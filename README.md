@@ -86,8 +86,8 @@ definition is out-of-tree and vendored, so no `west update` of extra manifests i
 needed.
 
 ```powershell
-git clone https://github.com/<you>/TanenBase.git
-cd TanenBase
+git clone https://github.com/hmd83/tanen.git
+cd tanen
 
 # LoRaWAN credentials — never commit the real one
 Copy-Item prj_credentials.conf.example prj_credentials.conf
