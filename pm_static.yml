@@ -1,0 +1,20 @@
+# Static partition pin for NCS Partition Manager.
+#
+# WHY THIS FILE EXISTS: without it, PM places zms_storage dynamically
+# "after: app" (nrf/subsys/partition_manager/pm.yml.zms), so ANY app-size
+# change or the switch to MCUboot RELOCATES the ZMS area. That silently
+# wipes: LoRaWAN DevNonce (→ TTN replay-rejects all joins = node bricked
+# until re-registered), session, credentials, scale calibration.
+#
+# Address matches the Seeed XIAO nRF54LM20A board DTS
+# (nrf54lm20a_cpuapp_common.dtsi: storage_partition @ 0x1D1000, 36 KB) so a
+# device flashed before sysbuild adoption keeps its data. MCUboot slots stay
+# dynamic — PM sizes them in the remaining 0x0-0x1D1000.
+#
+# NOTE: if already-provisioned units were built WITH sysbuild before this
+# pin existed, their storage may live elsewhere — expect a one-time
+# reprovision (BLE Setup) on first upgrade.
+zms_storage:
+  address: 0x1D1000
+  size: 0x9000
+  region: flash_primary

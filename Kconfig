@@ -1,0 +1,61 @@
+mainmenu "TanenBase"
+
+source "Kconfig.zephyr"
+
+config TANENBASE_DEV_EUI
+	string "LoRaWAN DevEUI (16 hex chars, MSB first)"
+	default ""
+	help
+	  Fixed DevEUI override. Leave empty (default) to derive a unique
+	  per-device DevEUI from the SoC factory hardware ID at first boot.
+	  A ZMS-stored or BLE-provisioned DevEUI always takes precedence.
+
+config TANENBASE_JOIN_EUI
+	string "LoRaWAN JoinEUI (16 hex chars)"
+	default "0000000000000000"
+
+config TANENBASE_APP_KEY
+	string "LoRaWAN AppKey (32 hex chars) — keep in prj_credentials.conf, never commit"
+	default "00000000000000000000000000000000"
+
+config TANENBASE_DEBUG_LOOP_INTERVAL
+	int "Debug loop delay when System OFF is skipped (seconds)"
+	default 180
+	help
+	  Minimum delay between cycles when ms_interval=0 (debug mode).
+	  Must respect EU868 1% duty cycle at DR_0. Default 180s.
+
+config TANENBASE_BLE_CONFIG
+	bool "BLE GATT configuration service"
+	default y
+
+config TANENBASE_ANOMALY
+	bool "Anomaly detection (delta reporting)"
+	default y
+
+config TANENBASE_SETUP_TIMEOUT
+	int "SETUP state timeout (seconds)"
+	default 180
+
+config TANENBASE_DEFAULT_TX_INTERVAL
+	int "Default TX/heartbeat interval (seconds)"
+	default 14400
+	help
+	  Mandatory heartbeat TX every N seconds. Default 14400 (4 hours).
+
+config TANENBASE_DEFAULT_MS_INTERVAL
+	int "Default measurement interval (seconds)"
+	default 300
+	help
+	  Wake and measure every N seconds. Default 300 (5 minutes).
+	  Minimum enforced: 60s.
+
+config TANENBASE_DEFAULT_WEIGHT_THRESHOLD
+	int "Default weight anomaly threshold (grams)"
+	default 2000
+
+config TANENBASE_DEFAULT_TEMP_THRESHOLD
+	int "Default temp anomaly threshold (centi-Celsius)"
+	default 500
+	help
+	  500 = 5.00 degrees C.

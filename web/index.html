@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TanenBase Config</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#1a1a2e;color:#e0e0e0;padding:16px;max-width:480px;margin:0 auto}
+h1{font-size:1.4em;margin-bottom:12px;color:#f5a623}
+h2{font-size:1.1em;margin:16px 0 8px;color:#aaa;border-bottom:1px solid #333;padding-bottom:4px}
+button{background:#f5a623;color:#1a1a2e;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:0.95em}
+button:hover{background:#d4911f}
+button:disabled{opacity:0.4;cursor:default}
+#status{margin:8px 0;padding:8px;border-radius:4px;font-size:0.85em;min-height:32px}
+.ok{background:#1b4332;color:#95d5b2}
+.err{background:#4a1020;color:#f5a0a0}
+.info{background:#1a2744;color:#a0c4f5}
+.field{display:flex;align-items:center;gap:8px;margin:6px 0}
+.field label{min-width:120px;font-size:0.85em;color:#999}
+.field input{flex:1;padding:6px;border:1px solid #444;border-radius:4px;background:#2a2a3e;color:#e0e0e0;font-family:monospace;font-size:0.9em}
+.field input:read-only{opacity:0.6}
+.btn-sm{padding:6px 12px;font-size:0.8em;margin:4px}
+.btn-danger{background:#c0392b}
+.btn-danger:hover{background:#a0301f}
+.btn-green{background:#27ae60}
+.btn-green:hover{background:#1e8449}
+#live{font-family:monospace;font-size:1.1em;padding:12px;background:#0d1117;border-radius:6px;text-align:center;margin:8px 0}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.calib-row{display:flex;align-items:center;gap:6px;margin:6px 0}
+.calib-row input{flex:1;padding:6px;border:1px solid #444;border-radius:4px;background:#2a2a3e;color:#e0e0e0;font-family:monospace;font-size:0.9em}
+.calib-row label{min-width:120px;font-size:0.85em;color:#999}
+</style>
+</head>
+<body>
+<h1>TanenBase Config</h1>
+<button id="connectBtn" onclick="doConnect()">Connect</button>
+<button id="disconnectBtn" onclick="doDisconnect()" disabled>Disconnect</button>
+<div id="status" class="info">Not connected</div>
+
+<div id="panel" style="display:none">
+
+<h2>Live Sensors</h2>
+<div id="live">-- waiting --</div>
+
+<h2>LoRaWAN Credentials</h2>
+<div class="field"><label>DevEUI</label><input id="devEui" maxlength="16" placeholder="16 hex chars"></div>
+<div class="field"><label>JoinEUI</label><input id="joinEui" maxlength="16" placeholder="16 hex chars"></div>
+<div class="field"><label>AppKey</label><input id="appKey" maxlength="32" placeholder="32 hex chars (write-only)"></div>
+
+<h2>Calibration</h2>
+<div class="field"><label>Zero Offset</label><input id="zeroOffset" type="number" readonly></div>
+<div class="field"><label>Scale Factor</label><input id="scaleFactor" type="number" readonly></div>
+<div class="actions">
+<button class="btn-sm" onclick="sendCmd(0x02)">1. Tare (empty scale)</button>
+</div>
+<div class="calib-row">
+<label>Ref Weight (kg)</label>
+<input id="calibRefKg" type="number" step="0.01" min="0" placeholder="e.g. 10.00">
+<button class="btn-sm btn-green" onclick="doCalibrate()">2. Calibrate</button>
+</div>
+
+<h2>Timing (seconds)</h2>
+<div class="field"><label>TX Interval</label><input id="txInterval" type="number" min="60"></div>
+<div class="field"><label>MS Interval</label><input id="msInterval" type="number" min="60"></div>
+
+<h2>Anomaly Thresholds</h2>
+<div class="field"><label>Weight (kg)</label><input id="weightThreshKg" type="number" step="0.1" min="0"></div>
+<div class="field"><label>Temp (C)</label><input id="tempThreshC" type="number" step="0.1" min="0"></div>
+
+<div class="actions">
+<button class="btn-green" onclick="writeAll()">Save All</button>
+<button class="btn-sm" onclick="readAll()">Refresh</button>
+<button class="btn-sm btn-danger" onclick="sendCmd(0x03)">Clear Session</button>
+<button class="btn-sm" onclick="sendCmd(0x04)">Test LoRa</button>
+<button class="btn-sm btn-danger" onclick="sendCmd(0x01)">Done (Exit Setup)</button>
+</div>
+</div>
+
+<script>
+const SVC = '544e4253-0000-4269-8000-544e42415345'.toLowerCase();
+const chr = n => `544e4253-${n.toString(16).padStart(4,'0')}-4269-8000-544e42415345`.toLowerCase();
+
+const CHARS = {
+  devEui:      {uuid: chr(1), len:8,  type:'hex'},
+  joinEui:     {uuid: chr(2), len:8,  type:'hex'},
+  appKey:      {uuid: chr(3), len:16, type:'hex', writeOnly:true},
+  zeroOffset:  {uuid: chr(4), len:4,  type:'i32'},
+  scaleFactor: {uuid: chr(5), len:4,  type:'i32'},
+  txInterval:  {uuid: chr(6), len:4,  type:'u32'},
+  msInterval:  {uuid: chr(7), len:4,  type:'u32'},
+  weightThresh:{uuid: chr(8), len:2,  type:'u16'},
+  tempThresh:  {uuid: chr(9), len:2,  type:'u16'},
+  calibRef:    {uuid: chr(0xA), len:4, type:'u32'},
+  cmdStatus:   {uuid: chr(0xB), len:2, type:'notify'},
+  configCmd:   {uuid: chr(0xC), len:1, type:'cmd'},
+  liveSensors: {uuid: chr(0xD), len:8, type:'notify'},
+};
+
+let device, server, svc, charMap = {};
+
+function status(msg, cls='info') {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = cls;
+}
+
+function hexToBytes(hex) {
+  hex = hex.replace(/\s/g, '');
+  const b = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.substr(i*2, 2), 16);
+  return b;
+}
+
+function bytesToHex(buf) {
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
+async function doConnect() {
+  try {
+    status('Requesting device...', 'info');
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{name: 'TanenBase'}, {services: [SVC]}],
+      optionalServices: [SVC],
+    });
+    device.addEventListener('gattserverdisconnected', () => {
+      status('Disconnected', 'err');
+      document.getElementById('panel').style.display = 'none';
+      document.getElementById('connectBtn').disabled = false;
+      document.getElementById('disconnectBtn').disabled = true;
+    });
+
+    status('Connecting...', 'info');
+    server = await device.gatt.connect();
+    svc = await server.getPrimaryService(SVC);
+
+    for (const [key, def] of Object.entries(CHARS)) {
+      try { charMap[key] = await svc.getCharacteristic(def.uuid); } catch(e) { charMap[key] = null; }
+    }
+
+    if (charMap.cmdStatus) {
+      charMap.cmdStatus.addEventListener('characteristicvaluechanged', onCmdStatus);
+      await charMap.cmdStatus.startNotifications();
+    }
+    if (charMap.liveSensors) {
+      charMap.liveSensors.addEventListener('characteristicvaluechanged', onLiveSensor);
+      await charMap.liveSensors.startNotifications();
+    }
+
+    document.getElementById('connectBtn').disabled = true;
+    document.getElementById('disconnectBtn').disabled = false;
+    document.getElementById('panel').style.display = 'block';
+
+    status('Connected to ' + device.name, 'ok');
+    await readAll();
+  } catch(e) {
+    status('Error: ' + e.message, 'err');
+  }
+}
+
+function doDisconnect() {
+  if (device && device.gatt.connected) device.gatt.disconnect();
+}
+
+function onCmdStatus(event) {
+  const dv = event.target.value;
+  const cmd = dv.getUint8(0);
+  const result = dv.getUint8(1);
+  const names = {2:'Tare',4:'Test LoRa',5:'Calibrate'};
+  const name = names[cmd] || `Cmd 0x${cmd.toString(16)}`;
+  if (result === 0) {
+    status(`${name}: OK`, 'ok');
+    if (cmd === 2 || cmd === 5) setTimeout(() => readAll(), 500);
+  } else {
+    status(`${name}: FAILED (err=${result})`, 'err');
+  }
+}
+
+function onLiveSensor(event) {
+  const dv = event.target.value;
+  const w = dv.getUint32(0, true);
+  const t = dv.getInt16(4, true);
+  const b = dv.getUint16(6, true);
+  document.getElementById('live').innerHTML =
+    `<b>${(w/1000).toFixed(3)}</b> kg &nbsp; <b>${(t/100).toFixed(2)}</b> &deg;C &nbsp; <b>${b}</b> mV`;
+}
+
+async function readAll() {
+  try {
+    for (const [key, def] of Object.entries(CHARS)) {
+      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || !charMap[key]) continue;
+      const val = await charMap[key].readValue();
+      const el = document.getElementById(key);
+
+      if (def.type === 'hex' && el) {
+        el.value = bytesToHex(val.buffer);
+      } else if (def.type === 'u32' && el) {
+        el.value = val.getUint32(0, true);
+      } else if (def.type === 'i32' && el) {
+        el.value = val.getInt32(0, true);
+      } else if (def.type === 'u16') {
+        /* Thresholds: display in user-friendly units */
+        if (key === 'weightThresh') {
+          const el2 = document.getElementById('weightThreshKg');
+          if (el2) el2.value = (val.getUint16(0, true) / 1000).toFixed(1);
+        } else if (key === 'tempThresh') {
+          const el2 = document.getElementById('tempThreshC');
+          if (el2) el2.value = (val.getUint16(0, true) / 100).toFixed(1);
+        } else if (el) {
+          el.value = val.getUint16(0, true);
+        }
+      }
+    }
+    /* CalibRef → display as kg */
+    if (charMap.calibRef) {
+      const val = await charMap.calibRef.readValue();
+      const g = val.getUint32(0, true);
+      const el = document.getElementById('calibRefKg');
+      if (el && g > 0) el.value = (g / 1000).toFixed(2);
+    }
+    status('Read complete', 'ok');
+  } catch(e) {
+    status('Read error: ' + e.message, 'err');
+  }
+}
+
+async function writeAll() {
+  try {
+    for (const [key, def] of Object.entries(CHARS)) {
+      if (def.type === 'cmd' || def.type === 'notify' || !charMap[key]) continue;
+      /* Skip calibRef, zeroOffset, scaleFactor — managed by tare/calibrate commands */
+      if (key === 'calibRef' || key === 'zeroOffset' || key === 'scaleFactor') continue;
+
+      let buf, el = document.getElementById(key);
+
+      /* Handle user-friendly threshold inputs */
+      if (key === 'weightThresh') {
+        const el2 = document.getElementById('weightThreshKg');
+        if (!el2 || !el2.value) continue;
+        buf = new ArrayBuffer(2);
+        new DataView(buf).setUint16(0, Math.round(parseFloat(el2.value) * 1000), true);
+      } else if (key === 'tempThresh') {
+        const el2 = document.getElementById('tempThreshC');
+        if (!el2 || !el2.value) continue;
+        buf = new ArrayBuffer(2);
+        new DataView(buf).setUint16(0, Math.round(parseFloat(el2.value) * 100), true);
+      } else if (!el || !el.value) {
+        continue;
+      } else if (def.type === 'hex') {
+        const hex = el.value.replace(/\s/g, '');
+        if (hex.length !== def.len * 2) { status(`${key}: need ${def.len*2} hex chars`, 'err'); return; }
+        buf = hexToBytes(hex).buffer;
+      } else if (def.type === 'u32') {
+        buf = new ArrayBuffer(4);
+        new DataView(buf).setUint32(0, parseInt(el.value), true);
+      } else if (def.type === 'i32') {
+        buf = new ArrayBuffer(4);
+        new DataView(buf).setInt32(0, parseInt(el.value), true);
+      } else if (def.type === 'u16') {
+        buf = new ArrayBuffer(2);
+        new DataView(buf).setUint16(0, parseInt(el.value), true);
+      }
+      await charMap[key].writeValueWithResponse(new DataView(buf));
+    }
+    status('All saved', 'ok');
+  } catch(e) {
+    status('Write error: ' + e.message, 'err');
+  }
+}
+
+async function doCalibrate() {
+  const el = document.getElementById('calibRefKg');
+  const kg = parseFloat(el.value);
+  if (!kg || kg <= 0) { status('Enter reference weight in kg', 'err'); return; }
+
+  try {
+    /* Write reference weight in grams to CalibRef characteristic */
+    const grams = Math.round(kg * 1000);
+    const buf = new ArrayBuffer(4);
+    new DataView(buf).setUint32(0, grams, true);
+    await charMap.calibRef.writeValueWithResponse(new DataView(buf));
+
+    /* Send calibrate command */
+    await charMap.configCmd.writeValueWithResponse(new Uint8Array([0x05]));
+    status('Calibrating... wait 2s then Refresh', 'ok');
+
+    /* Auto-refresh after calibration completes */
+    setTimeout(() => readAll(), 2500);
+  } catch(e) {
+    status('Calibrate error: ' + e.message, 'err');
+  }
+}
+
+async function sendCmd(cmd) {
+  try {
+    if (!charMap.configCmd) { status('ConfigCmd char not found', 'err'); return; }
+    await charMap.configCmd.writeValueWithResponse(new Uint8Array([cmd]));
+    const names = {1:'Done',2:'Tare',3:'Clear Session',4:'Test LoRa'};
+    const deferred = [0x02, 0x04, 0x05];
+    if (deferred.includes(cmd)) {
+      status((names[cmd]||'Cmd') + ': waiting...', 'info');
+    } else {
+      status('Sent: ' + (names[cmd]||cmd), 'ok');
+    }
+  } catch(e) {
+    status('Cmd error: ' + e.message, 'err');
+  }
+}
+</script>
+</body>
+</html>

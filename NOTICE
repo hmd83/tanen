@@ -1,0 +1,40 @@
+TanenBase — Smart Hive Monitoring System
+Copyright 2026 Hussein Daj
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+--------------------------------------------------------------------------------
+Development credits
+--------------------------------------------------------------------------------
+
+Firmware co-developed with Claude Code (Anthropic).
+Product design input from Google Gemini (Google).
+All work reviewed and hardware-verified by the author.
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+
+third_party/seeed-xiao-nrf54lm20a/
+    Zephyr board definition for the Seeed Studio XIAO nRF54LM20A.
+    Copyright (c) 2025 Seeed Technology Co., Ltd.
+    Licensed under the Apache License, Version 2.0.
+    Source: https://github.com/Seeed-Studio/platform-seeedboards
+    Vendored subset; unmodified. See that directory's README.md and LICENSE.
+
+This project builds against, but does not redistribute:
+
+    Zephyr RTOS                 Apache-2.0    https://zephyrproject.org
+    nRF Connect SDK (Nordic)    LicenseRef-Nordic-5-Clause / Apache-2.0
+                                              https://github.com/nrfconnect/sdk-nrf
+    loramac-node                BSD-3-Clause  https://github.com/Lora-net/LoRaMac-node

@@ -1,0 +1,87 @@
+/* test_app overlay — XIAO nRF54LM20A Standard (non-Sense). NAU7802 on sw-I2C,
+ * no LoRa: spi23 disabled so power.c's DEVICE_DT_GET_OR_NULL(spi23) → NULL. */
+
+&spi23 {
+	status = "disabled";
+};
+
+/* On-board py25q64 NOR (spi00) — unused */
+&spi00 {
+	status = "disabled";
+};
+
+/* Disable uart21 — its pins P1.08/P1.09 are D6/D7 (sw-I2C for NAU7802) */
+&uart21 {
+	status = "disabled";
+};
+
+/* Disable i2c22 — its pins P1.03/P1.07 are D4/D5 */
+&i2c22 {
+	status = "disabled";
+};
+
+/* Non-Sense variant: on-board IMU + PDM mic not populated */
+&lsm6ds3tr_c {
+	status = "disabled";
+};
+
+&i2c30 {
+	status = "disabled";
+};
+
+&pdm20 {
+	status = "disabled";
+};
+
+/* pwm20 pinctrl claims the RGB LED pins P1.22-24 */
+&pwm20 {
+	status = "disabled";
+};
+
+&nfct {
+	status = "disabled";
+};
+
+/* power_en (P1.12) is not connected in the schematic */
+&power_en {
+	/delete-property/ regulator-boot-on;
+	status = "disabled";
+};
+
+/* USB CDC-ACM console: usbhs needs the vregusb (USB VBUS) regulator device */
+&vregusb {
+	status = "okay";
+};
+
+/* Fix PMIC GPIO-I2C pins: SDA=P1.18, SCL=P1.17 (board dtsi bug: P1.15/P1.16) */
+&pmic_i2c {
+	sda-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
+	scl-gpios = <&gpio1 17 GPIO_ACTIVE_HIGH>;
+};
+
+/ {
+	chosen {
+		zephyr,settings-partition = &storage_partition;
+	};
+
+	w1: w1 {
+		compatible = "zephyr,w1-gpio";
+		gpios = <&gpio1 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;	/* D0 */
+
+		ds18b20: ds18b20 {
+			compatible = "maxim,ds18b20";
+			resolution = <10>;
+		};
+	};
+
+	sw_i2c: sw_i2c {
+		compatible = "gpio-i2c";
+		sda-gpios = <&gpio1 9 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;	/* D7 */
+		scl-gpios = <&gpio1 8 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;	/* D6 */
+		clock-frequency = <I2C_BITRATE_STANDARD>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		/* NAU7802 (addr 0x2A) driven directly from src/drivers/weight.c —
+		 * no DT child node needed. */
+	};
+};

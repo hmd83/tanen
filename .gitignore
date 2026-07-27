@@ -1,0 +1,38 @@
+# --- Secrets — never commit --------------------------------------------------
+prj_credentials.conf
+*.pem
+*.key
+
+# --- Build output ------------------------------------------------------------
+build*/
+twister-out*/
+*.hex
+*.bin
+*.elf
+*.map
+
+# --- Logs / scratch ----------------------------------------------------------
+*.log
+
+# --- KiCad -------------------------------------------------------------------
+# Lock files, autosave, backups, and per-user local state.
+# Gerbers ARE committed on purpose — they are the fabricated artifact.
+*.lck
+~*.lck
+*.kicad_prl
+*-backups/
+_autosave-*
+*.bak
+fp-info-cache
+
+# --- Editors / OS ------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Claude Code -------------------------------------------------------------
+# Per-machine permission state
+.claude/settings.local.json

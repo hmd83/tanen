@@ -1,0 +1,38 @@
+mainmenu "TanenBase test_app: measure_loop"
+
+source "Kconfig.zephyr"
+
+# Stubs — config.c references these even though LoRa isn't built here.
+config TANENBASE_DEV_EUI
+	string
+	default "0000000000000000"
+
+config TANENBASE_JOIN_EUI
+	string
+	default "0000000000000000"
+
+config TANENBASE_APP_KEY
+	string
+	default "00000000000000000000000000000000"
+
+config TANENBASE_DEFAULT_TX_INTERVAL
+	int
+	default 14400
+
+config TANENBASE_DEFAULT_MS_INTERVAL
+	int
+	default 5
+
+config TANENBASE_DEFAULT_WEIGHT_THRESHOLD
+	int
+	default 2000
+
+config TANENBASE_DEFAULT_TEMP_THRESHOLD
+	int
+	default 500
+
+config TANENBASE_TEST_INTERVAL_S
+	int "Measure loop interval (seconds)"
+	default 5
+	help
+	  Delay between measurement cycles in the test app.

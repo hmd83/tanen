@@ -1,0 +1,155 @@
+/* TanenBase board overlay — XIAO nRF54LM20A Standard (non-Sense).
+ * XIAO header roles kept 1:1 from the L15 build:
+ * D0=1-Wire, D1=DIO1, D2=RST, D3=BUSY, D4=NSS, D6/D7=sw-I2C, D8-D10=SPI. */
+#include <dt-bindings/lora/sx126x.h>
+
+/* SX1262 on the XIAO header SPI = spi23 (D8=P1.04 SCK, D9=P1.05 MISO, D10=P1.06 MOSI) */
+&spi23 {
+	status = "okay";
+	cs-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;		/* D4 = P1.03 NSS */
+
+	lora0: sx1262@0 {
+		compatible = "semtech,sx1262";
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(8)>;
+		reset-gpios              = <&gpio1 30 GPIO_ACTIVE_LOW>;		/* D2 */
+		busy-gpios               = <&gpio1 29 GPIO_ACTIVE_HIGH>;	/* D3 */
+		dio1-gpios               = <&gpio1 31 GPIO_ACTIVE_HIGH>;	/* D1 */
+		dio2-tx-enable;
+		dio3-tcxo-voltage        = <SX126X_DIO3_TCXO_1V8>;
+		tcxo-power-startup-delay-ms = <5>;
+	};
+};
+
+/* On-board py25q64 NOR (spi00, P2.01/02/04/05) — unused. Never drive its
+ * pins from software; see power.c DO-NOT-TOUCH list. */
+&spi00 {
+	status = "disabled";
+};
+
+/* Hardware watchdog for task_wdt fallback (60 s, TRD 13.1). Stops in
+ * System OFF — every wake is a full reset that re-arms it in main(). */
+&wdt31 {
+	status = "okay";
+};
+
+/* Disable uart21 — its pins P1.08/P1.09 are D6/D7 (sw-I2C for NAU7802) */
+&uart21 {
+	status = "disabled";
+};
+
+/* Disable i2c22 — its pins P1.03/P1.07 are D4 (LoRa NSS) and D5 */
+&i2c22 {
+	status = "disabled";
+};
+
+/* Non-Sense variant: on-board IMU + PDM mic not populated */
+&lsm6ds3tr_c {
+	status = "disabled";
+};
+
+&i2c30 {
+	status = "disabled";
+};
+
+&pdm20 {
+	status = "disabled";
+};
+
+/* pwm20 pinctrl claims the RGB LED pins P1.22-24 — LED is GPIO-driven */
+&pwm20 {
+	status = "disabled";
+};
+
+&nfct {
+	status = "disabled";
+};
+
+/* power_en (P1.12) is not connected in the schematic */
+&power_en {
+	/delete-property/ regulator-boot-on;
+	status = "disabled";
+};
+
+/* Fix PMIC GPIO-I2C pins: SDA=P1.18, SCL=P1.17 (board dtsi wrongly has
+ * P1.15/P1.16 — see platform-seeedboards examples/zephyr-battery) */
+&pmic_i2c {
+	sda-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
+	scl-gpios = <&gpio1 17 GPIO_ACTIVE_HIGH>;
+};
+
+/* --- nPM1300 sleep-current config (2026-07-25) --------------------------
+ * System OFF was 19.4 uA vs Seeed's 3.74 uA reference for this board at 3.7 V
+ * on BAT; the NOR-flash DPD fix plus this section brought it to ~4 uA. The
+ * nPM1300 sits on VBAT and keeps running straight through the SoC's System
+ * OFF, so anything left enabled inside it bills to the sleep budget.
+ *
+ * pmic_leds: Seeed's low-power guide disables it, and the board dtsi arms
+ * led0-mode="error" — which this unit would sit in permanently (see NTC
+ * below). Nothing in TanenBase drives the PMIC LEDs. */
+&pmic_leds {
+	status = "disabled";
+};
+
+/* The charger stays ENABLED as a device (VBAT ADC is the only battery gauge
+ * on this board) but is defanged:
+ *
+ * charging-enable deleted — SAFETY, not power. This unit runs a PRIMARY
+ * Li-SOCl2 cell. If VBUS is ever applied (debug USB, bench supply) with
+ * charging armed, the nPM1300 would push charge current into a
+ * non-rechargeable lithium cell -> venting/fire. Never re-add this property
+ * unless the cell on BAT is genuinely rechargeable.
+ *
+ * thermistor-ohms = 0 — no NTC is fitted. Left at 10k the charger parks in a
+ * permanent NTC fault (which is what made led0-mode="error" relevant above).
+ * 0 is a valid enum and makes the driver set the NTC-disable bit; the NTC
+ * threshold loop then no-ops because the board dtsi sets no thresholds.
+ *
+ * Still leaves ADC IBAT_EN=1 + TASK_AUTO=1 after init — those are cleared
+ * before System OFF in power.c pmic_enter_sleep(). */
+&pmic_charger {
+	/delete-property/ charging-enable;
+	thermistor-ohms = <0>;
+};
+
+/* usbhs is left enabled by the board dtsi but no build uses it — the console
+ * is uart20 -> CMSIS-DAP VCOM, and the USBHS CDC never enumerated on this
+ * board. Kept only so a future USB build compiles: usbhs references vregusb
+ * (USB VBUS regulator), which the SoC dtsi disables, and nrf_usbhs_wrapper.c
+ * fails on undeclared __device_dts_ord_* without it (needs CONFIG_REGULATOR). */
+&vregusb {
+	status = "okay";
+};
+
+/ {
+	aliases {
+		lora0 = &lora0;
+	};
+
+	chosen {
+		zephyr,settings-partition = &storage_partition;
+	};
+
+	w1: w1 {
+		compatible = "zephyr,w1-gpio";
+		gpios = <&gpio1 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;	/* D0 */
+
+		ds18b20: ds18b20 {
+			compatible = "maxim,ds18b20";
+			/* 9-bit = 0.5°C, 94ms conv (vs 10-bit 0.25°C, 187ms).
+			 * Anomaly threshold is 5°C → plenty of margin. */
+			resolution = <9>;
+		};
+	};
+
+	sw_i2c: sw_i2c {
+		compatible = "gpio-i2c";
+		sda-gpios = <&gpio1 9 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;	/* D7 */
+		scl-gpios = <&gpio1 8 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;	/* D6 */
+		clock-frequency = <I2C_BITRATE_STANDARD>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		/* NAU7802 (addr 0x2A) driven directly from src/drivers/weight.c —
+		 * no DT child node needed. */
+	};
+};

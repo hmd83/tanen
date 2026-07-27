@@ -1,0 +1,45 @@
+# Normalize line endings in the repo, check out native on each platform.
+* text=auto
+
+# PowerShell is only ever run on Windows
+*.ps1 text eol=crlf
+
+# Sources and configs stay LF in the tree
+*.c        text eol=lf
+*.h        text eol=lf
+*.conf     text eol=lf
+*.overlay  text eol=lf
+*.dts      text eol=lf
+*.dtsi     text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.cmake    text eol=lf
+*.md       text eol=lf
+*.js       text eol=lf
+*.html     text eol=lf
+CMakeLists.txt text eol=lf
+Kconfig*   text eol=lf
+
+# Binary — never diff or convert
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.zip   binary
+*.fzz   binary
+*.step  binary
+*.hex   binary
+
+# KiCad: text, but do not let Git mangle or try to merge them
+*.kicad_pcb  text eol=lf -merge
+*.kicad_sch  text eol=lf -merge
+*.kicad_pro  text eol=lf -merge
+
+# Gerbers / drill files — the fabricated artifact, keep byte-exact
+*.gbr     -text
+*.gbrjob  -text
+*.drl     -text
+
+# Collapse vendored + generated files in GitHub's diff view and language stats
+third_party/** linguist-vendored
+Tanen_Base_pcb/** linguist-documentation
+docs/** linguist-documentation
