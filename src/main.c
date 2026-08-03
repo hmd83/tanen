@@ -21,6 +21,7 @@ int main(void)
         k_sleep(K_SECONDS(5));
     }
     LOG_INF("TanenBase v0.3.0 initialized");
+    /* Zena (2026-08-03): simple demo edit — visible from VS Code via git pull */
 
     ret = fsm_init();
     if (ret < 0) {
