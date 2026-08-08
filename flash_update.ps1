@@ -20,7 +20,12 @@ $cfg  = Join-Path $repo "third_party\seeed-xiao-nrf54lm20a\boards\arm\xiao_nrf54
 if (-not (Test-Path $hex)) { Write-Error "No hex at $hex — build first."; exit 1 }
 Write-Host "Flashing $hex" -ForegroundColor Cyan
 
+# Prefer the real binary over chocolatey's bin\ shim: Windows Application Control
+# blocks the shim ("An Application Control policy has blocked this file").
+$openocd = 'C:\ProgramData\chocolatey\lib\openocd\tools\install\bin\openocd.exe'
+if (-not (Test-Path $openocd)) { $openocd = 'openocd' }
+
 # TCL needs forward slashes in the path; halt first in case the target is
 # running or locked up (blank flash → double fault, cfg auto-recovers).
-openocd -f $cfg -c "init; halt; nrf54lm20a-load $hex; reset run; shutdown"
+& $openocd -f $cfg -c "init; halt; nrf54lm20a-load $hex; reset run; shutdown"
 exit $LASTEXITCODE

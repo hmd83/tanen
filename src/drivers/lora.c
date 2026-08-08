@@ -1,4 +1,24 @@
+/* LoRa can be compiled out with CONFIG_LORAWAN=n. fsm.c and transmit.c call
+ * these entry points unconditionally, so stub them rather than dropping the
+ * translation unit — keeps the FSM's error paths (tx_pending retry) exercised. */
 #include <zephyr/kernel.h>
+#include "lora.h"
+
+#if !IS_ENABLED(CONFIG_LORAWAN)
+
+int lora_init(void)         { return -ENOTSUP; }
+int lora_session_save(void) { return 0; }
+
+int lora_send(const uint8_t *data, size_t len, bool confirmed)
+{
+	ARG_UNUSED(data);
+	ARG_UNUSED(len);
+	ARG_UNUSED(confirmed);
+	return -ENOTSUP;
+}
+
+#else
+
 #include <zephyr/device.h>
 #include <zephyr/lorawan/lorawan.h>
 #include <zephyr/logging/log.h>
@@ -363,3 +383,5 @@ int lora_send(const uint8_t *data, size_t len, bool important)
 	config_set_link_state(&st);
 	return ret;
 }
+
+#endif /* CONFIG_LORAWAN */
