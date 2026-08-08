@@ -56,6 +56,23 @@ LOG_MODULE_REGISTER(weight, LOG_LEVEL_INF);
 #define CTRL2_CALS     BIT(2)
 #define CTRL2_CALERR   BIT(3)
 
+/* One conversion per ~100 ms at CRS=10 SPS — the steady-state CR period. */
+#define CONV_PERIOD_MS 100
+
+/* First-CR budget after the conversion train is (re)started with CS, or after
+ * an offset calibration. The sigma-delta's sinc filter has to refill before it
+ * produces a valid result, so the FIRST sample lands ~3 conversion periods out,
+ * not one. Measured on the LM20A board: CS asserted right after the OCAL1 log
+ * at t=05.5426, no CR by the old 50+200 ms deadline at t=05.7941, and the next
+ * three samples completed by t=06.1473 — putting the first CR ~300-350 ms
+ * after CS. 200 ms therefore missed it on EVERY cold init.
+ *
+ * 5 periods gives real margin over the measured 350 ms. It is a ceiling, not a
+ * delay: once settled each sample returns in ~100 ms, so the wider window is
+ * never actually spent. Only a genuinely stuck chip waits the full budget, and
+ * that case breaks out of the flush loop anyway. */
+#define CONV_SETTLE_MS (5 * CONV_PERIOD_MS)
+
 /* REG_CHPS bits[5:4]: 00 = chopper enabled (default), 11 = chopper DISABLED.
  * Adafruit's stable reference lib writes 0b11. Chopper-on causes CR pulses
  * to land on internal pre-chopper samples → unstable trios we saw. */
@@ -216,9 +233,10 @@ static int cold_init(void)
 	if (ret) return ret;
 	k_msleep(50);
 
-	/* Flush 5 samples to clear startup transient */
+	/* Flush 5 samples to clear startup transient. CONV_SETTLE_MS, not one
+	 * conversion period: the first sample after CS is still filter-settling. */
 	for (int i = 0; i < 5; i++) {
-		ret = poll_pu_bit(PU_CR, 200);
+		ret = poll_pu_bit(PU_CR, CONV_SETTLE_MS);
 		if (ret) { LOG_WRN("cold flush[%d] timeout", i); break; }
 		int32_t dummy;
 		(void)read_adco(&dummy);
@@ -269,9 +287,14 @@ int weight_init(void)
 	if (ret) return ret;
 	k_msleep(50);
 
-	/* Flush 5 samples to clear any stale data after PUA cycle */
+	/* Flush 5 samples to clear any stale data after PUA cycle. The warm path
+	 * failed one iteration later than the cold one (flush[1], not flush[0]):
+	 * CR was still latched from before the PUA cycle, so flush[0] consumed
+	 * that stale sample instantly and flush[1] was the first to actually wait
+	 * on the settling filter. Hence the settle budget applies to every
+	 * iteration, not just the first. */
 	for (int i = 0; i < 5; i++) {
-		ret = poll_pu_bit(PU_CR, 200);
+		ret = poll_pu_bit(PU_CR, CONV_SETTLE_MS);
 		if (ret) { LOG_WRN("flush[%d] timeout", i); break; }
 		int32_t dummy;
 		(void)read_adco(&dummy);
