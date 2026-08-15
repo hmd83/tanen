@@ -198,6 +198,37 @@ docs/load_cells/H40A-C3-0150/
 
 ---
 
+## 9. Field validation — open, gates the merge
+
+Everything above is bench work: 40.7 h of logged data, a fit, and a host replay that reproduces it. **Nothing here has run on a hive with the correction active.** The firmware side stays on its branch until it has.
+
+### The test cannot be run naively
+
+The uplink carries the *corrected* weight only. `T_eff` is driven by every measurement (5 min), while uplinks fire on delta or the 4 h heartbeat — so the temperature history needed to reconstruct the correction offline never leaves the node, and raw weight is unrecoverable from the received series.
+
+**Configure around it:** for the test window set `ms_interval == tx_interval` (15 min each, over BLE or downlink FPort 10/11). Every measurement is then transmitted, the filter can be re-run offline over the uplinked temperature series, and `W_raw = W_corr − k_c · (T_eff − T_ref)` recovers the raw reading. No firmware change, and it reverts to normal cadence afterwards.
+
+Two things that break the reconstruction, so avoid both during the window: re-taring (moves `T_ref`), and any non-timer wake (button/reset re-seeds the filter — a gap in the series).
+
+### Protocol
+
+| | |
+|---|---|
+| Load | **Dead reference weight**, not a colony — §5 item 1. On a live hive, real mass change and thermal drift are not separable, and the test proves nothing either way. |
+| Duration | ≥ 3 full day/night cycles. The fit itself came from 1.7. |
+| Cadence | `ms_interval = tx_interval = 900 s` |
+| Record | Uplinked weight + temperature, plus ambient if available |
+
+### Pass criteria
+
+1. Regress reported weight on reported temperature over the window. Raw sits at ≈ −17.7 g/K; **compensated should land inside ±3 g/K** — the order of the OIML R60 envelope (2.1 g/K) the cell is certified to.
+2. Residual σ on the corrected series materially below the raw series on the same data. The bench number is 6.5×; anything above ~3× on a dead weight is a good result outdoors.
+3. No sign flip or growth at the cold end. The model is unvalidated below 20 °C (§5 item 2) — if the window happens to reach single digits, that is the most valuable part of the dataset.
+
+A fail here is informative, not fatal: `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` takes the re-fitted value, or `0` to ship the firmware with the correction inert.
+
+---
+
 ## Licence
 
 Data and analysis released under CC BY 4.0. Code under MIT, consistent with the rest of TANEN.
