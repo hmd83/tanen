@@ -21,12 +21,14 @@ to plug in once the lid is closed.
 | **Battery life** | ~9 years on an ER14505 AA Li-SOCl₂ at 15 min / 2 h reporting |
 | **Uplink** | 8 bytes — weight (999 kg range), temperature, battery, flags |
 
-![TanenBase deployed under a hive](media/tanen.jpg)
+![The scale platform in the field](media/platform.jpeg)
 
-*A node in the field: the load-cell bar slides under the hive, the enclosure
-holds the electronics and the AA cell, and the temperature probe runs inside.*
+*A node in the field: the hive stands on the platform, the IP-rated enclosure
+bolted to it holds the electronics and the AA cell, and the temperature probe
+runs inside the hive.*
 
-📺 **[Build workshop walkthrough (YouTube)](https://www.youtube.com/watch?v=t2ags30G7-o)**
+📺 **[Build workshop walkthrough (YouTube)](https://www.youtube.com/watch?v=t2ags30G7-o)** ·
+🎬 **[Bench test clip](media/test.mp4)** (download — GitHub does not play repo-hosted video inline)
 
 ---
 
@@ -62,6 +64,37 @@ life comes from.
 
 Full design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+### Temperature compensation
+
+A hive scale's real enemy is not resolution, it is thermal drift. Uncompensated,
+the reference cell reports a **350 g peak-to-peak swing on a constant 22 kg
+load** over a 17.5 K daily cycle — 16 g of phantom weight per kelvin, enough to
+bury a real nectar flow.
+
+The firmware corrects it with two parameters: one gain constant, plus a
+first-order lag filter on the probe temperature that models the probe sitting a
+few minutes behind the aluminium cell body. Residual scatter drops **6.5×, to
+σ = 15.7 g**. The filtered temperature is carried in ZMS across System OFF, and
+the tare stores the temperature it ran at as the correction's reference point.
+
+![Before and after compensation](docs/load_cells/H40A-C3-0150/figures/04_before_after.png)
+
+*Same 22 kg load, 40.7 h, one daily temperature cycle. σ 102.2 g → 15.7 g,
+peak-to-peak 350 g → 103 g.*
+
+![Load cell and its mount](media/loadcell_2.jpeg)
+
+*The cell the coefficient was fitted on — a Bosche H40A-C3-0150 single-point
+cell bolted between two steel spreader plates. Worth staring at: the report
+concludes the drift is **not** coming from the cell but from this mount, which
+is 8× outside the OIML R60 envelope the cell is certified to.*
+
+`k` is a property of the **cell plus its mount**, not of the cell alone —
+re-characterise after any mechanical change, override with
+`CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K`, or set it to `0` to disable. Method,
+data, hold-out validation and the (unflattering) hardware conclusions:
+[`docs/load_cells/H40A-C3-0150/`](docs/load_cells/H40A-C3-0150/).
+
 ---
 
 ## Repository layout
@@ -76,6 +109,8 @@ Full design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | [`ttndecoder/`](ttndecoder/) | TTN payload formatters — BEEP and custom |
 | [`test_apps/measure_loop/`](test_apps/measure_loop/) | Standalone sensor bring-up app |
 | [`docs/`](docs/) | Architecture, power budget, sprint log, TRD, open questions |
+| [`docs/load_cells/`](docs/load_cells/) | Load-cell characterisation — data, analysis, host replay of the compensation |
+| [`media/`](media/) | Build photos and a bench-test clip |
 
 ---
 
@@ -130,7 +165,9 @@ west build -b xiao_nrf54lm20a/nrf54lm20a/cpuapp --no-sysbuild -- \
 2. Open [`web/index.html`](web/index.html) in Chrome or Edge (Web Bluetooth;
    Safari and Firefox do not support it) and connect.
 3. Write the DevEUI, JoinEUI, and AppKey from your TTN device registration.
-4. Tare the empty scale, then calibrate with a known reference weight.
+4. Tare the empty scale, then calibrate with a known reference weight. The tare
+   also records the temperature it ran at — that becomes the reference point of
+   the thermal correction, so tare at a temperature the hive actually sees.
 5. Set the measurement and transmit intervals, and the anomaly thresholds.
 6. Press **Done**. The node joins TTN and enters its normal cycle.
 
@@ -171,6 +208,18 @@ capacitor. KiCad sources and fabricated gerbers are in
 *Assembled in an IP-rated enclosure — XIAO nRF54LM20A top-left, NAU7802
 load-cell amplifier on the right, external 868 MHz antenna, and cable glands for
 the load cell and temperature probe.*
+
+![Platform seen from the side](media/platform_2.jpeg)
+
+*The weighing platform end-on: a single-point cell carries the whole top frame
+from the centre, so the hive can sit anywhere on it without changing the
+reading. Enclosure sits on the top deck, cable runs down to the cell.*
+
+![Load cell mounted under the platform](media/loadcell.jpeg)
+
+*Underside — the cell between the top plate and the base, load arrow pointing
+down. E<sub>max</sub> = 150 kg, which is oversized for a hive: a 100 kg cell
+would give ~1.5× better signal-to-noise at the same absolute drift.*
 
 > The KiCad project files are still named **XIAO_nRF54L15 V1**, while the board
 > itself is silkscreened *Tanen Base v0.1*. That is deliberate: all XIAO modules
@@ -217,8 +266,9 @@ bring-up, PPK2 power measurement, and field validation.
 **[Claude Code](https://claude.com/claude-code)** (Anthropic) — firmware
 co-development. Worked alongside the author on the state machine, drivers,
 BLE GATT service, power-management path, watchdog and fault-tolerance layer, the
-nRF54L15 → nRF54LM20A port, and this documentation. Every change was reviewed and
-hardware-verified by the author before it landed.
+nRF54L15 → nRF54LM20A port, the load-cell temperature-drift analysis and the
+compensation formula it produced, and this documentation. Every change was
+reviewed and hardware-verified by the author before it landed.
 
 **[Google Gemini](https://gemini.google.com)** — product design input:
 requirements shaping, use-case analysis, and design-decision review during the
