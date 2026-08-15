@@ -118,6 +118,7 @@ TanenBase/
 │   │   └── battery.c/h         # Battery voltage via nPM1300 VBAT ADC
 │   └── features/
 │       ├── measurement/measure.c/h   # Weight + temp + battery orchestration
+│       ├── measurement/tempcomp.c/h  # Load-cell thermal drift correction
 │       ├── transmission/transmit.c/h # Payload build (big-endian) + uplink
 │       ├── ble_config/ble_svc.c/h    # BLE GATT service (Web Bluetooth config)
 │       └── anomaly/anomaly.c/h       # Weight/temp delta anomaly detection
@@ -275,11 +276,32 @@ formula, and battery ETA tables.
 | 15 | ocal1 | int32 | — (NAU7802 offset cal) |
 | 16 | link_state | struct | uplink_count=0, forced_dr=-1 |
 | 17 | tx_pending | uint8 | 0 |
+| 18 | tempcomp_state | struct | t_eff_mdeg=0, primed=0 |
+| 19 | tare_temp | int32 | 25000 (m°C) |
 
 ### Calibration
 - Zero offset: tare reading captured via BLE command in SETUP state
 - Scale factor: known reference weight set via BLE, computed and stored
-- Applied in `weight.c` before returning measurement
+- Both applied in `measure.c`: `grams = (raw - zero_offset) * 1000 / scale_factor`
+
+### Temperature compensation
+- `tempcomp.c` — `W_corr = W_raw + k_c · (T_eff − T_ref)`, with `T_eff` a
+  one-pole lag filter (τ = 25 min) on the DS18B20 reading. Fixed-point Q16,
+  no float. Measured effect on the reference cell: σ 102.2 g → 15.7 g
+- Applied in `measure.c` after the scale-factor conversion, before the 999 kg
+  clamp. Skipped (weight reported raw) when the temp read fails
+- `T_eff` is persisted in ZMS because System OFF wipes RAM — a filter that
+  re-seeds every cycle has no memory to lag with. `fsm.c` saves it once per
+  cycle, not per `measure_run()`, so the 2 s BLE live view can't hammer ZMS
+- Δt: configured `ms_interval` for the first sample of a wake (no wall clock
+  across System OFF), measured uptime for later ones. A non-timer wake means
+  the gap is unknown → drop `T_eff` and re-seed
+- `T_ref` = `T_eff` at the BLE tare (ZMS 19), written through `tempcomp_tare()`
+  so the in-RAM copy updates too — the live view would otherwise keep applying
+  the pre-tare reference for the rest of the setup window. Tare returns status
+  `4` if the offset stored but `T_ref` did not
+- `k_c` is a property of the cell **and its mount** — see
+  [`docs/load_cells/H40A-C3-0150/`](load_cells/H40A-C3-0150/)
 
 ### Logging
 - `LOG_*` macros exclusively (no `printk`)
@@ -353,6 +375,10 @@ and persisted in ZMS — Kconfig only seeds first boot):
 | `CONFIG_TANENBASE_DEFAULT_MS_INTERVAL` | 300 (5min) | Measurement interval (min 60s) |
 | `CONFIG_TANENBASE_DEFAULT_WEIGHT_THRESHOLD` | 2000 g | Weight anomaly threshold |
 | `CONFIG_TANENBASE_DEFAULT_TEMP_THRESHOLD` | 500 (5.00°C) | Temperature anomaly threshold |
+| `CONFIG_TANENBASE_TEMPCOMP` | `y` | Load-cell thermal drift correction |
+| `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` | 17734 | k_c — per cell **and mount**; 0 = no correction |
+| `CONFIG_TANENBASE_TEMPCOMP_TAU_S` | 1500 (25min) | Thermal lag time constant |
+| `CONFIG_TANENBASE_TEMPCOMP_T_REF_MDEG` | 25000 (25°C) | Fallback T_ref before the first tare |
 | `CONFIG_TANENBASE_SETUP_TIMEOUT` | 180 s | SETUP-state / BLE advertising window |
 | `CONFIG_TANENBASE_DEBUG_LOOP_INTERVAL` | 180 s | Cycle delay when System OFF is skipped (`ms_interval=0`) |
 

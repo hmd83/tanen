@@ -32,6 +32,12 @@ target_sources(app PRIVATE
     src/features/anomaly/anomaly.c
 )
 
+# Load-cell temperature compensation is optional: measure.c and fsm.c guard
+# every call site with IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP).
+target_sources_ifdef(CONFIG_TANENBASE_TEMPCOMP app PRIVATE
+    src/features/measurement/tempcomp.c
+)
+
 # BLE config service is optional: fsm.c already guards every call site with
 # IS_ENABLED(CONFIG_TANENBASE_BLE_CONFIG), so dropping the translation unit is
 # enough to build with CONFIG_BT=n (useful for isolating radio-vs-sensor bugs).

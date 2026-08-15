@@ -29,6 +29,8 @@ LOG_MODULE_REGISTER(config, LOG_LEVEL_DBG);
 #define ZMS_OCAL1_ID                  15
 #define ZMS_LINK_STATE_ID             16  /* LoRaWAN link-health recovery state */
 #define ZMS_TX_PENDING_ID             17  /* failed-uplink retry flag */
+#define ZMS_TEMPCOMP_STATE_ID         18  /* load-cell thermal-lag filter state */
+#define ZMS_TARE_TEMP_ID              19  /* temperature at tare = correction T_ref */
 
 static struct zms_fs zms;
 static bool zms_ready;
@@ -46,6 +48,7 @@ static uint16_t anomaly_temp_threshold;
 static uint32_t last_tx_weight;
 static int16_t last_tx_temp;
 static uint32_t measurement_count;
+static int32_t tare_temp_mdeg;
 
 static int hexstr_to_bytes(const char *hex, uint8_t *out, size_t len)
 {
@@ -172,6 +175,11 @@ int config_init(void)
 	}
 	if (!zms_load(ZMS_SCALE_FACTOR_ID, &scale_factor, sizeof(scale_factor))) {
 		scale_factor = 1000;
+	}
+	/* Never tared: fall back to the temperature the coefficient was fitted
+	 * at, so the correction is at least anchored somewhere sane. */
+	if (!zms_load(ZMS_TARE_TEMP_ID, &tare_temp_mdeg, sizeof(tare_temp_mdeg))) {
+		tare_temp_mdeg = CONFIG_TANENBASE_TEMPCOMP_T_REF_MDEG;
 	}
 
 	/* Load timing with Kconfig defaults */
@@ -413,4 +421,29 @@ int config_get_ocal1(int32_t *val)
 int config_set_ocal1(int32_t val)
 {
 	return zms_store(ZMS_OCAL1_ID, &val, sizeof(val));
+}
+
+/* Tempcomp filter state — not cached (read once per wake, written once per
+ * cycle, same wear profile as measurement_count). Defaults to unprimed so the
+ * first cycle after a flash seeds t_eff from the live reading. */
+int config_get_tempcomp_state(tempcomp_state_t *st)
+{
+	if (!zms_load(ZMS_TEMPCOMP_STATE_ID, st, sizeof(*st))) {
+		st->t_eff_mdeg = 0;
+		st->primed = 0;
+	}
+	return 0;
+}
+
+int config_set_tempcomp_state(const tempcomp_state_t *st)
+{
+	return zms_store(ZMS_TEMPCOMP_STATE_ID, st, sizeof(*st));
+}
+
+/* Tare temperature */
+int config_get_tare_temp(int32_t *val) { *val = tare_temp_mdeg; return 0; }
+int config_set_tare_temp(int32_t val)
+{
+	tare_temp_mdeg = val;
+	return zms_store(ZMS_TARE_TEMP_ID, &tare_temp_mdeg, sizeof(tare_temp_mdeg));
 }

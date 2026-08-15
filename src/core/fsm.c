@@ -8,6 +8,9 @@
 #include "../drivers/weight.h"
 #include "../config/config.h"
 #include "../features/measurement/measure.h"
+#if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
+#include "../features/measurement/tempcomp.h"
+#endif
 #include "../features/transmission/transmit.h"
 #include "../features/anomaly/anomaly.h"
 #if IS_ENABLED(CONFIG_TANENBASE_BLE_CONFIG)
@@ -106,6 +109,15 @@ static void fsm_measure_and_decide(void)
     if (err) {
         LOG_ERR("meas_count persist failed: %d", err);
     }
+
+#if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
+    /* Carry the thermal-lag filter across System OFF — once per cycle, not per
+     * measure_run(), so the 2 s BLE live view can't hammer ZMS. */
+    err = tempcomp_save();
+    if (err) {
+        LOG_ERR("tempcomp persist failed: %d", err);
+    }
+#endif
 
     /* Check if TX is needed (delta / heartbeat) */
     anomaly_result_t result = {0};
