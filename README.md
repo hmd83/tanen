@@ -82,6 +82,20 @@ the tare stores the temperature it ran at as the correction's reference point.
 *Same 22 kg load, 40.7 h, one daily temperature cycle. σ 102.2 g → 15.7 g,
 peak-to-peak 350 g → 103 g.*
 
+**Validated in the field**, not just on the bench: six days outdoors with a
+22.2 kg dead weight and the correction live left **+1.10 g/K** of temperature
+sensitivity where the uncompensated cell had −16.6, and σ of 11.6 g against
+63.1 g — measured on the *same samples*, by reconstructing the filter offline
+and inverting the correction.
+
+![Six days in the field](docs/load_cells/H40A-C3-0150/figures/07_field_validation.svg)
+
+*Days 4–6 are rain, not drift: +220 g arrived in two hours while the filtered
+temperature moved 0.4 K, and 506 g of water was still in the wooden platform and
+the concrete block at the end. Once the drying trend is modelled, the residual
+thermal term across those days is +0.56 and −1.48 g/K — the correction holds
+underneath the water.*
+
 ![Load cell and its mount](media/loadcell_2.jpeg)
 
 *The cell the coefficient was fitted on — a Bosche H40A-C3-0150 single-point

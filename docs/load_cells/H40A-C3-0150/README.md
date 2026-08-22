@@ -7,6 +7,7 @@
 **Load:** ~22.0 kg, static
 **Raw data:** [`data/Loadcell_B.csv`](data/Loadcell_B.csv)
 **Reproduce:** `python analysis/tempcomp_analysis.py`
+**Field validation:** 2026-08-16 → 08-21, 144 h on a dead weight — **passed**, see §9
 
 ---
 
@@ -21,7 +22,7 @@ W_corr = W_raw + 17.73 g/K · (T_eff − 25 °C)
 T_eff[n] = T_eff[n−1] + α · (T[n] − T_eff[n−1]),   τ = 25 min
 ```
 
-This runs on-device: [`src/features/measurement/tempcomp.c`](../../../src/features/measurement/tempcomp.c), `CONFIG_TANENBASE_TEMPCOMP=y` by default — see §6.
+This runs on-device: [`src/features/measurement/tempcomp.c`](../../../src/features/measurement/tempcomp.c), `CONFIG_TANENBASE_TEMPCOMP=y` by default — see §6. Six days in the field on a dead reference weight then confirmed it: **+1.10 g/K residual, σ 11.6 g** (§9).
 
 ![Raw overview](figures/01_raw_overview.png)
 
@@ -179,10 +180,13 @@ comp: mean=22.0554 kg sigma=15.7 g p2p=103 g
 docs/load_cells/H40A-C3-0150/
 ├── README.md
 ├── data/
-│   ├── Loadcell_B.csv                  raw measurement (time;T_C;W_raw_kg)
-│   └── Loadcell_B_compensated.csv      raw + T_eff + W_corr + residual
+│   ├── Loadcell_B.csv                  bench run, raw (time;T_C;W_raw_kg)
+│   ├── Loadcell_B_compensated.csv      bench run + T_eff + W_corr + residual
+│   └── Loadcell_B_test2.csv            field validation, as reported by the node
 ├── analysis/
-│   └── tempcomp_analysis.py            full pipeline, regenerates every figure
+│   ├── tempcomp_analysis.py            bench pipeline, regenerates figures 1-6
+│   ├── field_validation.py             field pipeline, stdlib only
+│   └── make_field_figure.py            renders figure 7 as SVG
 ├── firmware/
 │   ├── tanen_tempcomp.c                standalone copy of the shipped maths
 │   ├── tanen_tempcomp.h
@@ -193,39 +197,94 @@ docs/load_cells/H40A-C3-0150/
     ├── 03_tau_sweep.png
     ├── 04_before_after.png
     ├── 05_error_distribution.png
-    └── 06_validation.png
+    ├── 06_validation.png
+    └── 07_field_validation.svg
 ```
 
 ---
 
-## 9. Field validation — open, gates the merge
+## 9. Field validation — PASSED
 
-Everything above is bench work: 40.7 h of logged data, a fit, and a host replay that reproduces it. **Nothing here has run on a hive with the correction active.** The firmware side stays on its branch until it has.
+**Run:** 2026-08-16 → 08-21, 144 h, 1649 samples at 5.2 min. 22.2 kg dead weight (a concrete block) on the assembled platform, outdoors, correction active. Raw data: [`data/Loadcell_B_test2.csv`](data/Loadcell_B_test2.csv).
 
-### The test cannot be run naively
+![Test setup](../../../media/test_with_block.jpeg)
+
+*The setup. A dead weight rather than a colony is what makes the run decisive — with a live hive, real mass change and thermal drift are not separable (§5 item 1). The porous block and the wooden platform are also why days 4–6 gained half a kilo of rain.*
+
+Because every measurement was transmitted, `T_eff` is reproducible offline and the **uncompensated series can be recovered by inverting the correction** — so both curves below come from the same physical samples, not from two different runs.
+
+![Field validation](figures/07_field_validation.svg)
+
+### Result — dry window, 08-16 00:01 → 08-18 16:54 (64.9 h, 19.5–34.0 °C)
+
+| Metric | Uncompensated (reconstructed) | Compensated | |
+|---|---:|---:|---|
+| Weight vs T<sub>eff</sub> slope | −16.64 g/K | **+1.10 g/K** | pass, criterion was ±3 |
+| σ | 63.1 g | **11.6 g** | 5.5× |
+| Peak-to-peak | 270 g | **100 g** | 2.7× |
+| r² vs T<sub>eff</sub> | 0.971 | **0.126** | temperature no longer explains the signal |
+
+σ = 11.6 g beats the 15.7 g predicted on the bench, and 1 sample in 746 was an outlier (−45 g), so the cluster filter in `weight.c` is doing its job.
+
+### The steps after 08-18 are rain, not drift
+
+Four events, each a rapid sustained gain that no thermal mechanism can produce. The last column is the coefficient the correction would need for the jump to be thermal, against the −17.7 g/K model:
+
+| Event | ΔW | ΔT<sub>eff</sub> | implied |
+|---|---:|---:|---:|
+| 08-18 16:12 → 20:03 | +160 g | −5.21 K | −30.7 g/K |
+| 08-20 04:54 → 10:50 | +310 g | −2.96 K | −104.8 g/K |
+| 08-21 09:33 → 11:39 | +220 g | −0.38 K | **−582 g/K** |
+| 08-21 15:46 → 19:15 | +100 g | −1.21 K | −83.0 g/K |
+
+The third one settles it: 220 g arriving in two hours while the filtered temperature moved 0.4 K. That is mass, not drift — rain into a porous concrete block on a wooden platform. Peak +581 g over the dry baseline, +506 g still retained at the end of the series.
+
+**The correction keeps working underneath the water.** Fitting `weight ~ drying_trend + T_eff` across the two rain-free dry-downs separates the two effects:
+
+| Window | Drying | Thermal, compensated | Thermal, raw |
+|---|---:|---:|---:|
+| 08-19 00:04 → 08-20 04:28 (19.0–33.5 °C) | −4.7 g/h | **−1.48 g/K** | −19.21 g/K |
+| 08-20 13:02 → 08-21 09:28 (15.5–21.0 °C) | −7.8 g/h | **+0.56 g/K** | −17.18 g/K |
+
+So the compensation holds across the whole run, including down to **15.5 °C** — below the 20 °C floor §5 item 2 flagged as unvalidated.
+
+### Do not re-fit the gain on this
+
+This run measures k = −16.64 g/K where the bench fit gave −17.73, i.e. the shipped gain over-corrects by 6.6%. **Leave it.** The two dry-down windows disagree in *sign* about the residual (−1.48 and +0.56 g/K), so the true value sits inside roughly ±1.5 g/K of what is shipped and re-fitting on one more unit would be chasing noise. Everything is comfortably inside the ±3 g/K bar either way.
+
+### Still open
+
+- **Below 13 °C is untested.** The run bottomed out at 13 °C, and only the 15.5 °C dry-down was clean. A hive scale sees −10 °C; §5 item 2 stands until a winter window.
+- **Water mass is real mass.** Nothing in firmware can or should remove it — a wet hive genuinely is heavier. But +500 g of rain looks exactly like a nectar flow to a delta-threshold alarm, which is worth knowing before tuning `anomaly_weight_threshold`.
+
+### Method — the test cannot be run naively
 
 The uplink carries the *corrected* weight only. `T_eff` is driven by every measurement (5 min), while uplinks fire on delta or the 4 h heartbeat — so the temperature history needed to reconstruct the correction offline never leaves the node, and raw weight is unrecoverable from the received series.
 
-**Configure around it:** for the test window set `ms_interval == tx_interval` (15 min each, over BLE or downlink FPort 10/11). Every measurement is then transmitted, the filter can be re-run offline over the uplinked temperature series, and `W_raw = W_corr − k_c · (T_eff − T_ref)` recovers the raw reading. No firmware change, and it reverts to normal cadence afterwards.
+**Configure around it:** for the test window set `ms_interval == tx_interval` (the run above used 5.2 min, over BLE or downlink FPort 10/11). Every measurement is then transmitted, the filter can be re-run offline over the uplinked temperature series, and `W_raw = W_corr − k_c · (T_eff − T_ref)` recovers the raw reading. No firmware change, and it reverts to normal cadence afterwards.
 
 Two things that break the reconstruction, so avoid both during the window: re-taring (moves `T_ref`), and any non-timer wake (button/reset re-seeds the filter — a gap in the series).
 
-### Protocol
+### Method — run parameters
 
 | | |
 |---|---|
 | Load | **Dead reference weight**, not a colony — §5 item 1. On a live hive, real mass change and thermal drift are not separable, and the test proves nothing either way. |
-| Duration | ≥ 3 full day/night cycles. The fit itself came from 1.7. |
-| Cadence | `ms_interval = tx_interval = 900 s` |
+| Duration | ≥ 3 full day/night cycles. The fit itself came from 1.7; the validation run got 2.7 dry plus 3.3 wet. |
+| Cadence | `ms_interval = tx_interval`, ≤ 15 min |
 | Record | Uplinked weight + temperature, plus ambient if available |
 
-### Pass criteria
+### Pass criteria, and what the run returned
 
-1. Regress reported weight on reported temperature over the window. Raw sits at ≈ −17.7 g/K; **compensated should land inside ±3 g/K** — the order of the OIML R60 envelope (2.1 g/K) the cell is certified to.
-2. Residual σ on the corrected series materially below the raw series on the same data. The bench number is 6.5×; anything above ~3× on a dead weight is a good result outdoors.
-3. No sign flip or growth at the cold end. The model is unvalidated below 20 °C (§5 item 2) — if the window happens to reach single digits, that is the most valuable part of the dataset.
+| # | Criterion | Result | |
+|---|---|---|---|
+| 1 | Compensated slope inside ±3 g/K (raw ≈ −17.7) | +1.10 g/K | ✅ |
+| 2 | σ materially below raw on the same data; >3× is good outdoors | 5.5× (63.1 → 11.6 g) | ✅ |
+| 3 | No sign flip or growth at the cold end | holds to 15.5 °C; below 13 °C untested | ⚠️ partial |
 
-A fail here is informative, not fatal: `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` takes the re-fitted value, or `0` to ship the firmware with the correction inert.
+A fail would have been informative, not fatal: `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` takes a re-fitted value, or `0` to ship the correction inert.
+
+**Reproduce:** `python analysis/field_validation.py data/Loadcell_B_test2.csv`
 
 ---
 

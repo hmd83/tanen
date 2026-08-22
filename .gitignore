@@ -36,3 +36,8 @@ Desktop.ini
 # --- Claude Code -------------------------------------------------------------
 # Per-machine permission state
 .claude/settings.local.json
+
+# --- Python ------------------------------------------------------------------
+# Byte-code from the analysis scripts under docs/
+__pycache__/
+*.pyc
