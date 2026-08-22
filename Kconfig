@@ -50,6 +50,44 @@ config TANENBASE_DEFAULT_MS_INTERVAL
 	  Wake and measure every N seconds. Default 300 (5 minutes).
 	  Minimum enforced: 60s.
 
+config TANENBASE_TEMPCOMP
+	bool "Load-cell temperature compensation"
+	default y
+	help
+	  Correct the thermal drift of the load cell: a first-order lag filter
+	  on the probe temperature plus one gain constant. Measured on the
+	  reference unit: 350 g peak-to-peak on a constant 22 kg load over a
+	  17.5 K daily cycle, down to sigma = 15.7 g compensated. Full report in
+	  docs/load_cells/H40A-C3-0150/README.md.
+
+config TANENBASE_TEMPCOMP_GAIN_MG_PER_K
+	int "Compensation gain (milligram per kelvin)"
+	default 17734
+	help
+	  k_c = -k, added to the raw weight per kelvin of filtered temperature
+	  above T_ref. 17734 = +17.734 g/K, fitted on the reference cell.
+	  THIS IS A PROPERTY OF THE CELL PLUS ITS MOUNT, not of the H40A —
+	  re-characterise after any mechanical change to the frame. Set to 0 to
+	  keep the filter running (t_eff is logged) but apply no correction.
+
+config TANENBASE_TEMPCOMP_TAU_S
+	int "Thermal lag time constant (seconds)"
+	default 1500
+	help
+	  Time constant of the low-pass filter on the probe temperature, which
+	  models the lag between the probe and the cell body. 1500 = 25 min,
+	  found by sweeping tau; the optimum is broad (15-40 min all within 1 g)
+	  so it does not need tuning per unit. Only matters while the probe is
+	  not bonded to the cell body.
+
+config TANENBASE_TEMPCOMP_T_REF_MDEG
+	int "Fallback reference temperature (milli-Celsius)"
+	default 25000
+	help
+	  T_ref used until the scale is tared — a tare stores the temperature it
+	  ran at and that becomes T_ref from then on. 25000 = 25.000 C, the
+	  anchor the coefficient was fitted at.
+
 config TANENBASE_DEFAULT_WEIGHT_THRESHOLD
 	int "Default weight anomaly threshold (grams)"
 	default 2000

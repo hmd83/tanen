@@ -12,6 +12,9 @@
 #include "../../core/watchdog.h"
 #include "../../drivers/lora.h"
 #include "../measurement/measure.h"
+#if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
+#include "../measurement/tempcomp.h"
+#endif
 
 LOG_MODULE_REGISTER(ble_svc, LOG_LEVEL_INF);
 
@@ -560,16 +563,29 @@ static void cmd_work_handler(struct k_work *work)
     uint8_t cmd = (uint8_t)atomic_get(&pending_cmd);
 
     switch (cmd) {
-    case CMD_TARE:
+    case CMD_TARE: {
+        uint8_t result = 0;
+
         err = weight_read(&raw);
         if (!err) {
             config_set_zero_offset(raw);
             LOG_INF("Tare done: offset=%d", raw);
+#if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
+            /* Re-anchor the temperature correction on the same instant. Report
+             * a distinct failure if that half did not land: the offset is
+             * stored but the scale will read k_c * (T - T_ref) instead of
+             * zero, which looks like a broken tare rather than a dead probe. */
+            if (tempcomp_tare()) {
+                result = 4;
+            }
+#endif
         } else {
             LOG_ERR("Tare failed: %d", err);
+            result = 1;
         }
-        notify_cmd_status(cmd, err ? 1 : 0);
+        notify_cmd_status(cmd, result);
         break;
+    }
     case CMD_CALIBRATE:
         if (calib_ref_g == 0) {
             LOG_ERR("Calibrate: ref weight is 0");
