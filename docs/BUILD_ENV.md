@@ -20,7 +20,7 @@
 | `boards/` | Application devicetree overlay |
 | `third_party/` | Seeed XIAO nRF54LM20A board definition |
 | `Tanen_Base_pcb/` | KiCad carrier board (schematic, layout, gerbers) |
-| `web/` | Web Bluetooth config page (single file) |
+| `web/` | Web Bluetooth config page (`index.html`) + downlink encoder (`encoder.html`) |
 | `ttndecoder/` | TTN payload formatters |
 | `test_apps/measure_loop/` | Standalone sensor bring-up |
 

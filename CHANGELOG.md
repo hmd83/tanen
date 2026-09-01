@@ -15,8 +15,24 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   `$env:NCS_ROOT` / `NCS_VERSION` / `NCS_TOOLCHAIN`
 - `Tanen_Base_pcb/README.md` documenting XIAO footprint compatibility and
   fabrication notes
+- **Second TanenButton on D19 (P0.00)** — a XIAO bottom pad, wired in parallel
+  with the on-board P0.09 key. `button_arm_sense()` arms both as System OFF wake
+  sources and `power_get_wake_reason()` ORs the two latches, so either press
+  wakes into SETUP; they are read separately only so the log says which one
+  fired. Carrier v0.1 does not route D19 — flying wire until v0.2 (2026-08-29)
+- **`web/encoder.html`** — standalone LoRaWAN downlink builder for FPort 10–13
+  (TxInterval, MsInterval, WeightThresh, TempThresh). Emits fPort + hex +
+  base64 for the TTN console and a ready `down/push` body for the TTN API. No
+  Bluetooth, so it works without a node in range
+- Mandatory Wio-SX1262 rework documented in `Tanen_Base_pcb/README.md`: the
+  kit's **K1 button + 10 kΩ pull-up sit on D0**, the DS18B20 1-Wire net, and
+  with them fitted 1-Wire does not read at all. One trace cut lifts both off D0
 
 ### Fixed
+- **nRF54LM20A anomaly [37]** — System OFF current above spec when entered soon
+  after a pin reset or power cycle. Nordic's workaround (write 1 to the
+  undocumented POWER register `0x5005340C`, ≥ 40 CPU cycles before System OFF)
+  is applied in `power_off()`; the GRTC prepare that follows covers the delay
 - **BLE "Send radio test" (ConfigCmd 0x04) sent a 1-byte `{0xFF}` uplink.** Both
   TTN decoders bail on `bytes.length < 8`, so the frame decoded to nothing and
   BEEP fell back to the raw byte — the phantom `255` seen on the platform. The
@@ -27,6 +43,21 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   all-sentinel frame, which still decodes cleanly (2026-09-01)
 
 ### Changed
+- **D5 = P1.07 is `LORA_RF_SW1`, not a spare GPIO.** The Wio-SX1262 brings its
+  antenna-switch control out to that header pin. Firmware never drives it (the
+  radio is `dio2-tx-enable`, so the SX1262 switches the path itself), but a
+  pull-up or button there parks the switch and bills the System OFF budget.
+  Corrected in the overlay comment, ARCHITECTURE, TRD, and the carrier README,
+  all of which previously called D5 unused
+- **Web config app rebuilt** — the `index2.html` redesign is now `index.html`
+  (three-language DE/EN/AR, guided setup wizard, `device.svg` / `logo.svg`
+  assets); the old `index2.html` is gone and the command encoder moved to its
+  own page
+- `docs/POWER_BUDGET.md` gains a third thing to check before blaming firmware
+  for a sleep-current regression: **the carrier board**. A unit read 54 µA on
+  2026-08-29 and was chased through the firmware for hours — wake-port choice,
+  errata workarounds, A/B builds — before a carrier swap dropped it to 8 µA. The
+  XIAO alone measured 3.7 µA throughout, which was the tell
 - All build and flash scripts are now repo-relative — no absolute paths
 - Vendored Seeed platform trimmed from 33 MB to the single nRF54LM20A board
   definition, under `third_party/seeed-xiao-nrf54lm20a/`

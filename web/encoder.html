@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Befehls-Rechner · TanenBase</title>
+<style>
+/* =========================================================================
+   TanenBase - Befehls-Rechner (eigene Seite, ohne Bluetooth-Verbindung).
+   Gleiches Design-System wie index.html: gleiche Farben, gleiche Groessen,
+   gleiche Knopf-Formen. Diese Seite ist ausdruecklich Fachleuten gewidmet
+   und deshalb vom Bedien-Bildschirm getrennt.
+   ========================================================================= */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;
+  --surface:#ffffff;
+  --surface-2:#e4eaf4;
+  --border:#8f9cb5;
+  --border-strong:#4a5568;
+  --text:#0c1017;
+  --dim:#39445a;
+  --accent:#f0a500;
+  --accent-ink:#231800;
+  --accent-edge:#a06d00;
+  --accent-soft:#fff4dc;
+  --green:#0a6b33;
+  --green-soft:#e2f3e8;
+  --red:#9e1030;
+  --red-soft:#fdeaee;
+  --blue:#0f4c96;
+  --blue-soft:#e6eefa;
+  --r:18px;
+  --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100dvh;line-height:1.55;font-size:1rem;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input{font:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+/* ============================== Kopfbereich ============================== */
+.appbar{
+  position:sticky;top:0;z-index:30;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:var(--surface);border-bottom:3px solid var(--border-strong);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;flex:1 1 auto}
+.brand-mark{
+  inline-size:40px;block-size:40px;border-radius:11px;flex:none;
+  background:var(--accent);border:2px solid var(--accent-edge);
+  display:grid;place-items:center;color:var(--accent-ink);
+}
+.brand-mark svg{inline-size:26px;block-size:26px}
+.back-link{
+  order:3;flex:1 1 100%;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-block-size:56px;padding:10px 18px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  color:var(--text);font-size:1rem;font-weight:800;text-decoration:none;
+}
+.back-link svg{inline-size:24px;block-size:24px;flex:none}
+html[dir="rtl"] .back-link svg{transform:scaleX(-1)}
+@media (min-width:680px){.back-link{order:0;flex:0 0 auto}}
+.lang-toggle{display:flex;gap:6px;flex:none}
+.lang-toggle button{
+  min-inline-size:62px;min-block-size:48px;padding:6px 12px;border-radius:12px;
+  border:2px solid var(--border);background:var(--surface-2);
+  font-size:.95rem;font-weight:800;color:var(--dim);
+}
+.lang-toggle button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+
+/* ================================ Aufbau ================================ */
+main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
+.view-title{font-size:1.8rem;font-weight:800;line-height:1.2;margin-block-end:4px}
+.view-sub{font-size:1rem;color:var(--dim);margin-block-end:20px}
+
+.card{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:20px;margin-block-end:16px;box-shadow:var(--shadow);
+}
+.card h3{font-size:1.25rem;font-weight:800;margin-block-end:6px;line-height:1.25}
+.card-sub{font-size:.95rem;color:var(--dim);margin-block-end:14px}
+
+.note{
+  display:flex;gap:12px;align-items:flex-start;
+  font-size:1rem;line-height:1.5;padding:14px 16px;border-radius:14px;margin-block-end:16px;
+  background:var(--blue-soft);border:3px solid var(--blue);color:#0a2f5e;
+}
+.note svg{inline-size:26px;block-size:26px;flex:none;color:var(--blue)}
+.note strong{display:block;margin-block-end:2px}
+.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
+.note.warn svg{color:#8a5f00}
+.note.bad{background:var(--red-soft);border-color:var(--red);color:#5e0a1c}
+.note.bad svg{color:var(--red)}
+
+/* ============================ Werte-Auswahl ============================ */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-block-end:18px}
+@media (max-width:480px){.seg{grid-template-columns:1fr}}
+.seg button{
+  min-block-size:76px;padding:12px 14px;border-radius:14px;
+  border:3px solid var(--border-strong);background:var(--surface);
+  font-size:1.02rem;font-weight:800;line-height:1.25;text-align:start;
+}
+.seg button small{
+  display:block;direction:ltr;font-family:ui-monospace,Consolas,monospace;
+  font-size:.78rem;font-weight:700;color:var(--dim);margin-block-start:4px;
+}
+.seg button[aria-pressed="true"]{
+  background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink);
+}
+.seg button[aria-pressed="true"] small{color:#4a3400}
+.seg button[aria-pressed="true"]::before{content:"\2713\00a0"}
+
+.field{margin-block:16px}
+.field label{display:block;font-size:1.05rem;font-weight:700;margin-block-end:7px}
+.field input{
+  inline-size:100%;min-block-size:62px;padding:14px 16px;
+  border:3px solid var(--border-strong);border-radius:12px;
+  background:var(--surface);color:var(--text);
+  font-family:ui-monospace,Consolas,monospace;font-size:1.2rem;
+  direction:ltr;text-align:start;
+}
+.field input:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
+.field input::placeholder{color:#5c6880}
+.hint{font-size:.95rem;color:var(--dim);margin-block-start:7px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media (max-width:520px){.grid-2{grid-template-columns:1fr}}
+
+/* ================================ Ausgabe ================================ */
+.out{margin-block:16px}
+.out .out-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-block-end:7px}
+.out .out-head span{font-size:1.05rem;font-weight:700}
+.copy-btn{
+  flex:none;min-block-size:48px;padding:8px 18px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  font-size:.92rem;font-weight:800;color:var(--text);
+}
+.out pre{
+  direction:ltr;text-align:start;
+  padding:14px 16px;border:3px solid var(--border-strong);border-radius:12px;
+  background:var(--surface-2);color:var(--text);
+  font-family:ui-monospace,Consolas,monospace;font-size:1.05rem;line-height:1.6;
+  white-space:pre-wrap;word-break:break-all;
+}
+
+/* ================================= Liste ================================= */
+.queue{list-style:none;margin-block-end:14px}
+.queue li{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border:3px solid var(--border-strong);border-radius:14px;
+  background:var(--surface-2);margin-block-end:10px;
+}
+.q-port{
+  flex:none;direction:ltr;font-family:ui-monospace,Consolas,monospace;
+  font-size:.9rem;font-weight:800;color:var(--accent-ink);
+  background:var(--accent);border:2px solid var(--accent-edge);border-radius:8px;padding:4px 9px;
+}
+.q-txt{flex:1 1 160px;font-size:1rem;font-weight:700;min-inline-size:0}
+.q-btn{
+  flex:none;min-inline-size:52px;min-block-size:52px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface);
+  font-size:1.2rem;font-weight:800;line-height:1;
+}
+.q-btn.del{border-color:var(--red);color:var(--red)}
+.queue-empty{font-size:1rem;color:var(--dim);margin-block-end:14px}
+
+/* ================================ Knoepfe ================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-block-size:62px;padding:14px 26px;font-size:1.05rem;font-weight:800;
+  border-radius:999px;border:3px solid var(--accent-edge);
+  background:var(--accent);color:var(--accent-ink);text-decoration:none;
+}
+.btn svg{inline-size:24px;block-size:24px;flex:none}
+.btn:active{transform:translateY(2px)}
+.btn-block{inline-size:100%}
+.btn-outline{background:var(--surface);border:3px solid var(--border-strong);color:var(--text);border-radius:12px}
+.btn-danger{background:var(--surface);border:3px solid var(--red);color:var(--red);border-radius:12px}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-block-start:18px}
+.btn-row .btn{flex:1 1 200px}
+
+/* ================================= Toast ================================= */
+#toast{
+  position:fixed;top:18px;inset-inline:16px;z-index:50;max-width:600px;margin:0 auto;
+  padding:16px 20px;border-radius:14px;font-size:1.05rem;font-weight:700;
+  border:3px solid transparent;box-shadow:0 12px 34px rgba(12,16,23,.28);
+  opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .25s,transform .25s;
+}
+#toast.show{opacity:1;transform:none}
+#toast.ok{background:var(--green-soft);color:#06381b;border-color:var(--green)}
+#toast.err{background:var(--red-soft);color:#5e0a1c;border-color:var(--red)}
+#toast.info{background:var(--blue-soft);color:#0a2f5e;border-color:var(--blue)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="brand">
+    <!-- Honigtopf: dasselbe Zeichen wie auf dem Etikett der Station -->
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+        <ellipse cx="24" cy="18" rx="10" ry="3"/>
+        <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+      </svg>
+    </span>
+    <span data-i18n="brand">TanenBase</span>
+  </div>
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    <span data-i18n="back">Zurück zur Bedienung</span>
+  </a>
+  <div class="lang-toggle" role="group" data-i18n-al="langGroup" aria-label="Sprache">
+    <button type="button" id="langDe" aria-pressed="true" lang="de">DE</button>
+    <button type="button" id="langEn" aria-pressed="false" lang="en">EN</button>
+    <button type="button" id="langAr" aria-pressed="false" lang="ar">&#1593;&#1585;&#1576;&#1610;</button>
+  </div>
+</header>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<main>
+  <h1 class="view-title" data-i18n="encTitle">Befehls-Rechner</h1>
+  <p class="view-sub" data-i18n="encSub">Erzeugt TTN-Downlinks, die Werte im Gerät ändern</p>
+
+  <div class="note warn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
+    <span><strong data-i18n="advTitle">Werkzeug für Fachleute</strong><span data-i18n="advBody">Für den täglichen Betrieb nicht nötig. Diese Seite braucht keine Bluetooth-Verbindung — sie rechnet nur.</span></span>
+  </div>
+
+  <!-- ============================ Wert waehlen ============================ -->
+  <div class="card">
+    <h3 data-i18n="cmdParam">1. Wert auswählen</h3>
+    <p class="card-sub" data-i18n="cmdParamSub">Jeder Wert geht auf einem eigenen fPort — so lässt sich jeder einzeln setzen.</p>
+    <div class="seg" id="cmdSeg" role="group" data-i18n-al="cmdParam" aria-label="Wert auswählen">
+      <button type="button" data-param="tx" aria-pressed="true"><span data-i18n="cmdTx">Senden alle</span><small>fPort 10 · uint32</small></button>
+      <button type="button" data-param="ms" aria-pressed="false"><span data-i18n="cmdMs">Messen alle</span><small>fPort 11 · uint32</small></button>
+      <button type="button" data-param="wth" aria-pressed="false"><span data-i18n="cmdWth">Gewichts-Grenze</span><small>fPort 12 · uint16</small></button>
+      <button type="button" data-param="tth" aria-pressed="false"><span data-i18n="cmdTth">Temperatur-Grenze</span><small>fPort 13 · uint16</small></button>
+    </div>
+    <div class="field">
+      <label for="cmdVal" id="cmdValLabel">Wert (Minuten)</label>
+      <input id="cmdVal" type="number" inputmode="decimal" autocomplete="off" spellcheck="false">
+      <p class="hint" id="cmdValHint"></p>
+    </div>
+    <div id="cmdNotes"></div>
+  </div>
+
+  <!-- ============================== Ergebnis ============================== -->
+  <div class="card">
+    <h3 data-i18n="cmdPayload">2. Nachricht für die TTN-Konsole</h3>
+    <p class="card-sub" data-i18n="cmdConsoleHint">TTN Console → End device → Messaging → Downlink: fPort eintragen, Bytes einfügen, absenden.</p>
+    <div class="out">
+      <div class="out-head"><span data-i18n="cmdPort">fPort</span></div>
+      <pre id="outPort">—</pre>
+    </div>
+    <div class="out">
+      <div class="out-head"><span data-i18n="cmdHex">Bytes (hex)</span><button type="button" class="copy-btn" data-copy="outHex" data-i18n="copy">Kopieren</button></div>
+      <pre id="outHex">—</pre>
+    </div>
+    <div class="out">
+      <div class="out-head"><span data-i18n="cmdB64">Nutzlast (base64)</span><button type="button" class="copy-btn" data-copy="outB64" data-i18n="copy">Kopieren</button></div>
+      <pre id="outB64">—</pre>
+    </div>
+  </div>
+
+  <!-- ============================ Sammel-Liste ============================ -->
+  <div class="card">
+    <h3 data-i18n="cmdQueue">3. Mehrere Befehle · TTN-Schnittstelle</h3>
+    <p class="card-sub" data-i18n="cmdQueueSub">Mehrere Werte auf einmal setzen. Die Reihenfolge zählt.</p>
+    <ul class="queue" id="cmdQueue"></ul>
+    <p class="queue-empty" id="cmdQueueEmpty" data-i18n="cmdQueueEmpty">Liste leer — der Text unten enthält nur den einen Befehl von oben.</p>
+    <div class="btn-row" style="margin-block-start:0">
+      <button class="btn btn-outline" id="cmdAddBtn" data-i18n="cmdAdd">Zur Liste hinzufügen</button>
+      <button class="btn btn-danger" id="cmdClearBtn" data-i18n="cmdClear">Liste leeren</button>
+    </div>
+    <div class="out" style="margin-block-start:20px">
+      <div class="out-head"><span data-i18n="cmdJson">down/push Inhalt</span><button type="button" class="copy-btn" data-copy="outJson" data-i18n="copy">Kopieren</button></div>
+      <pre id="outJson">—</pre>
+    </div>
+    <div class="out">
+      <div class="out-head"><span data-i18n="cmdEndpoint">Adresse</span><button type="button" class="copy-btn" data-copy="outUrl" data-i18n="copy">Kopieren</button></div>
+      <pre id="outUrl">—</pre>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label for="cmdApp" data-i18n="cmdApp">Application ID</label><input id="cmdApp" autocomplete="off" spellcheck="false" placeholder="tanenbase-app"></div>
+      <div class="field"><label for="cmdDev" data-i18n="cmdDev">Device ID</label><input id="cmdDev" autocomplete="off" spellcheck="false" placeholder="tanenbase-01"></div>
+    </div>
+    <div class="field"><label for="cmdCluster" data-i18n="cmdCluster">Cluster</label><input id="cmdCluster" autocomplete="off" spellcheck="false" value="eu1"></div>
+    <p class="hint" data-i18n="cmdApiHint">Den Inhalt per POST senden, mit den Kopfzeilen Authorization: Bearer NNSXS.… und Content-Type: application/json</p>
+  </div>
+
+  <div class="card">
+    <h3 data-i18n="cmdDelivery">Wann kommt der Befehl an?</h3>
+    <p class="card-sub" style="margin-block-end:0" data-i18n="cmdDeliveryHint">Klasse A: Ein Befehl erreicht die Station erst im Empfangs-Fenster nach dem nächsten Senden — das dauert bis zu einer vollen Sende-Pause. TTN hält ihn so lange bereit.</p>
+  </div>
+
+  <a class="btn btn-outline btn-block" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    <span data-i18n="back">Zurück zur Bedienung</span>
+  </a>
+</main>
+
+<script>
+'use strict';
+
+/* ============================== Sprachen ==============================
+   Deutsch ist die Vorgabe; die Wahl teilt sich den Speicher-Schluessel
+   mit index.html, damit beide Seiten dieselbe Sprache zeigen.          */
+const I18N = {
+  de: {
+    _dir: 'ltr',
+    brand: 'TanenBase',
+    langGroup: 'Sprache',
+    back: 'Zurück zur Bedienung',
+    encTitle: 'Befehls-Rechner',
+    encSub: 'Erzeugt TTN-Downlinks, die Werte im Gerät ändern',
+    advTitle: 'Werkzeug für Fachleute',
+    advBody: 'Für den täglichen Betrieb nicht nötig. Diese Seite braucht keine Bluetooth-Verbindung — sie rechnet nur.',
+    cmdParam: '1. Wert auswählen',
+    cmdParamSub: 'Jeder Wert geht auf einem eigenen fPort — so lässt sich jeder einzeln setzen.',
+    cmdTx: 'Senden alle', cmdMs: 'Messen alle',
+    cmdWth: 'Gewichts-Grenze', cmdTth: 'Temperatur-Grenze',
+    cmdPayload: '2. Nachricht für die TTN-Konsole',
+    cmdConsoleHint: 'TTN Console → End device → Messaging → Downlink: fPort eintragen, Bytes einfügen, absenden.',
+    cmdPort: 'fPort', cmdHex: 'Bytes (hex)', cmdB64: 'Nutzlast (base64)',
+    copy: 'Kopieren',
+    cmdQueue: '3. Mehrere Befehle · TTN-Schnittstelle',
+    cmdQueueSub: 'Mehrere Werte auf einmal setzen. Die Reihenfolge zählt.',
+    cmdQueueEmpty: 'Liste leer — der Text unten enthält nur den einen Befehl von oben.',
+    cmdAdd: 'Zur Liste hinzufügen', cmdClear: 'Liste leeren',
+    cmdJson: 'down/push Inhalt', cmdEndpoint: 'Adresse',
+    cmdApp: 'Application ID', cmdDev: 'Device ID', cmdCluster: 'Cluster',
+    cmdApiHint: 'Den Inhalt per POST senden, mit den Kopfzeilen Authorization: Bearer NNSXS.… und Content-Type: application/json',
+    cmdDelivery: 'Wann kommt der Befehl an?',
+    cmdDeliveryHint: 'Klasse A: Ein Befehl erreicht die Station erst im Empfangs-Fenster nach dem nächsten Senden — das dauert bis zu einer vollen Sende-Pause. TTN hält ihn so lange bereit.',
+    cmdUp: 'Nach oben', cmdDel: 'Entfernen',
+    lblMin: 'Wert (Minuten)', lblKg: 'Wert (kg)', lblC: 'Wert (°C)',
+    hintTx: 'Geht als Sekunden auf die Leitung (4 Bytes). Wird abgewiesen, wenn der Wert kleiner ist als „Messen alle“. Übliche Einstellung: 240 Minuten (4 Stunden).',
+    hintMs: 'Geht als Sekunden auf die Leitung (4 Bytes). Mindestens 1 Minute; wird abgewiesen, wenn der Wert größer ist als „Senden alle“. Übliche Einstellung: 5 Minuten.',
+    hintWth: 'Geht als Gramm auf die Leitung (2 Bytes). Die Station meldet sich, sobald sich das Gewicht um mehr als diesen Wert ändert. Übliche Einstellung: 2,0 kg.',
+    hintTth: 'Geht als Hundertstel-Grad auf die Leitung (2 Bytes). Die Station meldet sich, sobald sich die Temperatur um mehr als diesen Wert ändert. Übliche Einstellung: 5,0 °C.',
+    errEmpty: 'Bitte einen Wert eintragen.',
+    errInt: 'Nur ganze Minuten.',
+    errRange: 'Außerhalb des Bereichs: {min} … {max}.',
+    noteZeroTh: 'Grenze 0 macht jede Messung zum Alarm: Die Station sendet in jedem Zyklus, die Batterie ist schnell leer.',
+    noteHb: 'Bei „Messen alle {ms}“ sendet die Station jeden {n}. Zyklus — also alle {eff}.',
+    noteHbTrunc: '„Senden alle“ ist kein ganzes Vielfaches von „Messen alle“ — das Gerät rundet auf {eff} ab.',
+    noteTxLtMs: '„Senden alle“ {tx} ist kleiner als „Messen alle“ {ms} — das Gerät weist beide Befehle ab.',
+    noteOrder: 'Beide Zeiten stehen in der Liste. Das Gerät prüft jeden Befehl gegen die gespeicherten Werte: Sind beide neuen Werte größer, zuerst „Senden alle“ senden; sind sie kleiner, zuerst „Messen alle“.',
+    stCopied: 'Kopiert',
+    stCopyErr: 'Kopieren nicht möglich — bitte den Text von Hand markieren.',
+    stQueued: 'Hinzugefügt: {name}',
+    stFixFirst: 'Bitte zuerst den Wert berichtigen',
+    unitMin: 'Min.', unitH: 'Std.', unitD: 'Tage', unitKg: 'kg', unitDeg: '°C',
+  },
+  en: {
+    _dir: 'ltr',
+    brand: 'TanenBase',
+    langGroup: 'Language',
+    back: 'Back to the controls',
+    encTitle: 'Command builder',
+    encSub: 'Builds TTN downlinks that change values on the device',
+    advTitle: 'Tool for experts',
+    advBody: 'Not needed for everyday use. This page needs no Bluetooth connection — it only calculates.',
+    cmdParam: '1. Choose the value',
+    cmdParamSub: 'Each value has its own fPort, so any one of them can be set on its own.',
+    cmdTx: 'Send every', cmdMs: 'Measure every',
+    cmdWth: 'Weight limit', cmdTth: 'Temperature limit',
+    cmdPayload: '2. Message for the TTN console',
+    cmdConsoleHint: 'TTN Console → End device → Messaging → Downlink: set the fPort, paste the bytes, schedule.',
+    cmdPort: 'fPort', cmdHex: 'Bytes (hex)', cmdB64: 'Payload (base64)',
+    copy: 'Copy',
+    cmdQueue: '3. Several commands · TTN API',
+    cmdQueueSub: 'Set several values at once. The order matters.',
+    cmdQueueEmpty: 'List empty — the body below carries only the single command above.',
+    cmdAdd: 'Add to the list', cmdClear: 'Empty the list',
+    cmdJson: 'down/push body', cmdEndpoint: 'Address',
+    cmdApp: 'Application ID', cmdDev: 'Device ID', cmdCluster: 'Cluster',
+    cmdApiHint: 'POST the body with the headers Authorization: Bearer NNSXS.… and Content-Type: application/json',
+    cmdDelivery: 'When does the command arrive?',
+    cmdDeliveryHint: 'Class A: a queued command only reaches the station in the receive window right after its next transmission — up to one full send interval away. TTN holds it until then.',
+    cmdUp: 'Move up', cmdDel: 'Remove',
+    lblMin: 'Value (minutes)', lblKg: 'Value (kg)', lblC: 'Value (°C)',
+    hintTx: 'Goes on the wire as seconds (4 bytes). Rejected if smaller than “Measure every”. Common setting: 240 minutes (4 hours).',
+    hintMs: 'Goes on the wire as seconds (4 bytes). At least 1 minute; rejected if larger than “Send every”. Common setting: 5 minutes.',
+    hintWth: 'Goes on the wire as grams (2 bytes). The station reports as soon as the weight changes by more than this. Common setting: 2.0 kg.',
+    hintTth: 'Goes on the wire as hundredths of a degree (2 bytes). The station reports as soon as the temperature changes by more than this. Common setting: 5.0 °C.',
+    errEmpty: 'Please enter a value.',
+    errInt: 'Whole minutes only.',
+    errRange: 'Out of range: {min} … {max}.',
+    noteZeroTh: 'A limit of 0 makes every measurement an alarm: the station sends every cycle and the battery drains fast.',
+    noteHb: 'With “measure every {ms}”, the station sends on every {n} cycle — that is every {eff}.',
+    noteHbTrunc: '“Send every” is not a whole multiple of “measure every” — the device rounds down to {eff}.',
+    noteTxLtMs: '“Send every” {tx} is smaller than “measure every” {ms} — the device rejects both commands.',
+    noteOrder: 'Both times are in the list. The device checks each command against its stored pair: if both new values are larger, send “Send every” first; if smaller, send “Measure every” first.',
+    stCopied: 'Copied',
+    stCopyErr: 'Copy failed — please select the text by hand.',
+    stQueued: 'Added: {name}',
+    stFixFirst: 'Please correct the value first',
+    unitMin: 'min', unitH: 'h', unitD: 'days', unitKg: 'kg', unitDeg: '°C',
+  },
+  ar: {
+    _dir: 'rtl',
+    brand: 'قاعدة طنين',
+    langGroup: 'اللغة',
+    back: 'رجوع إلى شاشة التشغيل',
+    encTitle: 'مُولّد الأوامر',
+    encSub: 'يولّد رسائل TTN النازلة التي تغيّر قيم الجهاز',
+    advTitle: 'أداة للفنيين',
+    advBody: 'غير لازمة للاستخدام اليومي. هذه الصفحة لا تحتاج بلوتوث — إنها تحسب فقط.',
+    cmdParam: '1. اختر القيمة',
+    cmdParamSub: 'لكل قيمة منفذ fPort خاص، فيمكن ضبط أي منها وحدها.',
+    cmdTx: 'الإرسال كل', cmdMs: 'القياس كل',
+    cmdWth: 'حد الوزن', cmdTth: 'حد الحرارة',
+    cmdPayload: '2. الرسالة لواجهة TTN',
+    cmdConsoleHint: 'في TTN Console ← End device ← Messaging ← Downlink: اضبط fPort، الصق البايتات، ثم أرسل.',
+    cmdPort: 'fPort', cmdHex: 'البايتات (ست عشري)', cmdB64: 'الحمولة (base64)',
+    copy: 'نسخ',
+    cmdQueue: '3. عدة أوامر · واجهة TTN',
+    cmdQueueSub: 'اضبط عدة قيم معًا. الترتيب مهم.',
+    cmdQueueEmpty: 'القائمة فارغة — النص بالأسفل يحمل الأمر الواحد أعلاه فقط.',
+    cmdAdd: 'أضف إلى القائمة', cmdClear: 'إفراغ القائمة',
+    cmdJson: 'محتوى down/push', cmdEndpoint: 'العنوان',
+    cmdApp: 'Application ID', cmdDev: 'Device ID', cmdCluster: 'Cluster',
+    cmdApiHint: 'أرسل المحتوى بطلب POST مع الترويستين Authorization: Bearer NNSXS.… و Content-Type: application/json',
+    cmdDelivery: 'متى يصل الأمر؟',
+    cmdDeliveryHint: 'الفئة A: لا يصل الأمر إلا في نافذة الاستقبال بعد أول إرسال صاعد — قد يتأخر بمقدار فترة إرسال كاملة، وتحتفظ به TTN حتى ذلك الحين.',
+    cmdUp: 'تحريك لأعلى', cmdDel: 'حذف',
+    lblMin: 'القيمة (دقائق)', lblKg: 'القيمة (كجم)', lblC: 'القيمة (°م)',
+    hintTx: 'يُرسل بالثواني (4 بايت). يُرفض إن كان أقل من «القياس كل». المعتاد: 240 دقيقة (4 ساعات).',
+    hintMs: 'يُرسل بالثواني (4 بايت). دقيقة واحدة على الأقل، ويُرفض إن تجاوز «الإرسال كل». المعتاد: 5 دقائق.',
+    hintWth: 'يُرسل بالجرام (2 بايت). ترسل المحطة عند تغيّر الوزن بأكثر من هذا الحد. المعتاد: 2.0 كجم.',
+    hintTth: 'يُرسل بمئوية/100 (2 بايت). ترسل المحطة عند تغيّر الحرارة بأكثر من هذا الحد. المعتاد: 5.0 °م.',
+    errEmpty: 'أدخل قيمة من فضلك.',
+    errInt: 'دقائق صحيحة فقط.',
+    errRange: 'خارج النطاق: {min} … {max}.',
+    noteZeroTh: 'الحد 0 يجعل كل قياس تنبيهًا: إرسال في كل دورة واستنزاف سريع للبطارية.',
+    noteHb: 'مع «القياس كل {ms}» ترسل المحطة كل {n} دورة — أي كل {eff}.',
+    noteHbTrunc: '«الإرسال كل» ليس مضاعفًا صحيحًا لـ«القياس كل» — يقرّبه الجهاز نزولًا إلى {eff}.',
+    noteTxLtMs: '«الإرسال كل» {tx} أقل من «القياس كل» {ms} — يرفض الجهاز الأمرين.',
+    noteOrder: 'الزمنان معًا في القائمة. يتحقق الجهاز من كل أمر مقابل القيم المخزّنة: إن كانت القيمتان الجديدتان أكبر فابدأ بـ«الإرسال كل»، وإن كانتا أصغر فابدأ بـ«القياس كل».',
+    stCopied: 'تم النسخ',
+    stCopyErr: 'تعذّر النسخ — حدّد النص يدويًا.',
+    stQueued: 'أُضيف: {name}',
+    stFixFirst: 'صحّح القيمة أولًا',
+    unitMin: 'دقيقة', unitH: 'ساعة', unitD: 'يوم', unitKg: 'كجم', unitDeg: '°م',
+  },
+};
+
+let lang = 'de';
+try { const s = localStorage.getItem('tb3-lang'); if (I18N[s]) lang = s; } catch (e) {}
+
+function t(key, params) {
+  let str = (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key;
+  if (params) for (const [k, v] of Object.entries(params)) str = str.replace('{' + k + '}', v);
+  return str;
+}
+
+function applyLang(next) {
+  lang = next;
+  try { localStorage.setItem('tb3-lang', lang); } catch (e) {}
+  document.documentElement.lang = lang;
+  document.documentElement.dir = I18N[lang]._dir;
+  document.title = t('encTitle') + ' · ' + t('brand');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
+  ['de', 'en', 'ar'].forEach(l =>
+    document.getElementById('lang' + l[0].toUpperCase() + l.slice(1)).setAttribute('aria-pressed', String(lang === l)));
+  updateEncoder();
+}
+
+let toastTimer = null;
+function toast(key, cls, params) {
+  const el = document.getElementById('toast');
+  el.textContent = t(key, params);
+  el.className = (cls || 'info') + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), cls === 'err' ? 6000 : 3600);
+}
+
+/* ============================ Befehls-Rechner ============================
+   Spiegelt downlink_cb() in src/drivers/lora.c: ein Wert je fPort, damit
+   jede Teilmenge einzeln gesetzt werden kann, big-endian; bei falscher
+   Laenge verwirft die Firmware den Rahmen.
+   Die Oberflaeche rechnet in Minuten, die Leitung fuehrt Sekunden:
+   scale = Anzeige-Einheit -> Leitungs-Einheit.                           */
+const SEC_PER_MIN = 60;
+const U32_MAX = 4294967295;
+const DL_CMDS = {
+  tx:  { port: 10, bytes: 4, name: 'cmdTx',  label: 'lblMin', hint: 'hintTx',  scale: SEC_PER_MIN, whole: true,  min: 1, max: Math.floor(U32_MAX / SEC_PER_MIN), step: '1',     ph: '240' },
+  ms:  { port: 11, bytes: 4, name: 'cmdMs',  label: 'lblMin', hint: 'hintMs',  scale: SEC_PER_MIN, whole: true,  min: 1, max: Math.floor(U32_MAX / SEC_PER_MIN), step: '1',     ph: '5' },
+  wth: { port: 12, bytes: 2, name: 'cmdWth', label: 'lblKg',  hint: 'hintWth', scale: 1000,        whole: false, min: 0, max: 65.535,                            step: '0.001', ph: '2.0' },
+  tth: { port: 13, bytes: 2, name: 'cmdTth', label: 'lblC',   hint: 'hintTth', scale: 100,         whole: false, min: 0, max: 655.35,                            step: '0.01',  ph: '5.0' },
+};
+
+let cmdParam = 'tx';
+let cmdBatch = [];     /* [{ param, val }] — val in Anzeige-Einheit, ein Eintrag je fPort */
+
+/* uintN big-endian. Division statt Bit-Schieben: >>> kippt bei u32 ueber 2^31. */
+function encodeBE(n, bytes) {
+  const out = new Uint8Array(bytes);
+  let v = n;
+  for (let i = bytes - 1; i >= 0; i--) { out[i] = v % 256; v = Math.floor(v / 256); }
+  return out;
+}
+const toHex = arr => Array.from(arr, b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+const toB64 = arr => btoa(String.fromCharCode.apply(null, arr));
+
+/* Minuten schoen ausschreiben: 1440 -> "1 Tage", 240 -> "4 Std." */
+function fmtDur(min) {
+  if (min >= 1440 && min % 1440 === 0) return (min / 1440) + ' ' + t('unitD');
+  if (min >= 60 && min % 60 === 0) return (min / 60) + ' ' + t('unitH');
+  return min + ' ' + t('unitMin');
+}
+
+/* Anzeige-Wert -> { n, bytes } oder { err } */
+function cmdEncode(param, raw) {
+  const def = DL_CMDS[param];
+  if (raw === '' || raw === null || raw === undefined) return { err: t('errEmpty') };
+  const f = parseFloat(raw);
+  if (!isFinite(f)) return { err: t('errEmpty') };
+  if (def.whole && !Number.isInteger(f)) return { err: t('errInt') };
+  const n = Math.round(f * def.scale);
+  if (n < Math.round(def.min * def.scale) || n > Math.round(def.max * def.scale)) {
+    return { err: t('errRange', { min: def.min, max: def.max }) };
+  }
+  return { n: n, bytes: encodeBE(n, def.bytes) };
+}
+
+function cmdValText(item) {
+  const def = DL_CMDS[item.param];
+  if (!def.whole) return item.val + ' ' + t(item.param === 'wth' ? 'unitKg' : 'unitDeg');
+  const pretty = fmtDur(item.val);
+  const plain = item.val + ' ' + t('unitMin');
+  return pretty === plain ? plain : plain + ' (' + pretty + ')';
+}
+
+/* was der JSON-Inhalt tragen soll: die Liste, sonst der eine Befehl von oben */
+function cmdList() {
+  if (cmdBatch.length) return cmdBatch;
+  const raw = document.getElementById('cmdVal').value;
+  return cmdEncode(cmdParam, raw).err ? [] : [{ param: cmdParam, val: parseFloat(raw) }];
+}
+
+/* Alles, was die Firmware mit diesen Werten tut — vorher ausgesprochen. */
+function cmdNotes(list, live) {
+  const notes = [];
+  if (live && (cmdParam === 'wth' || cmdParam === 'tth') && live.n === 0) {
+    notes.push(['warn', t('noteZeroTh')]);
+  }
+  const pick = k => { const it = list.find(i => i.param === k); return it ? it.val : null; };
+  const tx = pick('tx');
+  const ms = pick('ms');
+  if (tx !== null && ms !== null) {
+    if (tx < ms) {
+      notes.push(['bad', t('noteTxLtMs', { tx: fmtDur(tx), ms: fmtDur(ms) })]);
+    } else {
+      /* anomaly.c: heartbeat_cycles = tx / ms, ganzzahlige Division */
+      const cycles = Math.floor(tx / ms) || 1;
+      notes.push(['info', t('noteHb', { ms: fmtDur(ms), n: cycles, eff: fmtDur(cycles * ms) })]);
+      if (tx % ms !== 0) notes.push(['warn', t('noteHbTrunc', { eff: fmtDur(cycles * ms) })]);
+    }
+    if (cmdBatch.length > 1) notes.push(['info', t('noteOrder')]);
+  }
+  return notes;
+}
+
+function renderQueue() {
+  const ul = document.getElementById('cmdQueue');
+  ul.textContent = '';
+  document.getElementById('cmdQueueEmpty').style.display = cmdBatch.length ? 'none' : '';
+  cmdBatch.forEach((item, i) => {
+    const def = DL_CMDS[item.param];
+    const li = document.createElement('li');
+
+    const port = document.createElement('span');
+    port.className = 'q-port';
+    port.textContent = 'fPort ' + def.port;
+    li.appendChild(port);
+
+    const txt = document.createElement('span');
+    txt.className = 'q-txt';
+    txt.textContent = t(def.name) + ' = ' + cmdValText(item);
+    li.appendChild(txt);
+
+    if (i > 0) {
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'q-btn';
+      up.textContent = '↑';
+      up.title = t('cmdUp');
+      up.setAttribute('aria-label', t('cmdUp'));
+      up.addEventListener('click', () => {
+        const prev = cmdBatch[i - 1];
+        cmdBatch[i - 1] = cmdBatch[i];
+        cmdBatch[i] = prev;
+        updateEncoder();
+      });
+      li.appendChild(up);
+    }
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'q-btn del';
+    del.textContent = '✕';
+    del.title = t('cmdDel');
+    del.setAttribute('aria-label', t('cmdDel'));
+    del.addEventListener('click', () => { cmdBatch.splice(i, 1); updateEncoder(); });
+    li.appendChild(del);
+
+    ul.appendChild(li);
+  });
+}
+
+function renderJson(list) {
+  const downlinks = list.map(item => ({
+    f_port: DL_CMDS[item.param].port,
+    frm_payload: toB64(cmdEncode(item.param, item.val).bytes),
+    priority: 'NORMAL',
+  }));
+  document.getElementById('outJson').textContent =
+    downlinks.length ? JSON.stringify({ downlinks: downlinks }, null, 2) : '—';
+
+  const app = document.getElementById('cmdApp').value.trim() || '<application-id>';
+  const dev = document.getElementById('cmdDev').value.trim() || '<device-id>';
+  const cluster = document.getElementById('cmdCluster').value.trim() || 'eu1';
+  document.getElementById('outUrl').textContent =
+    'POST https://' + cluster + '.cloud.thethings.network/api/v3/as/applications/' +
+    app + '/devices/' + dev + '/down/push';
+}
+
+function updateEncoder() {
+  const def = DL_CMDS[cmdParam];
+  const input = document.getElementById('cmdVal');
+
+  document.querySelectorAll('#cmdSeg button').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.param === cmdParam)));
+  document.getElementById('cmdValLabel').textContent = t(def.label);
+  document.getElementById('cmdValHint').textContent = t(def.hint);
+  input.step = def.step;
+  input.min = def.min;
+  input.placeholder = def.ph;
+
+  const live = cmdEncode(cmdParam, input.value);
+  const ok = !live.err;
+  document.getElementById('outPort').textContent = ok ? String(def.port) : '—';
+  document.getElementById('outHex').textContent = ok ? toHex(live.bytes) : '—';
+  document.getElementById('outB64').textContent = ok ? toB64(live.bytes) : '—';
+
+  const notes = [];
+  if (input.value !== '' && live.err) notes.push(['bad', live.err]);
+  const list = cmdList();
+  cmdNotes(list, ok ? live : null).forEach(n => notes.push(n));
+
+  const box = document.getElementById('cmdNotes');
+  box.textContent = '';
+  notes.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'note' + (entry[0] === 'info' ? '' : ' ' + entry[0]);
+    div.appendChild(icon(entry[0]));
+    const span = document.createElement('span');
+    span.textContent = entry[1];
+    div.appendChild(span);
+    box.appendChild(div);
+  });
+
+  renderQueue();
+  renderJson(list);
+}
+
+/* Warn- und Info-Zeichen: Form zusaetzlich zur Farbe */
+function icon(kind) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2.2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  const paths = kind === 'info'
+    ? ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', 'M12 11v5', 'M12 8v.01']
+    : ['M12 4l9 16H3z', 'M12 10v4', 'M12 17.5v.01'];
+  paths.forEach(d => {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d);
+    svg.appendChild(p);
+  });
+  return svg;
+}
+
+async function copyOut(id) {
+  const txt = document.getElementById(id).textContent;
+  if (!txt || txt === '—') { toast('stFixFirst', 'err'); return; }
+  try {
+    await navigator.clipboard.writeText(txt);
+    toast('stCopied', 'ok');
+  } catch (e) {
+    toast('stCopyErr', 'err');
+  }
+}
+
+/* =============================== Verdrahtung =============================== */
+document.querySelectorAll('#cmdSeg button').forEach(b =>
+  b.addEventListener('click', () => { cmdParam = b.dataset.param; updateEncoder(); }));
+['cmdVal', 'cmdApp', 'cmdDev', 'cmdCluster'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateEncoder));
+document.getElementById('cmdAddBtn').addEventListener('click', () => {
+  const raw = document.getElementById('cmdVal').value;
+  if (cmdEncode(cmdParam, raw).err) { toast('stFixFirst', 'err'); return; }
+  cmdBatch = cmdBatch.filter(i => i.param !== cmdParam);  /* je fPort gilt der letzte Wert */
+  cmdBatch.push({ param: cmdParam, val: parseFloat(raw) });
+  toast('stQueued', 'ok', { name: t(DL_CMDS[cmdParam].name) });
+  updateEncoder();
+});
+document.getElementById('cmdClearBtn').addEventListener('click', () => { cmdBatch = []; updateEncoder(); });
+document.querySelectorAll('[data-copy]').forEach(b =>
+  b.addEventListener('click', () => copyOut(b.dataset.copy)));
+document.getElementById('langDe').addEventListener('click', () => applyLang('de'));
+document.getElementById('langEn').addEventListener('click', () => applyLang('en'));
+document.getElementById('langAr').addEventListener('click', () => applyLang('ar'));
+
+applyLang(lang);
+</script>
+</body>
+</html>
