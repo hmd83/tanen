@@ -16,6 +16,16 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 - `Tanen_Base_pcb/README.md` documenting XIAO footprint compatibility and
   fabrication notes
 
+### Fixed
+- **BLE "Send radio test" (ConfigCmd 0x04) sent a 1-byte `{0xFF}` uplink.** Both
+  TTN decoders bail on `bytes.length < 8`, so the frame decoded to nothing and
+  BEEP fell back to the raw byte — the phantom `255` seen on the platform. The
+  test now sends the same 8-byte frame as a real uplink via `transmit_run()`
+  (flags = 0, unconfirmed). Sensors are read *before* `lora_init()`/join, since
+  a 2-3 s `measure_run()` after the join would land inside a JoinAccept/RX
+  window; a total sensor failure is no longer fatal to the test — it sends the
+  all-sentinel frame, which still decodes cleanly (2026-09-01)
+
 ### Changed
 - All build and flash scripts are now repo-relative — no absolute paths
 - Vendored Seeed platform trimmed from 33 MB to the single nRF54LM20A board

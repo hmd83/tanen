@@ -12,6 +12,7 @@
 #include "../../core/watchdog.h"
 #include "../../drivers/lora.h"
 #include "../measurement/measure.h"
+#include "../transmission/transmit.h"
 #if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
 #include "../measurement/tempcomp.h"
 #endif
@@ -635,6 +636,16 @@ static void lora_test_entry(void *p1, void *p2, void *p3)
 
     atomic_set(&lora_test_running, 1);
 
+    /* Sensors first, radio second: measure_run takes 2-3 s and would
+     * otherwise land inside a JoinAccept/RX window. A total sensor
+     * failure is not fatal here — valid=0 makes transmit_run emit the
+     * all-sentinel frame, which still decodes cleanly. */
+    measurement_data_t data = {0};
+    if (measure_run(&data)) {
+        LOG_WRN("LoRa test: all sensors failed, sending sentinel frame");
+        data.valid = 0;
+    }
+
     LOG_INF("LoRa test: init + join...");
     err = lora_init();
     if (err) {
@@ -643,8 +654,10 @@ static void lora_test_entry(void *p1, void *p2, void *p3)
         goto out;
     }
 
-    uint8_t test_payload[] = {0xFF};
-    err = lora_send(test_payload, sizeof(test_payload), false);
+    /* Same 8-byte frame as a normal uplink (flags=0 -> unconfirmed).
+     * A short test frame gets rejected by the TTN decoder and shows up
+     * as a bogus 255 on the platform. */
+    err = transmit_run(&data, 0);
     if (err) {
         LOG_ERR("LoRa test send failed: %d", err);
     } else {
