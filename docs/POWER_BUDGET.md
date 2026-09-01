@@ -19,6 +19,11 @@ Q_tx 200 → 63 mC; battery frozen to ER14505 — see §5.1).
 > py25q64 NOR in **deep power-down**, nPM1300 auto-ADC **off**, nRF54LM20A
 > System OFF, GRTC retained. See `[[tanenbase-sleep-current]]` — the NOR-DPD and
 > nPM1300 fixes are what took this from 19.4 µA, and both are easy to regress.
+> Third thing to check before blaming firmware: **the carrier board itself**. On
+> 2026-08-29 a unit read **54 µA** and the regression was chased through the
+> firmware for hours — GPIO wake port, errata workarounds, A/B builds — before a
+> carrier swap dropped it to 8 µA. The XIAO alone measured 3.7 µA the whole time,
+> which was the clue: **if the module is clean, the leak is downstream.**
 > Measure = NAU7802 init → per-wake internal offset cal → 10 SPS settle → cluster readout.
 > TX = LoRa join check + uplink + RX1/RX2 windows.
 > Avg I is charge ÷ duration.

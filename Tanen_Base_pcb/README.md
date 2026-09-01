@@ -55,17 +55,63 @@ either module:
 
 | XIAO Pin | Carrier net | nRF54L15 GPIO | nRF54LM20A GPIO |
 |----------|-------------|---------------|-----------------|
-| D0 | DS18B20 data (1-Wire) | P1.04 | P1.00 |
+| D0 | DS18B20 data (1-Wire) — mandatory K1 cut, see below | P1.04 | P1.00 |
 | D1 | SX1262 DIO1 | P1.05 | P1.31 |
 | D2 | SX1262 RST | P1.06 | P1.30 |
 | D3 | SX1262 BUSY | P1.07 | P1.29 |
 | D4 | SX1262 NSS | P1.10 | P1.03 |
-| D5 | *(unused)* | P1.11 | P1.07 |
+| D5 | LORA_RF_SW1 (Wio-SX1262 ant. switch) | P1.11 | P1.07 |
 | D6 | NAU7802 SCL | P2.08 | P1.08 |
 | D7 | NAU7802 SDA | P2.07 | P1.09 |
 | D8 | SPI SCK | P2.01 | P1.04 |
 | D9 | SPI MISO | P2.04 | P1.05 |
 | D10 | SPI MOSI | P2.02 | P1.06 |
+
+### Mandatory rework: cut the Wio-SX1262 K1 button off D0
+
+The Wio-SX1262 for XIAO ships a user button **K1 (TS-1188E)** and a **10 kΩ
+pull-up R2 to +3V3** on **D0** — the net this carrier uses for the DS18B20
+1-Wire data line.
+
+**This is not optional and not a corner case: with K1/R2 fitted, 1-Wire does not
+read at all.** Observed on hardware. R2 lands in parallel with the carrier
+1-Wire pull-up (~3.2 kΩ effective) on top of the switch stub loading; the exact
+failure mechanism was not chased down because the cut fixes it outright.
+
+**The cut:** the single trace from the K1/R2 node to the D0 castellated pad on
+the Wio board. One cut lifts *both* K1 and R2 off D0 and leaves the D0
+pass-through (XIAO → carrier → DS18B20 terminal) intact. Verify by continuity:
+XIAO D0 still reaches the DS18B20 terminal, K1 node now isolated from D0.
+**Done on the units built so far** — repeat it on every new Wio-SX1262 before
+assembly, or temperature reads will fail on that unit.
+
+**Optional afterwards:** the cut leaves K1 + R2 as a self-contained
+button-with-pull-up, currently isolated and unused. Wiring that node to **P0.09**
+on the XIAO — in parallel with the module own user button — makes K1 a second
+TanenButton with **no firmware change**: P0.09 is already the armed System OFF
+wake source (`gpio_disconnect_all()` in [`src/core/power.c`](../src/core/power.c))
+and R2 reinforces the internal pull-up. P0.09 is not on any header, so that wire
+has to land on the XIAO on-board switch pad.
+
+### External button: D19 (P0.00)
+
+The second TanenButton lands on **D19 = P0.00**, a XIAO *bottom pad* — not one of
+the two 7-pin headers, so **carrier v0.1 does not route it** and it needs a
+flying wire. Add a 2-pin net for it in v0.2.
+
+Any wake-capable port works — P0, P1 and P3 all support SENSE/DETECT on this SoC
+(P2 does not). P0.00 was chosen only to match the on-board P0.09 key. Avoid
+D22/D23 (P0.03/P0.04 carry GRTC PWM / CLKOUT32K); D19, D20, D21 and D24 are
+plain GPIO. D11 = P3.00 works equally well.
+
+Wiring: momentary switch to
+GND, plus **10 kΩ to +3V3 and 100 nF to GND** if the run leaves the enclosure —
+the pin is sense-armed during System OFF, so a long unfiltered wire is a false-wake
+antenna and every false wake costs a full boot.
+
+Firmware already supports it: `button_arm_sense()` in
+[`src/core/power.c`](../src/core/power.c) arms P0.09 and P3.00 identically, and
+either press wakes into SETUP.
 
 ### Differences that *are* worth knowing
 
@@ -76,8 +122,12 @@ These do not affect the carrier board, but they change firmware behaviour:
   Nordic nPM1300**, and the firmware reads its factory-trimmed VBAT ADC instead.
   Nothing on the carrier changed; the divider was on the module side.
 - **Antenna switch.** The L15 build had to sequence an RF switch on P2.03/P2.05.
-  On the LM20A those pins belong to the on-board NOR flash, and the module
-  handles its own antenna path.
+  On the LM20A those pins belong to the on-board NOR flash. The Wio-SX1262 kit
+  brings its own switch control out to header pin **D5 = P1.07 (LORA_RF_SW1)**;
+  the firmware never drives it, because the radio is configured
+  `dio2-tx-enable` and the SX1262 switches the path from DIO2. D5 is therefore
+  **committed to an RF control net and is not a spare GPIO** — do not put a
+  button, pull-up, or anything else on it.
 - **On-board NOR flash.** The LM20A has a py25q64 on P2.00–P2.05. Firmware must
   put it into deep power-down before System OFF or it costs ~14 µA. Again,
   module-side only.

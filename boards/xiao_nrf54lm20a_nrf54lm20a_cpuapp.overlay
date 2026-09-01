@@ -38,7 +38,8 @@
 	status = "disabled";
 };
 
-/* Disable i2c22 — its pins P1.03/P1.07 are D4 (LoRa NSS) and D5 */
+/* Disable i2c22 — its pins P1.03/P1.07 are D4 (LoRa NSS) and D5 (LORA_RF_SW1,
+ * the Wio-SX1262 antenna-switch control: left undriven, DIO2 switches the path). */
 &i2c22 {
 	status = "disabled";
 };
