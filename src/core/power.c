@@ -15,6 +15,21 @@ LOG_MODULE_REGISTER(power, LOG_LEVEL_INF);
 /* TanenButton on P0.09 (board DTS: button0 / sw0) */
 #define BUTTON_PIN NRF_GPIO_PIN_MAP(0, 9)
 
+/* External TanenButton on D19 = P0.00 (XIAO bottom pad, not on the 7-pin
+ * headers). Same behaviour as the on-board one: either press wakes into SETUP,
+ * so the two latches are simply OR-ed.
+ *
+ * P0.00 has no alternate function; P0.03/P0.04 (D22/D23) carry GRTC PWM /
+ * CLKOUT32K, so avoid those.
+ *
+ * This was briefly on D11 = P3.00 and moved here on 2026-08-29 while chasing a
+ * 54 uA System OFF reading that was blamed on P3 being a peripheral-domain
+ * port. THAT WAS WRONG — the 54 uA was a leak on the carrier board, and
+ * swapping the carrier fixed it. P3 was never shown to cost anything. P0 is
+ * kept only because the on-board button is already here and there is no reason
+ * to churn the wiring; do not cite a power argument for the port choice. */
+#define EXT_BUTTON_PIN NRF_GPIO_PIN_MAP(0, 0)
+
 /* On-board py25q64ha NOR on spi00 — pins per the board dtsi (spi00 pinctrl +
  * cs/hold/wp-gpios). spi00 and the flash node are both disabled, so the
  * jedec,spi-nor driver never runs and never issues DPD: left alone the part
@@ -29,6 +44,14 @@ LOG_MODULE_REGISTER(power, LOG_LEVEL_INF);
 #define FLASH_CS_PIN   NRF_GPIO_PIN_MAP(2, 5)
 
 #define FLASH_CMD_DPD  0xB9
+
+/* nRF54LM20A anomaly [37] — POWER: "Current consumption might increase after
+ * pin reset or power cycle", symptom being a System OFF current higher than
+ * spec when System OFF is entered too soon after a pin reset or power cycle.
+ * Present in Engineering B and Revision 1. Nordic's workaround is to write 1 to
+ * this undocumented POWER register and let >= 40 CPU cycles run before entering
+ * System OFF. */
+#define ANOMALY_37_REG 0x5005340CUL
 
 /* nPM1300 register map (base, offset) — mirrors the private defines in
  * zephyr/drivers/sensor/nordic/npm13xx_charger/npm13xx_charger.c, which the
@@ -63,16 +86,21 @@ wake_reason_t power_get_wake_reason(void)
     }
 
     /* Latch can be stale (spurious set when SENSE is re-armed before pullup
-     * settles) — always clear so it reflects only this wake. */
+     * settles) — always clear so it reflects only this wake. Both buttons mean
+     * the same thing, so the two latches are OR-ed; they are read separately
+     * only so a field log says which one was pressed. */
     bool latch = nrf_gpio_pin_latch_get(BUTTON_PIN);
+    bool ext_latch = nrf_gpio_pin_latch_get(EXT_BUTTON_PIN);
     nrf_gpio_pin_latch_clear(BUTTON_PIN);
+    nrf_gpio_pin_latch_clear(EXT_BUTTON_PIN);
 
     /* GRTC (RESET_CLOCK) = timer wake — authoritative over latch. */
     if (cause & RESET_CLOCK) {
         LOG_INF("Wake: timer (GRTC)");
         cached_reason = WAKE_REASON_TIMER;
-    } else if (latch || (cause & RESET_LOW_POWER_WAKE)) {
-        LOG_INF("Wake: button");
+    } else if (latch || ext_latch || (cause & RESET_LOW_POWER_WAKE)) {
+        LOG_INF("Wake: button%s%s", latch ? " [P0.09]" : "",
+                ext_latch ? " [D19]" : "");
         cached_reason = WAKE_REASON_BUTTON;
     } else {
         LOG_INF("Wake: reset (cause=0x%08x)", cause);
@@ -164,6 +192,24 @@ static void flash_enter_dpd(void)
     k_busy_wait(10);                     /* t-enter-dpd = 3 us (board dtsi) */
 }
 
+/* Arm a button pin as a System OFF wake source: input, pull-up, sense-LOW.
+ * Small settling delay so the pullup pulls the line HIGH before SENSE is armed
+ * (else SENSE_LOW latches immediately on a still-LOW line). Latch is cleared
+ * after arming to discard any glitch — only a real press during sleep sets it
+ * again.
+ *
+ * A button HELD across this call leaves DETECT high, and the SoC then wakes
+ * straight back out of System OFF (datasheet: entering System OFF with DETECT
+ * high causes a wakeup reset). Harmless for a human press; a stuck or shorted
+ * button loops wake->SETUP->sleep and drains the primary cell. */
+static void button_arm_sense(uint32_t pin)
+{
+    nrf_gpio_cfg_input(pin, NRF_GPIO_PIN_PULLUP);
+    k_busy_wait(100);
+    nrf_gpio_cfg_sense_set(pin, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_pin_latch_clear(pin);
+}
+
 /* Disconnect all app GPIO pins to prevent leakage in System OFF.
  * nrf_gpio_cfg_default() sets pin to: input disconnected, no pull.
  * SX1262 is already in LoRaMAC sleep; internal pull-ups on NRESET
@@ -207,17 +253,15 @@ static void gpio_disconnect_all(void)
      * P1.17/P1.18 — nPM1300 bit-banged I2C; external pull-ups hold the idle
      *               bus high.
      * P1.12      — power_en, not connected in schematic.
+     * P1.07      — D5 = LORA_RF_SW1, the Wio-SX1262 antenna-switch control.
+     *               Leave floating: DIO2 switches the path. Never arm SENSE or
+     *               a pull here (parks the switch + bills the sleep budget).
      * P0.07/P0.08 (i2c30), P1.13/P1.14 (pdm20) — disabled, untouched. */
 
-    /* TanenButton (P0.09): input, pull-up, sense-LOW for System OFF wake.
-     * Small settling delay so pullup pulls line HIGH before SENSE is armed
-     * (else SENSE_LOW latches immediately on a still-LOW line). Latch is
-     * cleared after arming to discard any glitch — only a real press during
-     * sleep will set it again. */
-    nrf_gpio_cfg_input(BUTTON_PIN, NRF_GPIO_PIN_PULLUP);
-    k_busy_wait(100);
-    nrf_gpio_cfg_sense_set(BUTTON_PIN, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_pin_latch_clear(BUTTON_PIN);
+    /* TanenButtons: on-board P0.09 and external D19 (P0.00), both on the LP
+     * domain. Either press wakes into SETUP. */
+    button_arm_sense(BUTTON_PIN);
+    button_arm_sense(EXT_BUTTON_PIN);
 }
 
 int power_off(uint32_t sleep_seconds)
@@ -248,6 +292,11 @@ int power_off(uint32_t sleep_seconds)
 
     /* Disconnect / drive all GPIO pins to safe state */
     gpio_disconnect_all();
+
+    /* Anomaly [37] workaround. Must be followed by >= 40 CPU cycles before
+     * System OFF — the GRTC prepare and reset-cause clear below cover that many
+     * times over, so no explicit delay is needed here. */
+    *(volatile uint32_t *)ANOMALY_37_REG = 1;
 
     /* GRTC wake — set up last, right before poweroff (matches Nordic sample) */
     int ret = z_nrf_grtc_wakeup_prepare(wake_us);

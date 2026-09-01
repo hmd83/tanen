@@ -175,6 +175,31 @@
 
 **ConfigCmd values:** 0x01=Done, 0x02=Tare, 0x03=Clear Session, 0x04=Test LoRa, 0x05=Calibrate
 
+0x01 and 0x03 act synchronously in the ATT write and send no CmdStatus. 0x02 /
+0x04 / 0x05 are deferred (atomic CAS gate — a second command while one is in
+flight is rejected at ATT level with `Write Request Rejected`) and always answer
+with one CmdStatus notify:
+
+| cmd | result | Meaning |
+|-----|--------|---------|
+| any | 0 | Success |
+| 0x02 Tare | 1 | Load-cell read failed — nothing written |
+| 0x02 Tare | 4 | Offset stored, but the tempcomp re-anchor failed (see below) |
+| 0x04 Test LoRa | 1 | `lora_init()` / join failed — nothing sent |
+| 0x04 Test LoRa | 2 | Uplink send failed after a successful join |
+| 0x05 Calibrate | 1 | Load-cell read failed |
+| 0x05 Calibrate | 2 | CalibRef (0x000A) is 0 — write the reference mass first |
+| 0x05 Calibrate | 3 | raw == zero offset — no mass on the plate |
+
+**Tare result 4** is a *partial* tare, not a no-op: the zero offset is committed
+but `T_ref` is not, which leaves a standing `k_c * (T - T_ref)` error (~1.1 g/K
+on the characterised cell). It fires when `tempcomp_tare()` has to read the
+DS18B20 itself and that read fails — which only happens when the thermal-lag
+filter is still unprimed, i.e. tare was pressed before the live view had
+delivered its first good temperature sample of this wake (`tempcomp_init()`
+always drops a stored `t_eff` on a button/reset wake, so setup mode starts
+unprimed). Recovery: re-run the tare once the live temperature is showing.
+
 **Key learnings / bugs fixed:**
 - `BT_LE_ADV_CONN` renamed to `BT_LE_ADV_CONN_FAST_1` in NCS 3.2.4
 - RF switch must be enabled for BLE: P2.03 HIGH (power), P2.05 LOW (ceramic antenna)
@@ -183,6 +208,7 @@
 - Live timer deferred to CCC subscribe callback — early start blocks GATT discovery
 - Tare/calibrate serialized via k_work to avoid NAU7802 race with live sensor reads
 - LoRa test on dedicated 4KB thread — `lorawan_send()` deadlocks if run on system work queue
+- LoRa test sends the **same 8-byte frame as a real uplink** (`transmit_run()`, flags=0 → unconfirmed), measured *before* join so `measure_run()`'s 2-3 s can't land inside an RX window. It used to send a 1-byte `{0xFF}` stub, which both TTN decoders reject on `bytes.length < 8` — BEEP then fell back to the raw byte and displayed a phantom `255`
 - `k_thread_join` on never-started thread → NULL deref crash — guarded with `lora_test_started` flag
 - BLE shutdown: `shutting_down` flag prevents disconnect callback from re-advertising during cleanup
 - Shutdown order: stop adv → disconnect → wait 500ms → settle 100ms → bt_disable → RF switch off

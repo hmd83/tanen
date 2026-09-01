@@ -119,7 +119,7 @@ data, hold-out validation and the (unflattering) hardware conclusions:
 | [`boards/`](boards/) | Application devicetree overlay for the target board |
 | [`third_party/`](third_party/) | Vendored Seeed XIAO nRF54LM20A board definition (Apache-2.0) |
 | [`Tanen_Base_pcb/`](Tanen_Base_pcb/) | KiCad carrier board — schematic, layout, gerbers |
-| [`web/`](web/) | Web Bluetooth configuration page (single file, no build step) |
+| [`web/`](web/) | Web Bluetooth configuration page + standalone downlink encoder (no build step) |
 | [`ttndecoder/`](ttndecoder/) | TTN payload formatters — BEEP and custom |
 | [`test_apps/measure_loop/`](test_apps/measure_loop/) | Standalone sensor bring-up app |
 | [`docs/`](docs/) | Architecture, power budget, sprint log, TRD, open questions |
@@ -187,6 +187,10 @@ west build -b xiao_nrf54lm20a/nrf54lm20a/cpuapp --no-sysbuild -- \
 
 Everything above is also settable later by LoRaWAN downlink (FPort 10–13) and
 persists in ZMS across reboots and firmware updates.
+[`web/encoder.html`](web/encoder.html) builds those downlinks — pick the
+parameter, type the value in human units, and copy the fPort plus hex/base64 for
+the TTN console, or the whole `down/push` body for the TTN API. It is a separate
+page with no Bluetooth at all, so it needs neither the node nor a pairing.
 
 **Each physical unit needs its own DevEUI.** Leave `CONFIG_TANENBASE_DEV_EUI`
 empty to derive a unique one from the SoC's factory hardware ID.

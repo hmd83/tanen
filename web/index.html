@@ -1,141 +1,1146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TanenBase Config</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>TanenBase</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#1a1a2e;color:#e0e0e0;padding:16px;max-width:480px;margin:0 auto}
-h1{font-size:1.4em;margin-bottom:12px;color:#f5a623}
-h2{font-size:1.1em;margin:16px 0 8px;color:#aaa;border-bottom:1px solid #333;padding-bottom:4px}
-button{background:#f5a623;color:#1a1a2e;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:0.95em}
-button:hover{background:#d4911f}
-button:disabled{opacity:0.4;cursor:default}
-#status{margin:8px 0;padding:8px;border-radius:4px;font-size:0.85em;min-height:32px}
-.ok{background:#1b4332;color:#95d5b2}
-.err{background:#4a1020;color:#f5a0a0}
-.info{background:#1a2744;color:#a0c4f5}
-.field{display:flex;align-items:center;gap:8px;margin:6px 0}
-.field label{min-width:120px;font-size:0.85em;color:#999}
-.field input{flex:1;padding:6px;border:1px solid #444;border-radius:4px;background:#2a2a3e;color:#e0e0e0;font-family:monospace;font-size:0.9em}
-.field input:read-only{opacity:0.6}
-.btn-sm{padding:6px 12px;font-size:0.8em;margin:4px}
-.btn-danger{background:#c0392b}
-.btn-danger:hover{background:#a0301f}
-.btn-green{background:#27ae60}
-.btn-green:hover{background:#1e8449}
-#live{font-family:monospace;font-size:1.1em;padding:12px;background:#0d1117;border-radius:6px;text-align:center;margin:8px 0}
-.actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.calib-row{display:flex;align-items:center;gap:6px;margin:6px 0}
-.calib-row input{flex:1;padding:6px;border:1px solid #444;border-radius:4px;background:#2a2a3e;color:#e0e0e0;font-family:monospace;font-size:0.9em}
-.calib-row label{min-width:120px;font-size:0.85em;color:#999}
+/* =========================================================================
+   TanenBase - Bedien-Oberflaeche, ausgelegt auf aeltere Nutzer.
+   Regeln, die dieses Stylesheet durchhaelt:
+     - Fliesstext nie unter 1rem (= 18px), kein Grau heller als --dim (9:1)
+     - jedes bedienbare Element mindestens 60px hoch
+     - die Form traegt Bedeutung, nicht nur die Farbe:
+       rund = Haupt-Aktion, Rechteck = Neben-Aktion, rotes Rechteck = Vorsicht
+   ========================================================================= */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;
+  --surface:#ffffff;
+  --surface-2:#e4eaf4;
+  --border:#8f9cb5;
+  --border-strong:#4a5568;
+  --text:#0c1017;          /* 18:1 auf Weiss */
+  --dim:#39445a;           /* 9.6:1 auf Weiss */
+  --accent:#f0a500;        /* Marken-Gelb - immer Flaeche, nie Text */
+  --accent-ink:#231800;
+  --accent-edge:#a06d00;
+  --accent-soft:#fff4dc;
+  --green:#0a6b33;
+  --green-soft:#e2f3e8;
+  --red:#9e1030;
+  --red-soft:#fdeaee;
+  --blue:#0f4c96;
+  --blue-soft:#e6eefa;
+  --nav-h:80px;
+  --r:18px;
+  --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100dvh;line-height:1.55;font-size:1rem;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input{font:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+/* ============================ Kopfbereich ============================ */
+.appbar{
+  position:sticky;top:0;z-index:30;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:var(--surface);border-bottom:3px solid var(--border-strong);
+}
+.brand{order:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;flex:1 1 auto}
+.brand-mark{
+  inline-size:40px;block-size:40px;border-radius:11px;flex:none;
+  background:var(--accent);border:2px solid var(--accent-edge);
+  display:grid;place-items:center;color:var(--accent-ink);
+}
+.brand-mark svg{inline-size:26px;block-size:26px}
+.conn-pill{
+  order:3;flex:0 0 auto;
+  display:none;align-items:center;gap:8px;
+  font-size:.85rem;font-weight:700;color:var(--dim);
+  border:2px solid var(--border);border-radius:999px;padding:5px 12px;
+  background:var(--surface-2);white-space:nowrap;
+}
+.conn-pill .led{inline-size:11px;block-size:11px;border-radius:50%;background:var(--border-strong);flex:none}
+.conn-pill.on{display:inline-flex;color:#06381b;background:var(--green-soft);border-color:var(--green)}
+.conn-pill.on .led{background:var(--green)}
+
+.lang-select{
+  order:2;flex:none;min-block-size:46px;
+  padding:6px 10px;border-radius:12px;
+  border:2px solid var(--border-strong);background:var(--surface-2);
+  font-size:.95rem;font-weight:700;color:var(--text);
+}
+
+/* ================= Rest-Zeit des Einrichtungs-Modus =================
+   Die Station beendet den Einrichtungs-Modus nach 180 s von sich aus
+   (CONFIG_TANENBASE_SETUP_TIMEOUT). Nichts, was der Nutzer tut, verlaengert
+   das Fenster - die Anzeige informiert also nur und fordert nichts.      */
+.conn-timer{
+  direction:ltr;font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
+  font-size:.95rem;font-weight:800;line-height:1.2;color:var(--text);
+  background:var(--surface);border:2px solid var(--border-strong);border-radius:8px;
+  padding:2px 9px;flex:none;
+}
+.conn-timer[hidden]{display:none}
+.conn-timer.warn{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.conn-timer.danger{background:var(--red);border-color:#6d0a20;color:#fff;animation:pulse 1.1s steps(1) infinite}
+@keyframes pulse{50%{opacity:.55}}
+
+/* ================================ Views ================================ */
+main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
+.view{display:none}
+.view.active{display:block;animation:viewIn .25s ease-out}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-title{font-size:1.8rem;font-weight:800;line-height:1.2;margin-block-end:4px}
+.view-sub{font-size:1rem;color:var(--dim);margin-block-end:20px}
+
+/* ============================ Start-Bildschirm ============================ */
+#viewConnect{text-align:center}
+#viewConnect h2{font-size:1.5rem;font-weight:800;margin-block-end:14px;line-height:1.25}
+.hero-note{margin-block-start:20px;font-size:.92rem;color:var(--dim)}
+
+/* Bild der Station: zeigt, wo der rote Knopf sitzt - Worte allein
+   erklaeren die Stelle nicht. */
+.device-fig{margin:0;flex:none;inline-size:min(118px,33vw)}
+.cstep-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.cstep-row p{flex:1 1 84px}
+/* auf dem Verbinden-Schirm zaehlt jeder Pixel Breite */
+#viewConnect .card{padding:18px}
+.device-fig svg{
+  inline-size:100%;block-size:auto;display:block;
+  background:var(--surface);border:3px solid var(--border-strong);
+  border-radius:16px;padding:6px;
+}
+.hint-ring{fill:none;stroke:#9e1030;stroke-width:6}
+.hint-pulse{animation:ringPulse 2.2s ease-out infinite}
+@keyframes ringPulse{0%{r:30;opacity:.9}100%{r:58;opacity:0}}
+
+/* Zwei nummerierte Schritte, links ausgerichtet und gross genug zum Lesen */
+.cstep{display:flex;gap:14px;align-items:flex-start;text-align:start}
+.cstep+.cstep{margin-block-start:14px;border-block-start:3px dashed var(--border);padding-block-start:14px}
+.cstep-num{
+  inline-size:46px;block-size:46px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--accent);border:3px solid var(--accent-edge);color:var(--accent-ink);
+  font-size:1.15rem;font-weight:800;
+}
+.cstep-body{flex:1 1 auto;min-inline-size:0}
+.cstep-body p{font-size:1.05rem}
+
+/* ============================== Uebersicht ============================== */
+.gauge-card{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:22px;
+  padding:22px 18px;text-align:center;box-shadow:var(--shadow);margin-block-end:16px;
+}
+.gauge-label{font-size:1.1rem;font-weight:800;color:var(--dim)}
+.gauge-value{
+  direction:ltr;font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
+  font-size:clamp(3.4rem,17vw,4.8rem);font-weight:800;line-height:1.05;color:var(--text);
+}
+.gauge-unit{font-size:1.5rem;font-weight:800;color:var(--dim)}
+.wait-chip{
+  display:inline-flex;align-items:center;gap:10px;margin-block-start:12px;
+  font-size:.95rem;font-weight:700;color:var(--dim);
+  background:var(--surface-2);border:2px solid var(--border);border-radius:999px;padding:7px 16px;
+}
+.wait-chip .spin{
+  inline-size:16px;block-size:16px;border-radius:50%;flex:none;
+  border:3px solid var(--border);border-top-color:var(--accent-edge);animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:430px){.stat-row{grid-template-columns:1fr}}
+.stat{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);
+}
+.stat-ico{inline-size:52px;block-size:52px;border-radius:14px;flex:none;display:grid;place-items:center;border:2px solid}
+.stat-ico.temp{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.stat-ico.batt{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.stat-ico svg{inline-size:28px;block-size:28px}
+.stat b{
+  direction:ltr;display:block;font-family:ui-monospace,Consolas,monospace;
+  font-size:1.7rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums;
+}
+.stat span{font-size:.95rem;font-weight:700;color:var(--dim)}
+
+/* =========================== Karten und Felder =========================== */
+.card{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:20px;margin-block-end:16px;box-shadow:var(--shadow);
+}
+.card h3{font-size:1.25rem;font-weight:800;margin-block-end:6px;line-height:1.25}
+.card-sub{font-size:.95rem;color:var(--dim);margin-block-end:14px}
+.card-split{border-block-start:3px dashed var(--border);margin-block:24px 16px;padding-block-start:18px}
+.card-part-title{font-size:1.1rem;font-weight:800;margin-block-end:6px;display:flex;align-items:center;gap:10px}
+.card-part-title svg{inline-size:26px;block-size:26px;flex:none;color:var(--dim)}
+.field{margin-block:16px}
+.field label{display:block;font-size:1.05rem;font-weight:700;margin-block-end:7px}
+.field input{
+  inline-size:100%;min-block-size:62px;padding:14px 16px;
+  border:3px solid var(--border-strong);border-radius:12px;
+  background:var(--surface);color:var(--text);
+  font-family:ui-monospace,Consolas,monospace;font-size:1.2rem;
+  direction:ltr;text-align:start;
+}
+.field input:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
+.field input::placeholder{color:#5c6880}
+.field input.bad{border-color:var(--red);background:var(--red-soft)}
+.hint{font-size:.95rem;color:var(--dim);margin-block-start:7px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media (max-width:520px){.grid-2{grid-template-columns:1fr}}
+
+/* ================================ Knoepfe ================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-block-size:62px;padding:14px 26px;font-size:1.05rem;font-weight:800;
+  border-radius:999px;border:3px solid var(--accent-edge);
+  background:var(--accent);color:var(--accent-ink);text-decoration:none;
+}
+.btn svg{inline-size:24px;block-size:24px;flex:none}
+.btn:active:not(:disabled){transform:translateY(2px)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-lg{min-block-size:74px;font-size:1.2rem;padding:16px 40px}
+.btn-block{inline-size:100%}
+.btn-save{background:var(--green);border-color:#054d23;color:#fff}
+.btn-outline{background:var(--surface);border:3px solid var(--border-strong);color:var(--text);border-radius:12px}
+.btn-danger{background:var(--surface);border:3px solid var(--red);color:var(--red);border-radius:12px}
+.btn-danger:active:not(:disabled){background:var(--red-soft)}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-block-start:18px}
+.btn-row .btn{flex:1 1 200px}
+/* Schnell-Aktionen: knapper als die Haupt-Knoepfe, aber immer noch gross
+   genug zum sicheren Treffen (54px). */
+.btn-compact{min-block-size:54px;padding:9px 16px;font-size:.95rem;gap:8px}
+.btn-compact svg{inline-size:20px;block-size:20px}
+.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-block-start:16px}
+@media (max-width:430px){.quick-row{grid-template-columns:1fr}}
+
+/* ========================== Kalibrier-Assistent ========================== */
+.steps{display:flex;align-items:center;margin-block-end:22px;direction:ltr}
+html[dir="rtl"] .steps{direction:rtl}
+.step-dot{
+  inline-size:46px;block-size:46px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-size:1.1rem;font-weight:800;background:var(--surface);border:3px solid var(--border);color:var(--dim);
+}
+.step-line{flex:1;block-size:4px;background:var(--border)}
+.step-dot.now{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.step-dot.done{background:var(--green);border-color:#054d23;color:#fff}
+.step-line.done{background:var(--green)}
+.wiz-pane{display:none}
+.wiz-pane.active{display:block}
+.wiz-illus{
+  inline-size:96px;block-size:96px;border-radius:26px;margin:0 auto 18px;
+  background:var(--surface-2);border:3px solid var(--border-strong);
+  display:grid;place-items:center;color:var(--dim);
+}
+.wiz-illus svg{inline-size:50px;block-size:50px}
+.wiz-pane h4{text-align:center;font-size:1.4rem;font-weight:800;margin-block-end:10px;line-height:1.25}
+.wiz-pane .desc{text-align:center;font-size:1.05rem;max-inline-size:34ch;margin:0 auto 20px}
+.result-box{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-block-end:18px}
+.result-box div{background:var(--surface-2);border:2px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.result-box b{direction:ltr;display:block;font-family:ui-monospace,Consolas,monospace;font-size:1.25rem;font-weight:800}
+.result-box span{font-size:.9rem;font-weight:700;color:var(--dim)}
+
+/* ================================ Hinweise ================================ */
+.note{
+  display:flex;gap:12px;align-items:flex-start;
+  font-size:1rem;line-height:1.5;padding:14px 16px;border-radius:14px;margin-block-end:16px;
+  background:var(--blue-soft);border:3px solid var(--blue);color:#0a2f5e;
+}
+.note svg{inline-size:26px;block-size:26px;flex:none;color:var(--blue)}
+.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
+.note.warn svg{color:#8a5f00}
+.note strong{display:block;margin-block-end:2px}
+.card.danger{border-color:var(--red)}
+.card.danger h3{color:var(--red)}
+
+/* ============================= untere Leiste ============================= */
+.tabbar{
+  position:fixed;inset-inline:0;bottom:0;z-index:20;display:none;
+  background:var(--surface);border-top:3px solid var(--border-strong);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar.show{display:block}
+.tabbar ul{list-style:none;display:flex;max-width:640px;margin:0 auto}
+.tabbar li{flex:1}
+.tabbar button{
+  inline-size:100%;block-size:var(--nav-h);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--dim);font-size:.82rem;font-weight:800;position:relative;
+}
+.tabbar button svg{inline-size:28px;block-size:28px}
+.tabbar button[aria-current="page"]{color:var(--text);background:var(--accent-soft)}
+.tabbar button[aria-current="page"]::before{
+  content:"";position:absolute;top:0;inline-size:100%;block-size:5px;background:var(--accent-edge);
+}
+/* Netzwerk ist Fachmann-Werkzeug: abgesetzt, ruhiger, ausdruecklich beschriftet */
+.tab-adv{border-inline-start:3px dashed var(--border)}
+.tab-adv button{color:#4d576b;background:var(--surface-2)}
+.tab-adv button svg{opacity:.85}
+.tab-adv button[aria-current="page"]{background:var(--accent-soft);color:var(--text)}
+.adv-tag{
+  display:block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:#4d576b;line-height:1.1;
+}
+
+/* ================================= Toast ================================= */
+#toast{
+  position:fixed;top:18px;inset-inline:16px;z-index:50;max-width:600px;margin:0 auto;
+  padding:16px 20px;border-radius:14px;font-size:1.05rem;font-weight:700;
+  border:3px solid transparent;box-shadow:0 12px 34px rgba(12,16,23,.28);
+  opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .25s,transform .25s;
+}
+#toast.show{opacity:1;transform:none}
+#toast.ok{background:var(--green-soft);color:#06381b;border-color:var(--green)}
+#toast.err{background:var(--red-soft);color:#5e0a1c;border-color:var(--red)}
+#toast.info{background:var(--blue-soft);color:#0a2f5e;border-color:var(--blue)}
+.sr-only{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<h1>TanenBase Config</h1>
-<button id="connectBtn" onclick="doConnect()">Connect</button>
-<button id="disconnectBtn" onclick="doDisconnect()" disabled>Disconnect</button>
-<div id="status" class="info">Not connected</div>
 
-<div id="panel" style="display:none">
+<header class="appbar">
+  <div class="brand">
+    <!-- Honigtopf: dasselbe Zeichen wie auf dem Etikett der Station -->
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+        <ellipse cx="24" cy="18" rx="10" ry="3"/>
+        <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+      </svg>
+    </span>
+    <span data-i18n="brand">TanenBase</span>
+  </div>
+  <!-- Rest-Zeit steht direkt beim Verbindungs-Status, klein und ohne Knopf -->
+  <div class="conn-pill" id="connPill">
+    <span class="led" aria-hidden="true"></span>
+    <span id="connPillTxt" data-i18n="pillOff">Nicht verbunden</span>
+    <span class="conn-timer" id="idleTime" role="timer" aria-live="off" data-i18n-al="idleTitle" hidden>3:00</span>
+  </div>
+  <select class="lang-select" id="langSel" data-i18n-al="langGroup" aria-label="Sprache">
+    <option value="de" lang="de">Deutsch</option>
+    <option value="en" lang="en">English</option>
+    <option value="ar" lang="ar">&#1593;&#1585;&#1576;&#1610;</option>
+  </select>
+</header>
 
-<h2>Live Sensors</h2>
-<div id="live">-- waiting --</div>
+<div id="toast" role="status" aria-live="polite"></div>
 
-<h2>LoRaWAN Credentials</h2>
-<div class="field"><label>DevEUI</label><input id="devEui" maxlength="16" placeholder="16 hex chars"></div>
-<div class="field"><label>JoinEUI</label><input id="joinEui" maxlength="16" placeholder="16 hex chars"></div>
-<div class="field"><label>AppKey</label><input id="appKey" maxlength="32" placeholder="32 hex chars (write-only)"></div>
+<main>
 
-<h2>Calibration</h2>
-<div class="field"><label>Zero Offset</label><input id="zeroOffset" type="number" readonly></div>
-<div class="field"><label>Scale Factor</label><input id="scaleFactor" type="number" readonly></div>
-<div class="actions">
-<button class="btn-sm" onclick="sendCmd(0x02)">1. Tare (empty scale)</button>
-</div>
-<div class="calib-row">
-<label>Ref Weight (kg)</label>
-<input id="calibRefKg" type="number" step="0.01" min="0" placeholder="e.g. 10.00">
-<button class="btn-sm btn-green" onclick="doCalibrate()">2. Calibrate</button>
-</div>
+  <!-- ============================ VERBINDEN ============================ -->
+  <section class="view active" id="viewConnect">
+    <h2 data-i18n="heroTitle">Gerät verbinden</h2>
+    <div class="card">
+      <div class="cstep">
+        <span class="cstep-num" aria-hidden="true">1</span>
+        <div class="cstep-body">
+          <div class="cstep-row">
+            <p data-i18n="step1">Drücken Sie den roten Knopf an der Station.</p>
+          <figure class="device-fig">
+            <!-- Zeichnung der Station (web/device.svg), zugeschnitten auf Gehäuse
+                 und Knopf; der rote Ring zeigt, welcher Knopf gemeint ist. -->
+            <svg viewBox="55 45 345 450" role="img" data-i18n-al="figCap" aria-label="Roter Knopf an der Station">
+              <defs>
+                <radialGradient id="screwGrad" cx="30%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="40%" stop-color="#cbd5e0"/>
+                  <stop offset="100%" stop-color="#718096"/>
+                </radialGradient>
+                <linearGradient id="redButtonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#fc8181"/>
+                  <stop offset="40%" stop-color="#e53e3e"/>
+                  <stop offset="100%" stop-color="#9b2c2c"/>
+                </linearGradient>
+                <linearGradient id="glareGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.45)"/>
+                  <stop offset="30%" stop-color="rgba(255,255,255,0.15)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.0)"/>
+                </linearGradient>
+                <linearGradient id="glandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#edf2f7"/>
+                  <stop offset="50%" stop-color="#cbd5e0"/>
+                  <stop offset="100%" stop-color="#a0aec0"/>
+                </linearGradient>
+              </defs>
 
-<h2>Timing (seconds)</h2>
-<div class="field"><label>TX Interval</label><input id="txInterval" type="number" min="60"></div>
-<div class="field"><label>MS Interval</label><input id="msInterval" type="number" min="60"></div>
+              <!-- Montageplatte -->
+              <rect x="110" y="440" width="180" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e0" stroke-width="2"/>
+              <ellipse cx="140" cy="472" rx="14" ry="5" fill="#718096"/>
+              <ellipse cx="260" cy="472" rx="14" ry="5" fill="#718096"/>
 
-<h2>Anomaly Thresholds</h2>
-<div class="field"><label>Weight (kg)</label><input id="weightThreshKg" type="number" step="0.1" min="0"></div>
-<div class="field"><label>Temp (C)</label><input id="tempThreshC" type="number" step="0.1" min="0"></div>
+              <!-- Kabel -->
+              <path d="M 160 480 Q 160 540 150 610" stroke="#1a202c" stroke-width="12" fill="none" stroke-linecap="round"/>
+              <path d="M 240 480 Q 240 540 250 610" stroke="#1a202c" stroke-width="12" fill="none" stroke-linecap="round"/>
 
-<div class="actions">
-<button class="btn-green" onclick="writeAll()">Save All</button>
-<button class="btn-sm" onclick="readAll()">Refresh</button>
-<button class="btn-sm btn-danger" onclick="sendCmd(0x03)">Clear Session</button>
-<button class="btn-sm" onclick="sendCmd(0x04)">Test LoRa</button>
-<button class="btn-sm btn-danger" onclick="sendCmd(0x01)">Done (Exit Setup)</button>
-</div>
-</div>
+              <!-- Kabelverschraubungen -->
+              <rect x="146" y="440" width="28" height="18" rx="2" fill="url(#glandGrad)" stroke="#718096" stroke-width="1"/>
+              <rect x="142" y="458" width="36" height="14" rx="3" fill="url(#glandGrad)" stroke="#4a5568" stroke-width="1"/>
+              <rect x="148" y="472" width="24" height="12" rx="2" fill="#718096"/>
+              <rect x="226" y="440" width="28" height="18" rx="2" fill="url(#glandGrad)" stroke="#718096" stroke-width="1"/>
+              <rect x="222" y="458" width="36" height="14" rx="3" fill="url(#glandGrad)" stroke="#4a5568" stroke-width="1"/>
+              <rect x="228" y="472" width="24" height="12" rx="2" fill="#718096"/>
+
+              <!-- roter Druckknopf -->
+              <rect x="320" y="265" width="8" height="36" rx="2" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+              <path d="M 328 262 C 342 262, 342 304, 328 304 Z" fill="url(#redButtonGrad)" stroke="#9b2c2c" stroke-width="1.5"/>
+
+              <!-- Gehäuse -->
+              <rect x="80" y="60" width="240" height="390" rx="18" fill="rgba(237,242,247,0.4)" stroke="#a0aec0" stroke-width="3"/>
+              <rect x="92" y="72" width="216" height="366" rx="12" fill="none" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="6 4"/>
+
+              <!-- Innenleben -->
+              <path d="M 160 430 C 160 380, 290 370, 285 305" fill="none" stroke="#e53e3e" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M 240 430 C 240 390, 295 360, 290 320" fill="none" stroke="#1a202c" stroke-width="3.5" stroke-linecap="round"/>
+              <rect x="105" y="95" width="190" height="320" rx="8" fill="#1a202c" stroke="#2d3748" stroke-width="2"/>
+              <rect x="120" y="115" width="160" height="280" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+
+              <!-- Honigtopf auf dem Etikett -->
+              <g transform="translate(132, 125) scale(0.85)">
+                <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z" fill="none" stroke="#2d3748" stroke-width="2.5" stroke-linejoin="round"/>
+                <ellipse cx="24" cy="18" rx="10" ry="3" fill="none" stroke="#2d3748" stroke-width="2"/>
+                <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32" fill="none" stroke="#2d3748" stroke-width="2"/>
+              </g>
+
+              <text x="200" y="215" font-family="'Courier New',Courier,monospace" font-weight="bold" font-size="12" fill="#2d3748" text-anchor="middle" letter-spacing="0.5">XXXXXXXXXXXXXXXX</text>
+              <text x="200" y="255" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="22" fill="#1a202c" text-anchor="middle">Tanen.eu</text>
+
+              <!-- QR-Code -->
+              <g transform="translate(160, 280)">
+                <rect x="0" y="0" width="80" height="80" fill="#ffffff" stroke="#1a202c" stroke-width="1.5"/>
+                <rect x="6" y="6" width="22" height="22" fill="#1a202c"/>
+                <rect x="10" y="10" width="14" height="14" fill="#ffffff"/>
+                <rect x="13" y="13" width="8" height="8" fill="#1a202c"/>
+                <rect x="52" y="6" width="22" height="22" fill="#1a202c"/>
+                <rect x="56" y="10" width="14" height="14" fill="#ffffff"/>
+                <rect x="59" y="13" width="8" height="8" fill="#1a202c"/>
+                <rect x="6" y="52" width="22" height="22" fill="#1a202c"/>
+                <rect x="10" y="56" width="14" height="14" fill="#ffffff"/>
+                <rect x="13" y="59" width="8" height="8" fill="#1a202c"/>
+                <rect x="34" y="8" width="6" height="14" fill="#1a202c"/>
+                <rect x="34" y="28" width="12" height="6" fill="#1a202c"/>
+                <rect x="8" y="34" width="14" height="6" fill="#1a202c"/>
+                <rect x="52" y="34" width="20" height="6" fill="#1a202c"/>
+                <rect x="34" y="44" width="8" height="18" fill="#1a202c"/>
+                <rect x="48" y="48" width="10" height="10" fill="#1a202c"/>
+                <rect x="62" y="60" width="10" height="12" fill="#1a202c"/>
+                <rect x="10" y="44" width="14" height="5" fill="#1a202c"/>
+              </g>
+
+              <!-- Schrauben -->
+              <circle cx="102" cy="82" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+              <path d="M 95 82 H 109 M 102 75 V 89" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="298" cy="82" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+              <path d="M 291 82 H 305 M 298 75 V 89" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="102" cy="428" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+              <path d="M 95 428 H 109 M 102 421 V 435" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="298" cy="428" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+              <path d="M 291 428 H 305 M 298 421 V 435" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+
+              <!-- Glasspiegelung -->
+              <path d="M 82 62 L 210 62 L 92 448 L 82 448 Z" fill="url(#glareGrad)"/>
+
+              <!-- Hinweis auf den Knopf: Ring plus Pfeil, damit die Stelle
+                   auch ohne Farbwahrnehmung eindeutig ist. -->
+              <circle class="hint-ring" cx="332" cy="283" r="30"/>
+              <circle class="hint-ring hint-pulse" cx="332" cy="283" r="30"/>
+              <path d="M 385 352 L 356 306" stroke="#9e1030" stroke-width="6" stroke-linecap="round" fill="none"/>
+              <path d="M 356 306 L 369 310 M 356 306 L 359 320" stroke="#9e1030" stroke-width="6" stroke-linecap="round" fill="none"/>
+            </svg>
+          </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="cstep">
+        <span class="cstep-num" aria-hidden="true">2</span>
+        <div class="cstep-body">
+          <p data-i18n="step2">Tippen Sie auf „Verbinden“. Wählen Sie dann „TanenBase“ aus der Liste des Browsers.</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-lg" id="connectBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg>
+      <span data-i18n="connect">Verbinden</span>
+    </button>
+    <p class="hero-note" data-i18n="heroNote">Funktioniert mit Chrome oder Edge</p>
+  </section>
+
+  <!-- ============================ ÜBERSICHT ============================ -->
+  <section class="view" id="viewHome">
+    <div class="gauge-card">
+      <div class="gauge-label" data-i18n="weight">Gewicht</div>
+      <div class="gauge-value" id="liveW">--,--</div>
+      <div class="gauge-unit" data-i18n="unitKg">kg</div>
+      <div class="wait-chip" id="waitChip"><span class="spin" aria-hidden="true"></span><span data-i18n="waiting">Warte auf Daten …</span></div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <span class="stat-ico temp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg></span>
+        <div><b id="liveT">--</b><span data-i18n="temperature">Temperatur (°C)</span></div>
+      </div>
+      <div class="stat">
+        <span class="stat-ico batt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2"/></svg></span>
+        <div><b id="liveB">--</b><span data-i18n="battery">Batterie (Volt)</span></div>
+      </div>
+    </div>
+
+    <div class="quick-row">
+      <button class="btn btn-outline btn-compact" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+        <span data-i18n="refresh">Werte neu laden</span>
+      </button>
+      <button class="btn btn-outline btn-compact" data-cmd="4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9a7 7 0 0 1 14 0"/><path d="M8 9a4 4 0 0 1 8 0"/><path d="M12 13v8"/></svg>
+        <span data-i18n="testLora">Funk-Test senden</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================== WAAGE ============================== -->
+  <section class="view" id="viewCal">
+    <h2 class="view-title" data-i18n="calTitle">Waage einstellen</h2>
+    <p class="view-sub" data-i18n="calSub">In drei Schritten zur genauen Waage</p>
+
+    <div class="steps" aria-hidden="true">
+      <span class="step-dot now" id="dot1">1</span>
+      <span class="step-line" id="line1"></span>
+      <span class="step-dot" id="dot2">2</span>
+      <span class="step-line" id="line2"></span>
+      <span class="step-dot" id="dot3">3</span>
+    </div>
+
+    <div class="card">
+      <!-- Schritt 1: Null setzen -->
+      <div class="wiz-pane active" id="pane1">
+        <div class="wiz-illus" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20V9l6-5 6 5v11"/><circle cx="12" cy="12" r="2.5"/></svg>
+        </div>
+        <h4 data-i18n="wiz1Title">Schritt 1: Waage leer räumen</h4>
+        <p class="desc" data-i18n="wiz1Desc">Nehmen Sie alles von der Waage herunter. Tippen Sie dann auf den Knopf.</p>
+        <button class="btn btn-block" id="tareBtn" data-i18n="tare">Auf Null setzen</button>
+      </div>
+
+      <!-- Schritt 2: Referenzgewicht -->
+      <div class="wiz-pane" id="pane2">
+        <div class="wiz-illus" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21h12"/><path d="M12 3v4"/><circle cx="12" cy="8" r="2"/><path d="M7 10l-3 7a4 4 0 0 0 6 0l-3-7zM17 10l-3 7a4 4 0 0 0 6 0l-3-7z"/></svg>
+        </div>
+        <h4 data-i18n="wiz2Title">Schritt 2: Bekanntes Gewicht auflegen</h4>
+        <p class="desc" data-i18n="wiz2Desc">Legen Sie etwas auf die Waage, dessen Gewicht Sie genau kennen. Tragen Sie das Gewicht ein.</p>
+        <div class="field">
+          <label for="calibRefKg" data-i18n="refWeight">Gewicht in Kilogramm</label>
+          <input id="calibRefKg" type="number" step="0.01" min="0" inputmode="decimal" data-i18n-ph="phRef" placeholder="z. B. 10.00">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline" id="wizBack" data-i18n="back">Zurück</button>
+          <button class="btn btn-save" id="calibrateBtn" data-i18n="calibrate">Jetzt einstellen</button>
+        </div>
+      </div>
+
+      <!-- Schritt 3: fertig -->
+      <div class="wiz-pane" id="pane3">
+        <div class="wiz-illus" style="color:var(--green);border-color:var(--green);background:var(--green-soft)" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+        </div>
+        <h4 data-i18n="wiz3Title">Fertig! Die Waage ist eingestellt.</h4>
+        <p class="desc" data-i18n="wiz3Desc">Die neuen Werte sind auf dem Gerät gespeichert.</p>
+        <div class="result-box">
+          <div><b id="zeroOffset">--</b><span data-i18n="zeroOffset">Null-Punkt</span></div>
+          <div><b id="scaleFactor">--</b><span data-i18n="scaleFactor">Umrechnung</span></div>
+        </div>
+        <button class="btn btn-outline btn-block" id="wizRestart" data-i18n="recal">Noch einmal einstellen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ EINSTELLUNGEN ============================ -->
+  <section class="view" id="viewSet">
+    <h2 class="view-title" data-i18n="navSet">Einstellungen</h2>
+    <p class="view-sub" data-i18n="setSub">Zeiten und Alarm-Grenzen</p>
+
+    <!-- Zeiten + Alarm in EINER Karte -->
+    <div class="card">
+      <h3 data-i18n="timingCard">Zeiten &amp; Alarm</h3>
+      <p class="card-sub" data-i18n="timingCardSub">Alle Zeiten in Minuten.</p>
+
+      <div class="card-part-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        <span data-i18n="timing">Zeiten</span>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="txMin" data-i18n="txInterval">Senden alle (Minuten)</label>
+          <input id="txMin" type="number" min="1" step="1" inputmode="numeric">
+          <p class="hint" data-i18n="txHint">Wie oft die Station ihre Werte funkt. Übliche Einstellung: 240 Minuten.</p>
+        </div>
+        <div class="field">
+          <label for="msMin" data-i18n="msInterval">Messen alle (Minuten)</label>
+          <input id="msMin" type="number" min="1" step="1" inputmode="numeric">
+          <p class="hint" data-i18n="msHint">Wie oft die Station misst. Mindestens 1 Minute. Übliche Einstellung: 5 Minuten.</p>
+        </div>
+      </div>
+
+      <div class="card-split">
+        <div class="card-part-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
+          <span data-i18n="thresholds">Alarm-Grenzen</span>
+        </div>
+        <p class="card-sub" data-i18n="thresholdsSub">Die Station meldet sich sofort, wenn sich ein Wert stärker ändert als hier eingestellt.</p>
+        <div class="grid-2">
+          <div class="field">
+            <label for="weightThreshKg" data-i18n="weightThresh">Gewicht (kg)</label>
+            <input id="weightThreshKg" type="number" step="0.1" min="0" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="tempThreshC" data-i18n="tempThresh">Temperatur (°C)</label>
+            <input id="tempThreshC" type="number" step="0.1" min="0" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-save btn-block" id="saveSetBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+        <span data-i18n="saveSet">Einstellungen speichern</span>
+      </button>
+    </div>
+
+    <div class="card danger">
+      <h3 data-i18n="finish">Einrichtung beenden</h3>
+      <p class="card-sub" data-i18n="finishHint">Die Station startet neu und arbeitet ganz normal weiter. Bluetooth wird ausgeschaltet.</p>
+      <div class="btn-row" style="margin-block-start:0">
+        <button class="btn btn-outline" id="disconnectBtn" data-i18n="disconnect">Verbindung trennen</button>
+        <button class="btn btn-danger" data-cmd="1" data-i18n="done">Einrichtung beenden</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== NETZWERK (Fachleute) ============================== -->
+  <section class="view" id="viewNet">
+    <h2 class="view-title" data-i18n="navNet">Netzwerk</h2>
+    <p class="view-sub" data-i18n="netSub">LoRaWAN-Zugang und Funk-Sitzung</p>
+
+    <div class="note warn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
+      <span><strong data-i18n="advTitle">Nur für Fachleute</strong><span data-i18n="netWarn">Diese Angaben bekommen Sie vom Installateur. Für den täglichen Gebrauch ändern Sie hier nichts.</span></span>
+    </div>
+
+    <div class="card">
+      <h3 data-i18n="credentials">Zugangsdaten</h3>
+      <div class="field"><label for="devEui">DevEUI</label><input id="devEui" maxlength="16" autocomplete="off" spellcheck="false" data-i18n-ph="ph16" placeholder="16 Zeichen"></div>
+      <div class="field"><label for="joinEui">JoinEUI</label><input id="joinEui" maxlength="16" autocomplete="off" spellcheck="false" data-i18n-ph="ph16" placeholder="16 Zeichen"></div>
+      <div class="field">
+        <label for="appKey">AppKey</label>
+        <input id="appKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
+        <p class="hint" data-i18n="appKeyHint">Wird nur geschrieben — nie vom Gerät zurückgelesen.</p>
+      </div>
+      <button class="btn btn-save btn-block" id="saveNetBtn" data-i18n="saveNet">Zugangsdaten speichern</button>
+    </div>
+
+    <div class="card danger">
+      <h3 data-i18n="session">Funk-Sitzung</h3>
+      <p class="card-sub" data-i18n="sessionHint">Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.</p>
+      <button class="btn btn-danger btn-block" data-cmd="3" data-i18n="clearSession">Sitzung löschen</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== TAB-LEISTE ============================== -->
+<nav class="tabbar" id="tabbar" data-i18n-al="navLabel" aria-label="Hauptbereiche">
+  <ul>
+    <li><button data-view="viewHome" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 1 18 0"/><path d="M12 12l3.5-3.5"/><path d="M2 12h2M20 12h2"/></svg>
+      <span data-i18n="navHome">Übersicht</span></button></li>
+    <li><button data-view="viewCal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.4"/><circle cx="15" cy="17" r="2.4"/></svg>
+      <span data-i18n="navCal">Waage</span></button></li>
+    <li><button data-view="viewSet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.07-.4.1-.8.1-1.2z"/></svg>
+      <span data-i18n="navSet">Einstellungen</span></button></li>
+    <li class="tab-adv"><button data-view="viewNet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9a7 7 0 0 1 14 0"/><path d="M8 9a4 4 0 0 1 8 0"/><circle cx="12" cy="11" r="1.6"/><path d="M12 13v8"/></svg>
+      <span data-i18n="navNet">Netzwerk</span><small class="adv-tag" data-i18n="advTag">Fachleute</small></button></li>
+  </ul>
+</nav>
 
 <script>
-const SVC = '544e4253-0000-4269-8000-544e42415345'.toLowerCase();
-const chr = n => `544e4253-${n.toString(16).padStart(4,'0')}-4269-8000-544e42415345`.toLowerCase();
+'use strict';
 
-const CHARS = {
-  devEui:      {uuid: chr(1), len:8,  type:'hex'},
-  joinEui:     {uuid: chr(2), len:8,  type:'hex'},
-  appKey:      {uuid: chr(3), len:16, type:'hex', writeOnly:true},
-  zeroOffset:  {uuid: chr(4), len:4,  type:'i32'},
-  scaleFactor: {uuid: chr(5), len:4,  type:'i32'},
-  txInterval:  {uuid: chr(6), len:4,  type:'u32'},
-  msInterval:  {uuid: chr(7), len:4,  type:'u32'},
-  weightThresh:{uuid: chr(8), len:2,  type:'u16'},
-  tempThresh:  {uuid: chr(9), len:2,  type:'u16'},
-  calibRef:    {uuid: chr(0xA), len:4, type:'u32'},
-  cmdStatus:   {uuid: chr(0xB), len:2, type:'notify'},
-  configCmd:   {uuid: chr(0xC), len:1, type:'cmd'},
-  liveSensors: {uuid: chr(0xD), len:8, type:'notify'},
+/* ============================== Sprachen ==============================
+   Deutsch ist die Vorgabe. Eigener Speicher-Schluessel, damit eine alte
+   Sprachwahl aus index2.html die Vorgabe hier nicht ueberschreibt.       */
+const I18N = {
+  de: {
+    _dir: 'ltr', _locale: 'de-DE',
+    brand: 'TanenBase',
+    langGroup: 'Sprache', navLabel: 'Hauptbereiche',
+    pillOff: 'Nicht verbunden', pillOn: 'Verbunden',
+    heroTitle: 'Gerät verbinden',
+    step1: 'Drücken Sie den roten Knopf an der Station.',
+    figCap: 'Roter Knopf an der Station',
+    step2: 'Tippen Sie auf „Verbinden“. Wählen Sie dann „TanenBase“ aus der Liste des Browsers.',
+    heroNote: 'Funktioniert mit Chrome oder Edge',
+    connect: 'Verbinden', disconnect: 'Verbindung trennen',
+    navHome: 'Übersicht', navCal: 'Waage', navSet: 'Einstellungen', navNet: 'Netzwerk',
+    advTag: 'Fachleute', advTitle: 'Nur für Fachleute',
+    weight: 'Gewicht', unitKg: 'kg',
+    temperature: 'Temperatur (°C)', battery: 'Batterie (Volt)',
+    waiting: 'Warte auf Daten …',
+    quick: 'Schnell-Aktionen', quickSub: 'Werte neu abfragen oder den Funk prüfen.',
+    refresh: 'Werte neu laden', testLora: 'Funk-Test senden',
+    calTitle: 'Waage einstellen', calSub: 'In drei Schritten zur genauen Waage',
+    wiz1Title: 'Schritt 1: Waage leer räumen',
+    wiz1Desc: 'Nehmen Sie alles von der Waage herunter. Tippen Sie dann auf den Knopf.',
+    tare: 'Auf Null setzen',
+    wiz2Title: 'Schritt 2: Bekanntes Gewicht auflegen',
+    wiz2Desc: 'Legen Sie etwas auf die Waage, dessen Gewicht Sie genau kennen. Tragen Sie das Gewicht ein.',
+    refWeight: 'Gewicht in Kilogramm', phRef: 'z. B. 10.00',
+    back: 'Zurück', calibrate: 'Jetzt einstellen',
+    wiz3Title: 'Fertig! Die Waage ist eingestellt.',
+    wiz3Desc: 'Die neuen Werte sind auf dem Gerät gespeichert.',
+    zeroOffset: 'Null-Punkt', scaleFactor: 'Umrechnung',
+    recal: 'Noch einmal einstellen',
+    setSub: 'Zeiten und Alarm-Grenzen',
+    timingCard: 'Zeiten & Alarm', timingCardSub: 'Alle Zeiten in Minuten.',
+    timing: 'Zeiten',
+    txInterval: 'Senden alle (Minuten)', msInterval: 'Messen alle (Minuten)',
+    txHint: 'Wie oft die Station ihre Werte funkt. Übliche Einstellung: 240 Minuten.',
+    msHint: 'Wie oft die Station misst. Mindestens 1 Minute. Übliche Einstellung: 5 Minuten.',
+    thresholds: 'Alarm-Grenzen',
+    thresholdsSub: 'Die Station meldet sich sofort, wenn sich ein Wert stärker ändert als hier eingestellt.',
+    weightThresh: 'Gewicht (kg)', tempThresh: 'Temperatur (°C)',
+    saveSet: 'Einstellungen speichern',
+    finish: 'Einrichtung beenden',
+    finishHint: 'Die Station startet neu und arbeitet ganz normal weiter. Bluetooth wird ausgeschaltet.',
+    done: 'Einrichtung beenden',
+    netSub: 'LoRaWAN-Zugang und Funk-Sitzung',
+    netWarn: 'Diese Angaben bekommen Sie vom Installateur. Für den täglichen Gebrauch ändern Sie hier nichts.',
+    credentials: 'Zugangsdaten', ph16: '16 Zeichen', ph32: '32 Zeichen',
+    appKeyHint: 'Wird nur geschrieben — nie vom Gerät zurückgelesen.',
+    saveNet: 'Zugangsdaten speichern',
+    session: 'Funk-Sitzung',
+    sessionHint: 'Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.',
+    clearSession: 'Sitzung löschen',
+    idleTitle: 'Einrichtungs-Modus endet in',
+    /* Meldungen */
+    stNoBluetooth: 'Dieser Browser kann kein Bluetooth. Bitte Chrome oder Edge benutzen.',
+    stRequesting: 'Gerät wird gesucht …',
+    stConnecting: 'Verbindung wird aufgebaut …',
+    stConnected: 'Verbunden mit {name}',
+    stDisconnected: 'Verbindung getrennt',
+    stSetupEnd: 'Der Einrichtungs-Modus ist nach 3 Minuten beendet.',
+    stSetupWarn: 'Der Einrichtungs-Modus endet in 30 Sekunden.',
+    stReadDone: 'Werte neu geladen',
+    stReadErr: 'Fehler beim Lesen: {msg}',
+    stSaved: 'Gespeichert',
+    stWriteErr: 'Fehler beim Speichern: {msg}',
+    stError: 'Fehler: {msg}',
+    stCmdErr: 'Fehler beim Befehl: {msg}',
+    stCmdNotFound: 'Befehls-Kanal nicht gefunden',
+    stHexLen: '{field}: braucht {n} Zeichen (0–9, A–F)',
+    stHexBad: '{field}: nur Zeichen 0–9 und A–F',
+    stEnterRef: 'Bitte zuerst das Gewicht eintragen',
+    stCalibrating: 'Waage wird eingestellt …',
+    stWaitingCmd: '{name}: bitte warten …',
+    stSent: 'Gesendet: {name}',
+    stCmdOk: '{name}: erledigt',
+    stCmdFail: '{name}: fehlgeschlagen (Code {code})',
+    stMinBad: 'Bitte ganze Minuten eintragen — mindestens 1.',
+    stTxLtMs: '„Senden alle“ darf nicht kleiner sein als „Messen alle“.',
+    cmd1: 'Einrichtung beenden', cmd2: 'Auf Null setzen', cmd3: 'Sitzung löschen',
+    cmd4: 'Funk-Test', cmd5: 'Waage einstellen', cmdX: 'Befehl 0x{hex}',
+  },
+  en: {
+    _dir: 'ltr', _locale: 'en-US',
+    brand: 'TanenBase',
+    langGroup: 'Language', navLabel: 'Main sections',
+    pillOff: 'Not connected', pillOn: 'Connected',
+    heroTitle: 'Connect your device',
+    step1: 'Press the red button on the station.',
+    figCap: 'Red button on the station',
+    step2: 'Tap “Connect”. Then pick “TanenBase” from the browser list.',
+    heroNote: 'Works with Chrome or Edge',
+    connect: 'Connect', disconnect: 'Disconnect',
+    navHome: 'Overview', navCal: 'Scale', navSet: 'Settings', navNet: 'Network',
+    advTag: 'Experts', advTitle: 'For experts only',
+    weight: 'Weight', unitKg: 'kg',
+    temperature: 'Temperature (°C)', battery: 'Battery (volts)',
+    waiting: 'Waiting for data …',
+    quick: 'Quick actions', quickSub: 'Read the values again or check the radio.',
+    refresh: 'Reload values', testLora: 'Send radio test',
+    calTitle: 'Set up the scale', calSub: 'Three steps to an accurate scale',
+    wiz1Title: 'Step 1: Clear the scale',
+    wiz1Desc: 'Take everything off the scale. Then tap the button.',
+    tare: 'Set to zero',
+    wiz2Title: 'Step 2: Put on a known weight',
+    wiz2Desc: 'Place something on the scale whose weight you know exactly. Type that weight in.',
+    refWeight: 'Weight in kilograms', phRef: 'e.g. 10.00',
+    back: 'Back', calibrate: 'Set up now',
+    wiz3Title: 'Done! The scale is set up.',
+    wiz3Desc: 'The new values are stored on the device.',
+    zeroOffset: 'Zero point', scaleFactor: 'Conversion',
+    recal: 'Set up again',
+    setSub: 'Times and alarm limits',
+    timingCard: 'Times & alarm', timingCardSub: 'All times in minutes.',
+    timing: 'Times',
+    txInterval: 'Send every (minutes)', msInterval: 'Measure every (minutes)',
+    txHint: 'How often the station transmits its values. Common setting: 240 minutes.',
+    msHint: 'How often the station measures. At least 1 minute. Common setting: 5 minutes.',
+    thresholds: 'Alarm limits',
+    thresholdsSub: 'The station reports immediately when a value changes more than set here.',
+    weightThresh: 'Weight (kg)', tempThresh: 'Temperature (°C)',
+    saveSet: 'Save settings',
+    finish: 'Finish setup',
+    finishHint: 'The station restarts and carries on as usual. Bluetooth is switched off.',
+    done: 'Finish setup',
+    netSub: 'LoRaWAN access and radio session',
+    netWarn: 'Your installer provides these values. For everyday use, change nothing here.',
+    credentials: 'Access data', ph16: '16 characters', ph32: '32 characters',
+    appKeyHint: 'Written only — never read back from the device.',
+    saveNet: 'Save access data',
+    session: 'Radio session',
+    sessionHint: 'After clearing, the station rejoins the radio network on its next transmission.',
+    clearSession: 'Clear session',
+    idleTitle: 'Setup mode ends in',
+    stNoBluetooth: 'This browser cannot use Bluetooth. Please use Chrome or Edge.',
+    stRequesting: 'Looking for the device …',
+    stConnecting: 'Connecting …',
+    stConnected: 'Connected to {name}',
+    stDisconnected: 'Disconnected',
+    stSetupEnd: 'Setup mode ended after 3 minutes.',
+    stSetupWarn: 'Setup mode ends in 30 seconds.',
+    stReadDone: 'Values reloaded',
+    stReadErr: 'Read error: {msg}',
+    stSaved: 'Saved',
+    stWriteErr: 'Save error: {msg}',
+    stError: 'Error: {msg}',
+    stCmdErr: 'Command error: {msg}',
+    stCmdNotFound: 'Command channel not found',
+    stHexLen: '{field}: needs {n} characters (0–9, A–F)',
+    stHexBad: '{field}: only 0–9 and A–F',
+    stEnterRef: 'Please enter the weight first',
+    stCalibrating: 'Setting up the scale …',
+    stWaitingCmd: '{name}: please wait …',
+    stSent: 'Sent: {name}',
+    stCmdOk: '{name}: done',
+    stCmdFail: '{name}: failed (code {code})',
+    stMinBad: 'Please enter whole minutes — at least 1.',
+    stTxLtMs: '“Send every” must not be smaller than “Measure every”.',
+    cmd1: 'Finish setup', cmd2: 'Set to zero', cmd3: 'Clear session',
+    cmd4: 'Radio test', cmd5: 'Set up scale', cmdX: 'Command 0x{hex}',
+  },
+  ar: {
+    _dir: 'rtl', _locale: 'ar-EG-u-nu-latn',
+    brand: 'قاعدة طنين',
+    langGroup: 'اللغة', navLabel: 'الأقسام الرئيسية',
+    pillOff: 'غير متصل', pillOn: 'متصل',
+    heroTitle: 'اربط الجهاز',
+    step1: 'اضغط الزر الأحمر على المحطة.',
+    figCap: 'الزر الأحمر على المحطة',
+    step2: 'اضغط «اتصال»، ثم اختر «TanenBase» من قائمة المتصفح.',
+    heroNote: 'يعمل مع Chrome أو Edge',
+    connect: 'اتصال', disconnect: 'قطع الاتصال',
+    navHome: 'الرئيسية', navCal: 'الميزان', navSet: 'الإعدادات', navNet: 'الشبكة',
+    advTag: 'للفنيين', advTitle: 'للفنيين فقط',
+    weight: 'الوزن', unitKg: 'كجم',
+    temperature: 'الحرارة (°م)', battery: 'البطارية (فولت)',
+    waiting: 'في انتظار البيانات …',
+    quick: 'إجراءات سريعة', quickSub: 'أعد قراءة القيم أو افحص الإرسال.',
+    refresh: 'تحديث القيم', testLora: 'إرسال اختبار',
+    calTitle: 'ضبط الميزان', calSub: 'ثلاث خطوات لميزان دقيق',
+    wiz1Title: 'الخطوة 1: أفرغ الميزان',
+    wiz1Desc: 'أزل كل شيء عن الميزان، ثم اضغط الزر.',
+    tare: 'ضبط على الصفر',
+    wiz2Title: 'الخطوة 2: ضع وزنًا معروفًا',
+    wiz2Desc: 'ضع على الميزان شيئًا تعرف وزنه بدقة، ثم اكتب الوزن.',
+    refWeight: 'الوزن بالكيلوجرام', phRef: 'مثال: 10.00',
+    back: 'رجوع', calibrate: 'اضبط الآن',
+    wiz3Title: 'تم! الميزان مضبوط.',
+    wiz3Desc: 'حُفظت القيم الجديدة في الجهاز.',
+    zeroOffset: 'نقطة الصفر', scaleFactor: 'معامل التحويل',
+    recal: 'إعادة الضبط',
+    setSub: 'الأوقات وحدود التنبيه',
+    timingCard: 'الأوقات والتنبيه', timingCardSub: 'كل الأوقات بالدقائق.',
+    timing: 'الأوقات',
+    txInterval: 'الإرسال كل (دقيقة)', msInterval: 'القياس كل (دقيقة)',
+    txHint: 'كل كم دقيقة ترسل المحطة قيمها. المعتاد: 240 دقيقة.',
+    msHint: 'كل كم دقيقة تقيس المحطة. دقيقة واحدة على الأقل. المعتاد: 5 دقائق.',
+    thresholds: 'حدود التنبيه',
+    thresholdsSub: 'ترسل المحطة فورًا إذا تغيّرت القيمة أكثر من الحد المضبوط هنا.',
+    weightThresh: 'الوزن (كجم)', tempThresh: 'الحرارة (°م)',
+    saveSet: 'حفظ الإعدادات',
+    finish: 'إنهاء الإعداد',
+    finishHint: 'تعيد المحطة التشغيل وتعمل بشكل عادي، ويُطفأ البلوتوث.',
+    done: 'إنهاء الإعداد',
+    netSub: 'بيانات LoRaWAN والجلسة',
+    netWarn: 'تحصل على هذه البيانات من الفني. لا تغيّر شيئًا هنا في الاستخدام اليومي.',
+    credentials: 'بيانات الدخول', ph16: '16 خانة', ph32: '32 خانة',
+    appKeyHint: 'للكتابة فقط — لا يُقرأ من الجهاز أبدًا.',
+    saveNet: 'حفظ بيانات الدخول',
+    session: 'جلسة الشبكة',
+    sessionHint: 'بعد المسح تنضم المحطة للشبكة من جديد عند أول إرسال.',
+    clearSession: 'مسح الجلسة',
+    idleTitle: 'ينتهي وضع الإعداد خلال',
+    stNoBluetooth: 'هذا المتصفح لا يدعم البلوتوث. استخدم Chrome أو Edge.',
+    stRequesting: 'جارٍ البحث عن الجهاز …',
+    stConnecting: 'جارٍ الاتصال …',
+    stConnected: 'متصل بـ {name}',
+    stDisconnected: 'انقطع الاتصال',
+    stSetupEnd: 'انتهى وضع الإعداد بعد 3 دقائق.',
+    stSetupWarn: 'ينتهي وضع الإعداد خلال 30 ثانية.',
+    stReadDone: 'تم تحديث القيم',
+    stReadErr: 'خطأ في القراءة: {msg}',
+    stSaved: 'تم الحفظ',
+    stWriteErr: 'خطأ في الحفظ: {msg}',
+    stError: 'خطأ: {msg}',
+    stCmdErr: 'خطأ في الأمر: {msg}',
+    stCmdNotFound: 'قناة الأوامر غير موجودة',
+    stHexLen: '{field}: يحتاج {n} خانة (0–9، A–F)',
+    stHexBad: '{field}: الحروف 0–9 و A–F فقط',
+    stEnterRef: 'أدخل الوزن أولًا',
+    stCalibrating: 'جارٍ ضبط الميزان …',
+    stWaitingCmd: '{name}: انتظر من فضلك …',
+    stSent: 'أُرسل: {name}',
+    stCmdOk: '{name}: تم',
+    stCmdFail: '{name}: فشل (رمز {code})',
+    stMinBad: 'أدخل دقائق صحيحة — دقيقة واحدة على الأقل.',
+    stTxLtMs: '«الإرسال كل» يجب ألا يقل عن «القياس كل».',
+    cmd1: 'إنهاء الإعداد', cmd2: 'ضبط على الصفر', cmd3: 'مسح الجلسة',
+    cmd4: 'اختبار الإرسال', cmd5: 'ضبط الميزان', cmdX: 'أمر 0x{hex}',
+  },
 };
 
-let device, server, svc, charMap = {};
+let lang = 'de';
+try { const s = localStorage.getItem('tb3-lang'); if (I18N[s]) lang = s; } catch (e) {}
 
-function status(msg, cls='info') {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = cls;
+function t(key, params) {
+  let str = (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key;
+  if (params) for (const [k, v] of Object.entries(params)) str = str.replace('{' + k + '}', v);
+  return str;
+}
+
+/* Zahlen im Format der gewaehlten Sprache: 12,345 statt 12.345 auf Deutsch */
+function fmtNum(n, digits) {
+  try { return n.toLocaleString(I18N[lang]._locale, { minimumFractionDigits: digits, maximumFractionDigits: digits }); }
+  catch (e) { return n.toFixed(digits); }
+}
+
+function applyLang(next) {
+  lang = next;
+  try { localStorage.setItem('tb3-lang', lang); } catch (e) {}
+  document.documentElement.lang = lang;
+  document.documentElement.dir = I18N[lang]._dir;
+  document.title = t('brand');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
+  document.getElementById("langSel").value = lang;
+  updatePill(connected);
+}
+
+/* =============================== Meldung =============================== */
+let toastTimer = null;
+function toast(key, cls, params) {
+  const el = document.getElementById('toast');
+  el.textContent = t(key, params);
+  el.className = (cls || 'info') + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), cls === 'err' ? 6000 : 3600);
+}
+
+/* ============================== Navigation ============================== */
+const VIEWS = ['viewConnect', 'viewHome', 'viewCal', 'viewSet', 'viewNet'];
+function showView(id) {
+  VIEWS.forEach(v => document.getElementById(v).classList.toggle('active', v === id));
+  document.querySelectorAll('.tabbar button[data-view]').forEach(b => {
+    if (b.dataset.view === id) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  window.scrollTo({ top: 0 });
+}
+
+let connected = false;
+function updatePill(on) {
+  const pill = document.getElementById('connPill');
+  pill.classList.toggle('on', on);
+  document.getElementById('connPillTxt').textContent = t(on ? 'pillOn' : 'pillOff');
+}
+
+function setConnected(on) {
+  connected = on;
+  updatePill(on);
+  document.getElementById('tabbar').classList.toggle('show', on);
+  showView(on ? 'viewHome' : 'viewConnect');
+  if (on) {
+    startIdle();
+  } else {
+    stopIdle();
+    setWizStep(1);
+    document.getElementById('waitChip').style.display = '';
+    document.getElementById('liveW').textContent = '--,--';
+    ['liveT', 'liveB'].forEach(id => document.getElementById(id).textContent = '--');
+  }
+}
+
+/* ====================== Rest-Zeit Einrichtungs-Modus ======================
+   ble_config_run() laeuft feste CONFIG_TANENBASE_SETUP_TIMEOUT = 180 s ab
+   dem Beginn des Werbens und beendet den Modus dann selbst. Keine Eingabe
+   verlaengert das Fenster, darum laeuft die Uhr durch und es gibt keinen
+   Knopf zum Verlaengern - die Anzeige informiert nur.
+   Achtung: der Browser zaehlt ab dem Verbinden, das Geraet ab dem Werben.
+   Die Station kann also etwas frueher auflegen als die Anzeige vermuten
+   laesst; der Trenn-Fall wird ohnehin sauber abgefangen.                  */
+const SETUP_MS = 180 * 1000;
+const SETUP_WARN_MS = 30 * 1000;
+let idleDeadline = 0, idleTimer = null, idleWarned = false, idleQuit = false;
+
+function renderIdle(left) {
+  const el = document.getElementById('idleTime');
+  const sec = Math.max(0, Math.ceil(left / 1000));
+  el.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+  el.classList.toggle('warn', left <= 60000 && left > SETUP_WARN_MS);
+  el.classList.toggle('danger', left <= SETUP_WARN_MS);
+}
+
+function tickIdle() {
+  const left = idleDeadline - Date.now();
+  if (left <= SETUP_WARN_MS && !idleWarned) {
+    idleWarned = true;
+    toast('stSetupWarn', 'err');
+  }
+  if (left <= 0) {
+    idleQuit = true;
+    stopIdle();
+    doDisconnect();
+    return;
+  }
+  renderIdle(left);
+}
+
+function startIdle() {
+  const el = document.getElementById('idleTime');
+  el.hidden = false;
+  idleDeadline = Date.now() + SETUP_MS;
+  idleWarned = false;
+  renderIdle(SETUP_MS);
+  clearInterval(idleTimer);
+  idleTimer = setInterval(tickIdle, 250);
+}
+
+function stopIdle() {
+  clearInterval(idleTimer);
+  idleTimer = null;
+  const el = document.getElementById('idleTime');
+  el.hidden = true;
+  el.classList.remove('warn', 'danger');
+}
+
+/* ========================== Kalibrier-Assistent ========================== */
+let wizStep = 1;
+function setWizStep(n) {
+  wizStep = n;
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' now' : '');
+    if (i < 3) document.getElementById('line' + i).className = 'step-line' + (i < n ? ' done' : '');
+    document.getElementById('pane' + i).classList.toggle('active', i === n);
+  }
+}
+
+/* ================================= BLE ================================= */
+const SVC = '544e4253-0000-4269-8000-544e42415345'.toLowerCase();
+const chr = n => `544e4253-${n.toString(16).padStart(4, '0')}-4269-8000-544e42415345`.toLowerCase();
+
+/* uiMin: Feld zeigt Minuten, das Geraet spricht Sekunden. */
+const CHARS = {
+  devEui:      { uuid: chr(1),   len: 8,  type: 'hex', group: 'net' },
+  joinEui:     { uuid: chr(2),   len: 8,  type: 'hex', group: 'net' },
+  appKey:      { uuid: chr(3),   len: 16, type: 'hex', group: 'net', writeOnly: true },
+  zeroOffset:  { uuid: chr(4),   len: 4,  type: 'i32' },
+  scaleFactor: { uuid: chr(5),   len: 4,  type: 'i32' },
+  txInterval:  { uuid: chr(6),   len: 4,  type: 'u32', group: 'set', el: 'txMin', uiMin: true },
+  msInterval:  { uuid: chr(7),   len: 4,  type: 'u32', group: 'set', el: 'msMin', uiMin: true },
+  weightThresh:{ uuid: chr(8),   len: 2,  type: 'u16', group: 'set', el: 'weightThreshKg', scale: 1000, digits: 1 },
+  tempThresh:  { uuid: chr(9),   len: 2,  type: 'u16', group: 'set', el: 'tempThreshC',    scale: 100,  digits: 1 },
+  calibRef:    { uuid: chr(0xA), len: 4,  type: 'u32' },
+  cmdStatus:   { uuid: chr(0xB), len: 2,  type: 'notify' },
+  configCmd:   { uuid: chr(0xC), len: 1,  type: 'cmd' },
+  liveSensors: { uuid: chr(0xD), len: 8,  type: 'notify' },
+};
+
+const SEC_PER_MIN = 60;
+let device = null, charMap = {};
+let pendingTimers = [];
+
+function later(fn, ms) { pendingTimers.push(setTimeout(fn, ms)); }
+function clearTimers() { pendingTimers.forEach(clearTimeout); pendingTimers = []; }
+
+function cmdName(cmd) {
+  const key = 'cmd' + cmd;
+  return (I18N.de[key] !== undefined) ? t(key) : t('cmdX', { hex: cmd.toString(16) });
 }
 
 function hexToBytes(hex) {
-  hex = hex.replace(/\s/g, '');
   const b = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.substr(i*2, 2), 16);
+  for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.substr(i * 2, 2), 16);
   return b;
 }
 
 function bytesToHex(buf) {
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+function cleanupChars() {
+  if (charMap.cmdStatus) charMap.cmdStatus.removeEventListener('characteristicvaluechanged', onCmdStatus);
+  if (charMap.liveSensors) charMap.liveSensors.removeEventListener('characteristicvaluechanged', onLiveSensor);
+  charMap = {};
+}
+
+function onDisconnected() {
+  clearTimers();
+  cleanupChars();
+  setConnected(false);
+  toast(idleQuit ? 'stSetupEnd' : 'stDisconnected', 'err');
+  idleQuit = false;
+  document.getElementById('connectBtn').disabled = false;
 }
 
 async function doConnect() {
+  if (!navigator.bluetooth) { toast('stNoBluetooth', 'err'); return; }
+  const btn = document.getElementById('connectBtn');
   try {
-    status('Requesting device...', 'info');
+    btn.disabled = true;
+    toast('stRequesting', 'info');
+    if (device) device.removeEventListener('gattserverdisconnected', onDisconnected);
+
     device = await navigator.bluetooth.requestDevice({
-      filters: [{name: 'TanenBase'}, {services: [SVC]}],
+      filters: [{ name: 'TanenBase' }, { services: [SVC] }],
       optionalServices: [SVC],
     });
-    device.addEventListener('gattserverdisconnected', () => {
-      status('Disconnected', 'err');
-      document.getElementById('panel').style.display = 'none';
-      document.getElementById('connectBtn').disabled = false;
-      document.getElementById('disconnectBtn').disabled = true;
-    });
+    device.addEventListener('gattserverdisconnected', onDisconnected);
 
-    status('Connecting...', 'info');
-    server = await device.gatt.connect();
-    svc = await server.getPrimaryService(SVC);
+    toast('stConnecting', 'info');
+    const server = await device.gatt.connect();
+    const svc = await server.getPrimaryService(SVC);
 
+    cleanupChars();
     for (const [key, def] of Object.entries(CHARS)) {
-      try { charMap[key] = await svc.getCharacteristic(def.uuid); } catch(e) { charMap[key] = null; }
+      try { charMap[key] = await svc.getCharacteristic(def.uuid); } catch (e) { charMap[key] = null; }
     }
 
     if (charMap.cmdStatus) {
@@ -147,165 +1152,191 @@ async function doConnect() {
       await charMap.liveSensors.startNotifications();
     }
 
-    document.getElementById('connectBtn').disabled = true;
-    document.getElementById('disconnectBtn').disabled = false;
-    document.getElementById('panel').style.display = 'block';
-
-    status('Connected to ' + device.name, 'ok');
-    await readAll();
-  } catch(e) {
-    status('Error: ' + e.message, 'err');
+    setConnected(true);
+    toast('stConnected', 'ok', { name: device.name || 'TanenBase' });
+    await readAll(true);
+  } catch (e) {
+    btn.disabled = false;
+    toast('stError', 'err', { msg: e.message });
   }
 }
 
 function doDisconnect() {
   if (device && device.gatt.connected) device.gatt.disconnect();
+  else onDisconnected();
 }
 
 function onCmdStatus(event) {
   const dv = event.target.value;
+  if (!dv || dv.byteLength < 2) return;
   const cmd = dv.getUint8(0);
   const result = dv.getUint8(1);
-  const names = {2:'Tare',4:'Test LoRa',5:'Calibrate'};
-  const name = names[cmd] || `Cmd 0x${cmd.toString(16)}`;
+  const name = cmdName(cmd);
   if (result === 0) {
-    status(`${name}: OK`, 'ok');
-    if (cmd === 2 || cmd === 5) setTimeout(() => readAll(), 500);
+    toast('stCmdOk', 'ok', { name });
+    if (cmd === 2) {                     /* Null gesetzt -> Schritt 2 */
+      if (wizStep === 1) setWizStep(2);
+      later(() => readAll(), 500);
+    } else if (cmd === 5) {              /* eingestellt -> Schritt 3 */
+      later(() => readAll(), 500);
+      if (wizStep === 2) setWizStep(3);
+    }
   } else {
-    status(`${name}: FAILED (err=${result})`, 'err');
+    toast('stCmdFail', 'err', { name, code: result });
   }
 }
 
 function onLiveSensor(event) {
   const dv = event.target.value;
-  const w = dv.getUint32(0, true);
-  const t = dv.getInt16(4, true);
-  const b = dv.getUint16(6, true);
-  document.getElementById('live').innerHTML =
-    `<b>${(w/1000).toFixed(3)}</b> kg &nbsp; <b>${(t/100).toFixed(2)}</b> &deg;C &nbsp; <b>${b}</b> mV`;
+  if (!dv || dv.byteLength < 8) return;
+  document.getElementById('waitChip').style.display = 'none';
+  document.getElementById('liveW').textContent = fmtNum(dv.getUint32(0, true) / 1000, 2);
+  document.getElementById('liveT').textContent = fmtNum(dv.getInt16(4, true) / 100, 1);
+  document.getElementById('liveB').textContent = fmtNum(dv.getUint16(6, true) / 1000, 2);
 }
 
-async function readAll() {
+async function readAll(silent) {
   try {
     for (const [key, def] of Object.entries(CHARS)) {
       if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || !charMap[key]) continue;
       const val = await charMap[key].readValue();
-      const el = document.getElementById(key);
+      const el = document.getElementById(def.el || key);
+      if (!el) continue;
 
-      if (def.type === 'hex' && el) {
+      if (def.type === 'hex') {
         el.value = bytesToHex(val.buffer);
-      } else if (def.type === 'u32' && el) {
-        el.value = val.getUint32(0, true);
-      } else if (def.type === 'i32' && el) {
-        el.value = val.getInt32(0, true);
+      } else if (def.type === 'u32') {
+        const sec = val.getUint32(0, true);
+        el.value = def.uiMin ? Math.max(1, Math.round(sec / SEC_PER_MIN)) : sec;
+      } else if (def.type === 'i32') {
+        el.textContent = val.getInt32(0, true);      /* Ergebnis-Kacheln */
       } else if (def.type === 'u16') {
-        /* Thresholds: display in user-friendly units */
-        if (key === 'weightThresh') {
-          const el2 = document.getElementById('weightThreshKg');
-          if (el2) el2.value = (val.getUint16(0, true) / 1000).toFixed(1);
-        } else if (key === 'tempThresh') {
-          const el2 = document.getElementById('tempThreshC');
-          if (el2) el2.value = (val.getUint16(0, true) / 100).toFixed(1);
-        } else if (el) {
-          el.value = val.getUint16(0, true);
-        }
+        const raw = val.getUint16(0, true);
+        el.value = def.scale ? (raw / def.scale).toFixed(def.digits) : raw;
       }
     }
-    /* CalibRef → display as kg */
     if (charMap.calibRef) {
       const val = await charMap.calibRef.readValue();
       const g = val.getUint32(0, true);
       const el = document.getElementById('calibRefKg');
-      if (el && g > 0) el.value = (g / 1000).toFixed(2);
+      if (el && g > 0 && !el.value) el.value = (g / 1000).toFixed(2);
     }
-    status('Read complete', 'ok');
-  } catch(e) {
-    status('Read error: ' + e.message, 'err');
+    if (!silent) toast('stReadDone', 'ok');
+  } catch (e) {
+    toast('stReadErr', 'err', { msg: e.message });
   }
 }
 
-async function writeAll() {
+/* Minuten-Feld -> Sekunden fuer das Geraet. Null bei ungueltiger Eingabe. */
+function minutesToSeconds(el) {
+  const v = parseFloat(el.value);
+  if (!isFinite(v) || v < 1 || !Number.isInteger(v)) return 0;
+  return Math.round(v) * SEC_PER_MIN;
+}
+
+/* Die Firmware prueft dieses Paar nur beim Funk-Befehl, nicht bei Bluetooth —
+   also faengt die Oberflaeche den Fall ab, bevor er gespeichert wird. */
+function validateTiming() {
+  const txEl = document.getElementById('txMin');
+  const msEl = document.getElementById('msMin');
+  [txEl, msEl].forEach(el => el.classList.remove('bad'));
+
+  const tx = minutesToSeconds(txEl);
+  const ms = minutesToSeconds(msEl);
+  if (txEl.value !== '' && !tx) { txEl.classList.add('bad'); toast('stMinBad', 'err'); txEl.focus(); return false; }
+  if (msEl.value !== '' && !ms) { msEl.classList.add('bad'); toast('stMinBad', 'err'); msEl.focus(); return false; }
+  if (tx && ms && tx < ms) {
+    txEl.classList.add('bad'); msEl.classList.add('bad');
+    toast('stTxLtMs', 'err');
+    txEl.focus();
+    return false;
+  }
+  return true;
+}
+
+/* schreibt nur die Merkmale eines Bildschirms (net | set) */
+async function writeGroup(group) {
+  if (group === 'set' && !validateTiming()) return;
   try {
     for (const [key, def] of Object.entries(CHARS)) {
-      if (def.type === 'cmd' || def.type === 'notify' || !charMap[key]) continue;
-      /* Skip calibRef, zeroOffset, scaleFactor — managed by tare/calibrate commands */
-      if (key === 'calibRef' || key === 'zeroOffset' || key === 'scaleFactor') continue;
+      if (def.group !== group || !charMap[key]) continue;
+      const el = document.getElementById(def.el || key);
+      if (!el || el.value === '') continue;
 
-      let buf, el = document.getElementById(key);
-
-      /* Handle user-friendly threshold inputs */
-      if (key === 'weightThresh') {
-        const el2 = document.getElementById('weightThreshKg');
-        if (!el2 || !el2.value) continue;
-        buf = new ArrayBuffer(2);
-        new DataView(buf).setUint16(0, Math.round(parseFloat(el2.value) * 1000), true);
-      } else if (key === 'tempThresh') {
-        const el2 = document.getElementById('tempThreshC');
-        if (!el2 || !el2.value) continue;
-        buf = new ArrayBuffer(2);
-        new DataView(buf).setUint16(0, Math.round(parseFloat(el2.value) * 100), true);
-      } else if (!el || !el.value) {
-        continue;
-      } else if (def.type === 'hex') {
+      let buf;
+      if (def.type === 'hex') {
         const hex = el.value.replace(/\s/g, '');
-        if (hex.length !== def.len * 2) { status(`${key}: need ${def.len*2} hex chars`, 'err'); return; }
+        if (hex.length !== def.len * 2) { toast('stHexLen', 'err', { field: key, n: def.len * 2 }); return; }
+        if (!/^[0-9a-fA-F]+$/.test(hex)) { toast('stHexBad', 'err', { field: key }); return; }
         buf = hexToBytes(hex).buffer;
       } else if (def.type === 'u32') {
         buf = new ArrayBuffer(4);
-        new DataView(buf).setUint32(0, parseInt(el.value), true);
-      } else if (def.type === 'i32') {
-        buf = new ArrayBuffer(4);
-        new DataView(buf).setInt32(0, parseInt(el.value), true);
+        new DataView(buf).setUint32(0, def.uiMin ? minutesToSeconds(el) : parseInt(el.value, 10), true);
       } else if (def.type === 'u16') {
+        const n = def.scale ? Math.round(parseFloat(el.value) * def.scale) : parseInt(el.value, 10);
+        if (!isFinite(n)) continue;
         buf = new ArrayBuffer(2);
-        new DataView(buf).setUint16(0, parseInt(el.value), true);
+        new DataView(buf).setUint16(0, n, true);
+      } else {
+        continue;
       }
       await charMap[key].writeValueWithResponse(new DataView(buf));
     }
-    status('All saved', 'ok');
-  } catch(e) {
-    status('Write error: ' + e.message, 'err');
+    toast('stSaved', 'ok');
+  } catch (e) {
+    toast('stWriteErr', 'err', { msg: e.message });
   }
 }
 
 async function doCalibrate() {
   const el = document.getElementById('calibRefKg');
   const kg = parseFloat(el.value);
-  if (!kg || kg <= 0) { status('Enter reference weight in kg', 'err'); return; }
+  if (!kg || kg <= 0) { toast('stEnterRef', 'err'); el.focus(); return; }
 
   try {
-    /* Write reference weight in grams to CalibRef characteristic */
-    const grams = Math.round(kg * 1000);
     const buf = new ArrayBuffer(4);
-    new DataView(buf).setUint32(0, grams, true);
+    new DataView(buf).setUint32(0, Math.round(kg * 1000), true);
     await charMap.calibRef.writeValueWithResponse(new DataView(buf));
-
-    /* Send calibrate command */
     await charMap.configCmd.writeValueWithResponse(new Uint8Array([0x05]));
-    status('Calibrating... wait 2s then Refresh', 'ok');
-
-    /* Auto-refresh after calibration completes */
-    setTimeout(() => readAll(), 2500);
-  } catch(e) {
-    status('Calibrate error: ' + e.message, 'err');
+    toast('stCalibrating', 'info');
+    /* Rueckfall: auffrischen und weiterschalten, auch ohne Rueckmeldung */
+    later(() => { readAll(true); if (wizStep === 2) setWizStep(3); }, 2500);
+  } catch (e) {
+    toast('stCmdErr', 'err', { msg: e.message });
   }
 }
 
 async function sendCmd(cmd) {
   try {
-    if (!charMap.configCmd) { status('ConfigCmd char not found', 'err'); return; }
+    if (!charMap.configCmd) { toast('stCmdNotFound', 'err'); return; }
     await charMap.configCmd.writeValueWithResponse(new Uint8Array([cmd]));
-    const names = {1:'Done',2:'Tare',3:'Clear Session',4:'Test LoRa'};
-    const deferred = [0x02, 0x04, 0x05];
-    if (deferred.includes(cmd)) {
-      status((names[cmd]||'Cmd') + ': waiting...', 'info');
-    } else {
-      status('Sent: ' + (names[cmd]||cmd), 'ok');
-    }
-  } catch(e) {
-    status('Cmd error: ' + e.message, 'err');
+    if ([0x02, 0x04, 0x05].includes(cmd)) toast('stWaitingCmd', 'info', { name: cmdName(cmd) });
+    else toast('stSent', 'ok', { name: cmdName(cmd) });
+  } catch (e) {
+    toast('stCmdErr', 'err', { msg: e.message });
   }
 }
+
+/* =============================== Verdrahtung =============================== */
+document.getElementById('connectBtn').addEventListener('click', doConnect);
+document.getElementById('disconnectBtn').addEventListener('click', doDisconnect);
+document.getElementById('refreshBtn').addEventListener('click', () => readAll());
+document.getElementById('saveNetBtn').addEventListener('click', () => writeGroup('net'));
+document.getElementById('saveSetBtn').addEventListener('click', () => writeGroup('set'));
+document.getElementById('tareBtn').addEventListener('click', () => sendCmd(0x02));
+document.getElementById('calibrateBtn').addEventListener('click', doCalibrate);
+document.getElementById('wizBack').addEventListener('click', () => setWizStep(1));
+document.getElementById('wizRestart').addEventListener('click', () => setWizStep(1));
+document.querySelectorAll('[data-cmd]').forEach(btn =>
+  btn.addEventListener('click', () => sendCmd(parseInt(btn.dataset.cmd, 10))));
+document.querySelectorAll('.tabbar button[data-view]').forEach(btn =>
+  btn.addEventListener('click', () => showView(btn.dataset.view)));
+['txMin', 'msMin'].forEach(id =>
+  document.getElementById(id).addEventListener('input', e => e.target.classList.remove('bad')));
+document.getElementById("langSel").addEventListener("change", e => applyLang(e.target.value));
+
+applyLang(lang);
+if (!navigator.bluetooth) toast('stNoBluetooth', 'err');
 </script>
 </body>
 </html>

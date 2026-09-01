@@ -24,18 +24,19 @@ carrier PCB fits both modules — only the underlying GPIO numbers differ. See
 
 | XIAO Pin | nRF54LM20A GPIO | Function |
 |----------|-----------------|----------|
-| D0 | P1.00 | DS18B20 data (1-Wire) |
+| D0 | P1.00 | DS18B20 data (1-Wire). **Wio-SX1262 rework required:** its K1 button + 10K pull-up ship on D0 and stop 1-Wire working entirely — trace must be cut, see Tanen_Base_pcb/README.md |
 | D1 | P1.31 | SX1262 DIO1 |
 | D2 | P1.30 | SX1262 RST |
 | D3 | P1.29 | SX1262 BUSY |
 | D4 | P1.03 | SX1262 NSS (SPI CS) |
-| D5 | P1.07 | unused (was SX1262 RF_SW on L15 — Wio-SX1262 is DIO2-switched) |
+| D5 | P1.07 | **LORA_RF_SW1** — Wio-SX1262 antenna-switch control. NOT a spare GPIO: driven RF control line, do not repurpose (a pull-up here parks the switch and bills the System OFF budget) |
 | D6/TX | P1.08 | SW I2C SCL (NAU7802) |
 | D7/RX | P1.09 | SW I2C SDA (NAU7802) |
 | D8/SCK | P1.04 | SPI SCK (spi23) |
 | D9/MISO | P1.05 | SPI MISO (spi23) |
 | D10/MOSI | P1.06 | SPI MOSI (spi23) |
-| — | P0.09 | TanenButton (wake from System OFF) |
+| D19 | P0.00 | External TanenButton (XIAO bottom pad, not on the 7-pin header) — wake from System OFF. Port choice is arbitrary; D11/P3.00 works equally well |
+| — | P0.09 | On-board TanenButton (wake from System OFF) |
 | — | P1.22–P1.24 | RGB LEDs (active HIGH) |
 | — | P1.17 / P1.18 | nPM1300 PMIC I2C — SCL / SDA |
 | — | P2.00–P2.05 | on-board py25q64 NOR (spi00) — **never drive** |
@@ -125,7 +126,7 @@ TanenBase/
 ├── boards/                     # App devicetree overlay for the target board
 ├── third_party/                # Vendored Seeed XIAO nRF54LM20A board def
 ├── test_apps/measure_loop/     # Standalone sensor bring-up app
-├── web/                        # Web Bluetooth configuration page
+├── web/                        # Web Bluetooth config page + downlink encoder
 ├── ttndecoder/                 # TTN payload formatters (BEEP + custom)
 ├── Tanen_Base_pcb/             # KiCad carrier board (schematic, PCB, gerbers)
 ├── scripts/                    # Toolchain discovery helper
@@ -200,7 +201,7 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 - Just-Works pairing only, max 1 connection
 - Custom GATT service: 13 characteristics (creds, calibration, timing, thresholds, commands, live sensors)
 - UUID base: `544E4253-xxxx-4269-8000-544E42415345`
-- Web Bluetooth API consumed by `web/index.html` — no mobile app required
+- Web Bluetooth API consumed by `web/index.html` — no mobile app required. `web/encoder.html` is a sibling page that builds FPort 10–13 downlinks offline (no Bluetooth, no node)
 - Active only in SETUP state (button/reset wake)
 - No RF-switch handling needed on LM20A — the module drives its own antenna path (the L15 build had to sequence `rfsw_pwr`/`rfsw_ctl` on P2.03/P2.05; on LM20A those pins belong to the on-board NOR flash)
 - Live sensor notify: 2s interval, deferred to CCC subscribe (no reads until client subscribes)

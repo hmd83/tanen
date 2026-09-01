@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 620" width="100%" height="100%">
+  <defs>
+    <!-- Metallic Screw Gradient -->
+    <radialGradient id="screwGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#cbd5e0"/>
+      <stop offset="100%" stop-color="#718096"/>
+    </radialGradient>
+
+    <!-- Red Button Gradient -->
+    <linearGradient id="redButtonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fc8181"/>
+      <stop offset="40%" stop-color="#e53e3e"/>
+      <stop offset="100%" stop-color="#9b2c2c"/>
+    </linearGradient>
+
+    <!-- Glass Glare Gradient -->
+    <linearGradient id="glareGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255, 255, 255, 0.45)"/>
+      <stop offset="30%" stop-color="rgba(255, 255, 255, 0.15)"/>
+      <stop offset="100%" stop-color="rgba(255, 255, 255, 0.0)"/>
+    </linearGradient>
+
+    <!-- Cable Gland Gradient -->
+    <linearGradient id="glandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#edf2f7"/>
+      <stop offset="50%" stop-color="#cbd5e0"/>
+      <stop offset="100%" stop-color="#a0aec0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mounting Flange (Backing Plate) -->
+  <g id="mounting-flange">
+    <rect x="110" y="440" width="180" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e0" stroke-width="2"/>
+    <ellipse cx="140" cy="472" rx="14" ry="5" fill="#718096"/>
+    <ellipse cx="260" cy="472" rx="14" ry="5" fill="#718096"/>
+  </g>
+
+  <!-- Cables (Going Downwards) -->
+  <g id="cables">
+    <path d="M 160 480 Q 160 540 150 610" stroke="#1a202c" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 240 480 Q 240 540 250 610" stroke="#1a202c" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Cable Glands (Bottom Edge) -->
+  <g id="cable-glands">
+    <!-- Left Gland -->
+    <rect x="146" y="440" width="28" height="18" rx="2" fill="url(#glandGrad)" stroke="#718096" stroke-width="1"/>
+    <rect x="142" y="458" width="36" height="14" rx="3" fill="url(#glandGrad)" stroke="#4a5568" stroke-width="1"/>
+    <rect x="148" y="472" width="24" height="12" rx="2" fill="#718096"/>
+
+    <!-- Right Gland -->
+    <rect x="226" y="440" width="28" height="18" rx="2" fill="url(#glandGrad)" stroke="#718096" stroke-width="1"/>
+    <rect x="222" y="458" width="36" height="14" rx="3" fill="url(#glandGrad)" stroke="#4a5568" stroke-width="1"/>
+    <rect x="228" y="472" width="24" height="12" rx="2" fill="#718096"/>
+  </g>
+
+  <!-- Red Push Button (Mounted on Right Side) -->
+  <g id="red-button">
+    <!-- Base Nut/Bezel -->
+    <rect x="320" y="265" width="8" height="36" rx="2" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+    <!-- Button Body -->
+    <path d="M 328 262 C 342 262, 342 304, 328 304 Z" fill="url(#redButtonGrad)" stroke="#9b2c2c" stroke-width="1.5"/>
+  </g>
+
+  <!-- Outer Clear Enclosure Box -->
+  <g id="enclosure-outer">
+    <rect x="80" y="60" width="240" height="390" rx="18" fill="rgba(237, 242, 247, 0.4)" stroke="#a0aec0" stroke-width="3"/>
+    <!-- Waterproof Rubber Gasket Seal Line -->
+    <rect x="92" y="72" width="216" height="366" rx="12" fill="none" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="6 4"/>
+  </g>
+
+  <!-- Internal Wiring & Electronics Base -->
+  <g id="internal-components">
+    <!-- Internal Red/Black Wires -->
+    <path d="M 160 430 C 160 380, 290 370, 285 305" fill="none" stroke="#e53e3e" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 240 430 C 240 390, 295 360, 290 320" fill="none" stroke="#1a202c" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Inner Black Module / Housing -->
+    <rect x="105" y="95" width="190" height="320" rx="8" fill="#1a202c" stroke="#2d3748" stroke-width="2"/>
+
+    <!-- White Identification Label Sticker -->
+    <rect x="120" y="115" width="160" height="280" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+
+    <!-- Honey Pot Icon -->
+    <g transform="translate(132, 125) scale(0.85)">
+      <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z" fill="none" stroke="#2d3748" stroke-width="2.5" stroke-linejoin="round"/>
+      <ellipse cx="24" cy="18" rx="10" ry="3" fill="none" stroke="#2d3748" stroke-width="2"/>
+      <!-- Honey Drip Detail -->
+      <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32" fill="none" stroke="#2d3748" stroke-width="2"/>
+    </g>
+
+    <!-- Serial / ID Code Text -->
+    <text x="200" y="215" font-family="'Courier New', Courier, monospace" font-weight="bold" font-size="12" fill="#2d3748" text-anchor="middle" letter-spacing="0.5">XXXXXXXXXXXXXXXX</text>
+
+    <!-- Brand / Domain Name -->
+    <text x="200" y="255" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="22" fill="#1a202c" text-anchor="middle">Tanen.eu</text>
+
+    <!-- QR Code Graphic -->
+    <g transform="translate(160, 280)">
+      <rect x="0" y="0" width="80" height="80" fill="#ffffff" stroke="#1a202c" stroke-width="1.5"/>
+      <!-- Position Markers -->
+      <rect x="6" y="6" width="22" height="22" fill="#1a202c"/>
+      <rect x="10" y="10" width="14" height="14" fill="#ffffff"/>
+      <rect x="13" y="13" width="8" height="8" fill="#1a202c"/>
+
+      <rect x="52" y="6" width="22" height="22" fill="#1a202c"/>
+      <rect x="56" y="10" width="14" height="14" fill="#ffffff"/>
+      <rect x="59" y="13" width="8" height="8" fill="#1a202c"/>
+
+      <rect x="6" y="52" width="22" height="22" fill="#1a202c"/>
+      <rect x="10" y="56" width="14" height="14" fill="#ffffff"/>
+      <rect x="13" y="59" width="8" height="8" fill="#1a202c"/>
+
+      <!-- QR Data Pattern Elements -->
+      <rect x="34" y="8" width="6" height="14" fill="#1a202c"/>
+      <rect x="34" y="28" width="12" height="6" fill="#1a202c"/>
+      <rect x="8" y="34" width="14" height="6" fill="#1a202c"/>
+      <rect x="52" y="34" width="20" height="6" fill="#1a202c"/>
+      <rect x="34" y="44" width="8" height="18" fill="#1a202c"/>
+      <rect x="48" y="48" width="10" height="10" fill="#1a202c"/>
+      <rect x="62" y="60" width="10" height="12" fill="#1a202c"/>
+      <rect x="10" y="44" width="14" height="5" fill="#1a202c"/>
+    </g>
+  </g>
+
+  <!-- Corner Screws (4 Phillips Screws) -->
+  <g id="screws">
+    <!-- Top Left -->
+    <circle cx="102" cy="82" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+    <path d="M 95 82 H 109 M 102 75 V 89" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Top Right -->
+    <circle cx="298" cy="82" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+    <path d="M 291 82 H 305 M 298 75 V 89" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Bottom Left -->
+    <circle cx="102" cy="428" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+    <path d="M 95 428 H 109 M 102 421 V 435" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Bottom Right -->
+    <circle cx="298" cy="428" r="11" fill="url(#screwGrad)" stroke="#4a5568" stroke-width="1.5"/>
+    <path d="M 291 428 H 305 M 298 421 V 435" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Glass Cover Glare Reflection Overlay -->
+  <g id="glass-reflection">
+    <path d="M 82 62 L 210 62 L 92 448 L 82 448 Z" fill="url(#glareGrad)"/>
+  </g>
+</svg>
