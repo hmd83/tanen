@@ -8,6 +8,21 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Added
+- **`ttndecoder/tanen-decoder.js`** — one uplink formatter for both supported
+  platforms. Parses the 8-byte frame once and emits BEEP keys
+  (`weight_kg`/`t`/`bv`) and beelogger keys (`Gewicht`/`TempOut`/`VBatt`) in the
+  same `decoded_payload`; each server keeps what it knows. Invalid sensors stay
+  `null` on both sides. The per-platform formatters (`beepdecoder.js`,
+  `custumdecoder.js`, `tanen-beelogger-decoder.js`) are kept for reference
+  (2026-09-09)
+- beelogger documented as a supported platform alongside BEEP: README TTN
+  section with the key-mapping table and the community-server webhook URL
+  (`community.beelogger.de/<user>/{/devID}/beelogger_log.php?Passwort=…&LORA=1`
+  — one webhook for the whole application, TTN device IDs named `beeloggerN`),
+  `docs/ARCHITECTURE.md` "Server-Side Decoding", user manual chapter 6 rewritten
+  from "BEEP-Plattform" to "Auswerteplattform" with a beelogger section, and a
+  platform bullet on the site (de/en/ar). Both platforms confirmed receiving
+  from the same uplink (2026-09-09)
 - Open-source release: Apache-2.0 `LICENSE` + `NOTICE`, `README.md`,
   `CONTRIBUTING.md`, this changelog (2026-07-27)
 - `prj_credentials.conf.example` so a fresh clone builds without secrets

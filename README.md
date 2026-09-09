@@ -120,7 +120,7 @@ data, hold-out validation and the (unflattering) hardware conclusions:
 | [`third_party/`](third_party/) | Vendored Seeed XIAO nRF54LM20A board definition (Apache-2.0) |
 | [`Tanen_Base_pcb/`](Tanen_Base_pcb/) | KiCad carrier board — schematic, layout, gerbers |
 | [`web/`](web/) | Web Bluetooth configuration page + standalone downlink encoder (no build step) |
-| [`ttndecoder/`](ttndecoder/) | TTN payload formatters — BEEP and custom |
+| [`ttndecoder/`](ttndecoder/) | TTN payload formatters — one unified BEEP + beelogger decoder, plus the older per-platform ones |
 | [`test_apps/measure_loop/`](test_apps/measure_loop/) | Standalone sensor bring-up app |
 | [`docs/`](docs/) | Architecture, power budget, sprint log, TRD, open questions |
 | [`docs/load_cells/`](docs/load_cells/) | Load-cell characterisation — data, analysis, host replay of the compensation |
@@ -197,11 +197,30 @@ empty to derive a unique one from the SoC's factory hardware ID.
 
 ### The Things Network
 
-Register the device as **LoRaWAN MAC v1.0.3**, OTAA, EU868. Install one of the
-payload formatters from [`ttndecoder/`](ttndecoder/).
+Register the device as **LoRaWAN MAC v1.0.3**, OTAA, EU868, then install
+[`ttndecoder/tanen-decoder.js`](ttndecoder/tanen-decoder.js) as the uplink
+payload formatter (Payload formatters → Uplink → Custom Javascript formatter).
 
-If you forward to [BEEP](https://beep.nl), the webhook base URL **must** carry
-the device key explicitly:
+One formatter serves both supported platforms: it parses the 8-byte frame once
+and emits both key sets into the same `decoded_payload`.
+
+| Reading | BEEP key | beelogger key | Unit |
+|---|---|---|---|
+| Weight | `weight_kg` | `Gewicht` | kg |
+| Temperature | `t` | `TempOut` | °C |
+| Battery | `bv` | `VBatt` | V |
+
+Each platform stores the keys it knows and ignores the rest, so no per-platform
+formatter juggling is needed. A failed sensor decodes to `null` on both sides,
+never to a sentinel number. `flags`, `anomaly_weight`, `anomaly_temp` and
+`heartbeat` ride along for TTN live-data debugging and are ignored by both
+servers. The older single-platform formatters
+([`beepdecoder.js`](ttndecoder/beepdecoder.js),
+[`tanen-beelogger-decoder.js`](ttndecoder/tanen-beelogger-decoder.js)) are kept
+for reference.
+
+**BEEP** ([beep.nl](https://beep.nl)) — the webhook base URL **must** carry the
+device key explicitly:
 
 ```
 https://api.beep.nl/api/lora_sensors?key=<DevEUI>
@@ -211,6 +230,23 @@ Without it BEEP decodes your payload perfectly and then silently drops it,
 because it falls back to a TTN Stack **V2** field (`payload_fields.hardware_serial`)
 that V3 webhooks do not send. This one cost real debugging time — see
 [`docs/PLAN.md`](docs/PLAN.md) Sprint 14.
+
+**beelogger** ([beelogger.de](https://beelogger.de)) — the community server
+takes the `Gewicht` / `TempOut` / `VBatt` names its own payload formatter uses,
+which is exactly what the decoder emits. Webhook base URL:
+
+```
+https://community.beelogger.de/<username>/{/devID}/beelogger_log.php?Passwort=<password>&LORA=1
+```
+
+- `<username>` — your community-server account
+- `{/devID}` — filled in by TTN per uplink, so name the TTN devices
+  `beelogger1`, `beelogger2`, … to match the stations registered on the server
+- `<password>` — the same one for every station, which is what lets a **single
+  webhook serve the whole TTN application** instead of one per node
+- `LORA=1` — tells the server the record arrives via LoRaWAN
+
+Both platforms are confirmed receiving from the unified decoder.
 
 ---
 
@@ -259,7 +295,8 @@ lithium cell. Do not re-enable it unless you have also changed the cell.
 ## Status
 
 Running in the field. The core loop — measure, delta-detect, uplink, sleep — is
-verified end to end on hardware, including BEEP ingestion.
+verified end to end on hardware, including ingestion by both BEEP and the
+beelogger community server from the same uplink.
 
 Not yet done: MCUboot/OTA is wired up (`sysbuild.conf`, `pm_static.yml`) but
 **unverified on this module**, and no production signing key is provisioned.
@@ -301,6 +338,8 @@ concept and specification phase.
   [`third_party/`](third_party/) — Apache-2.0
 - [loramac-node](https://github.com/Lora-net/LoRaMac-node) — LoRaWAN MAC
 - [BEEP](https://beep.nl) — open beehive monitoring platform and data API
+- [beelogger](https://beelogger.de) — open hive-scale project and community
+  server; its field names are mirrored by the uplink decoder
 
 ---
 
