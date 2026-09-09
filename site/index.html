@@ -254,6 +254,25 @@ html[dir="rtl"] .stat b{text-align:right}
 }
 .feat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
 
+/* ======================= Auswerteplattformen ======================= */
+/* Zwei Karten nebeneinander statt drei wie bei den Merkmalen, damit die
+   beiden Plattformen gleich schwer wiegen. Der Knopf sitzt unten buendig,
+   auch wenn die Texte unterschiedlich lang sind. */
+.plat{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:820px){.plat{grid-template-columns:1fr 1fr}}
+.plat .card{display:flex;flex-direction:column}
+.plat .card ul{list-style:none;margin-block-start:16px;display:grid;gap:10px}
+.plat .card li{
+  display:flex;gap:10px;align-items:flex-start;font-size:.98rem;font-weight:700;color:var(--text);
+  border-block-start:2px dashed var(--border);padding-block-start:10px;
+}
+.plat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
+.plat .card .btn{margin-block-start:auto}
+.plat .card ul+.btn{margin-block-start:22px}
+/* Die Plattformnamen bleiben in jeder Sprache lateinisch geschrieben. */
+.plat-name{direction:ltr;unicode-bidi:isolate}
+.plat-note{margin-block-start:24px;color:var(--dim);max-inline-size:72ch}
+
 /* ============================== Tabelle ============================== */
 .tablewrap{overflow-x:auto;border:3px solid var(--border-strong);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
 table{border-collapse:collapse;inline-size:100%;min-inline-size:520px}
@@ -334,6 +353,7 @@ footer p{font-size:.98rem;color:var(--dim)}
     <nav class="nav" data-i18n-al="navLabel" aria-label="Hauptbereiche">
       <ul>
         <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+        <li><a href="#data" data-i18n="navData">Plattformen</a></li>
         <li><a href="#why" data-i18n="navWhy">Warum</a></li>
         <li><a href="#open" data-i18n="navOpen">Offen</a></li>
         <li><a href="#tech" data-i18n="navTech">Technik</a></li>
@@ -448,8 +468,47 @@ footer p{font-size:.98rem;color:var(--dim)}
   </div>
 </section>
 
+<!-- ============================= PLATTFORMEN ============================= -->
+<section class="band band-white" id="data">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="dataKicker">Auswertung</span>
+      <h2 data-i18n="dataTitle">Wo Ihre Daten landen</h2>
+      <p data-i18n="dataLead">Die Waage funkt über The Things Network. Von dort gehen die Werte an eine kostenlose, offene Auswerteplattform, die daraus Kurven macht und Ihre Messreihen aufbewahrt. Zwei sind fertig angebunden und im Feld erprobt — Sie brauchen nichts zu programmieren.</p>
+    </div>
+
+    <div class="plat">
+      <article class="card">
+        <h3><span class="plat-name">BEEP</span></h3>
+        <p data-i18n="d1D">Offene Plattform aus den Niederlanden. Gewicht, Temperatur und Batterie als Kurven, dazu ein digitales Stockbuch für jedes Volk. Konto anlegen, Gerätenummer vom Aufkleber eintragen — mehr ist nicht zu tun.</p>
+        <ul>
+          <li data-i18n="d1a">Kurven und Stockbuch in einem</li>
+          <li data-i18n="d1b">Im Dauerbetrieb am Stand erprobt</li>
+        </ul>
+        <a class="btn btn-outline" href="https://beep.nl" rel="noopener">
+          <span data-i18n="d1L">beep.nl öffnen</span>
+        </a>
+      </article>
+
+      <article class="card">
+        <h3><span class="plat-name">beelogger</span></h3>
+        <p data-i18n="d2D">Deutschsprachiges Imkerprojekt mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.</p>
+        <ul>
+          <li data-i18n="d2a">Deutschsprachige Oberfläche und Anleitung</li>
+          <li data-i18n="d2b">Ein Zugang für beliebig viele Waagen</li>
+        </ul>
+        <a class="btn btn-outline" href="https://beelogger.de" rel="noopener">
+          <span data-i18n="d2L">beelogger.de öffnen</span>
+        </a>
+      </article>
+    </div>
+
+    <p class="plat-note" data-i18n="dataNote">Es ist derselbe Funkspruch: Die Umsetzung in The Things Network liefert beide Formate gleichzeitig. Sie können eine Plattform nutzen, beide parallel — oder die Werte auf Ihren eigenen Server holen, ohne uns zu fragen.</p>
+  </div>
+</section>
+
 <!-- ============================ PROBLEM / MARKT ============================ -->
-<section class="band band-white" id="why">
+<section class="band" id="why">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker" data-i18n="whyKicker">Die Lücke am Markt</span>
@@ -638,6 +697,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h4 data-i18n="footNav">Bereiche</h4>
         <ul>
           <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+          <li><a href="#data" data-i18n="navData">Plattformen</a></li>
           <li><a href="#why" data-i18n="navWhy">Warum</a></li>
           <li><a href="#open" data-i18n="navOpen">Offen</a></li>
           <li><a href="#tech" data-i18n="navTech">Technik</a></li>
@@ -679,7 +739,7 @@ de: {
   skip:'Zum Inhalt springen',
   brandSub:'Offene Stockwaage',
   langLabel:'Sprache', navLabel:'Hauptbereiche',
-  navFeat:'Was es kann', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
+  navFeat:'Was es kann', navData:'Plattformen', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
   navSetup:'Einrichten', setupBtn:'Einrichtungsseite öffnen',
 
   heroKicker:'Offene Technik für die Imkerei',
@@ -714,6 +774,18 @@ de: {
   f3b:'Eingerichtet per Bluetooth im Browser — keine App',
   f3c:'Die Daten laufen dort auf, wo Sie es festlegen',
   f3d:'Fertige Anbindung an BEEP und beelogger über The Things Network',
+  dataKicker:'Auswertung',
+  dataTitle:'Wo Ihre Daten landen',
+  dataLead:'Die Waage funkt über The Things Network. Von dort gehen die Werte an eine kostenlose, offene Auswerteplattform, die daraus Kurven macht und Ihre Messreihen aufbewahrt. Zwei sind fertig angebunden und im Feld erprobt — Sie brauchen nichts zu programmieren.',
+  d1D:'Offene Plattform aus den Niederlanden. Gewicht, Temperatur und Batterie als Kurven, dazu ein digitales Stockbuch für jedes Volk. Konto anlegen, Gerätenummer vom Aufkleber eintragen — mehr ist nicht zu tun.',
+  d1a:'Kurven und Stockbuch in einem',
+  d1b:'Im Dauerbetrieb am Stand erprobt',
+  d1L:'beep.nl öffnen',
+  d2D:'Deutschsprachiges Imkerprojekt mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.',
+  d2a:'Deutschsprachige Oberfläche und Anleitung',
+  d2b:'Ein Zugang für beliebig viele Waagen',
+  d2L:'beelogger.de öffnen',
+  dataNote:'Es ist derselbe Funkspruch: Die Umsetzung in The Things Network liefert beide Formate gleichzeitig. Sie können eine Plattform nutzen, beide parallel — oder die Werte auf Ihren eigenen Server holen, ohne uns zu fragen.',
 
   whyKicker:'Die Lücke am Markt',
   whyTitle:'Warum es TanenBase gibt',
@@ -792,7 +864,7 @@ en: {
   skip:'Skip to content',
   brandSub:'Open hive scale',
   langLabel:'Language', navLabel:'Main sections',
-  navFeat:'What it does', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
+  navFeat:'What it does', navData:'Platforms', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
   navSetup:'Set up', setupBtn:'Open the setup page',
 
   heroKicker:'Open technology for beekeepers',
@@ -827,6 +899,18 @@ en: {
   f3b:'Set up over Bluetooth in the browser — no app to install',
   f3c:'The data arrives wherever you decide it should',
   f3d:'Ready-made link to BEEP and beelogger over The Things Network',
+  dataKicker:'Analysis',
+  dataTitle:'Where your data lands',
+  dataLead:'The scale transmits over The Things Network. From there the readings go to a free, open analysis platform that draws them as curves and keeps your history. Two are wired up and proven in the field — nothing to program.',
+  d1D:'Open platform from the Netherlands. Weight, temperature and battery as curves, plus a digital hive log for every colony. Create an account, enter the device number from the sticker — that is all it takes.',
+  d1a:'Curves and hive log in one place',
+  d1b:'Proven in continuous use at the apiary',
+  d1L:'Open beep.nl',
+  d2D:'German-language beekeeping project with its own community server. Your station reports the same readings there; one account carries every scale at the apiary instead of a sign-up per device.',
+  d2a:'German-language interface and instructions',
+  d2b:'One account for any number of scales',
+  d2L:'Open beelogger.de',
+  dataNote:'It is the same radio message: the formatter in The Things Network emits both formats at once. Use one platform, both in parallel — or pull the readings onto your own server without asking us.',
 
   whyKicker:'The gap in the market',
   whyTitle:'Why TanenBase exists',
@@ -905,7 +989,7 @@ ar: {
   skip:'انتقل إلى المحتوى',
   brandSub:'ميزان خلايا مفتوح المصدر',
   langLabel:'اللغة', navLabel:'الأقسام الرئيسية',
-  navFeat:'ماذا يفعل', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
+  navFeat:'ماذا يفعل', navData:'المنصات', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
   navSetup:'الإعداد', setupBtn:'فتح صفحة الإعداد',
 
   heroKicker:'تقنية مفتوحة لتربية النحل',
@@ -940,6 +1024,18 @@ ar: {
   f3b:'الضبط عبر البلوتوث من المتصفح — دون تطبيق',
   f3c:'تصل البيانات إلى حيث تقرر أنت',
   f3d:'ربط جاهز مع BEEP وbeelogger عبر The Things Network',
+  dataKicker:'التحليل',
+  dataTitle:'إلى أين تصل بياناتك',
+  dataLead:'ترسل الميزان قراءاتها عبر The Things Network، ومن هناك تنتقل إلى منصة تحليل مجانية ومفتوحة ترسمها منحنيات وتحفظ سجلك. منصتان جاهزتان ومجرَّبتان ميدانياً — دون أي برمجة.',
+  d1D:'منصة مفتوحة من هولندا: الوزن والحرارة والبطارية كمنحنيات، مع دفتر خلية رقمي لكل طائفة. أنشئ حساباً وأدخل رقم الجهاز من الملصق، وانتهى الأمر.',
+  d1a:'منحنيات ودفتر خلية في مكان واحد',
+  d1b:'مجرَّبة في التشغيل المستمر في المنحل',
+  d1L:'فتح beep.nl',
+  d2D:'مشروع نحّالين ألماني اللغة بخادم مجتمعي خاص به. ترسل محطتك القراءات نفسها إليه، وحساب واحد يكفي لكل موازين المنحل بدل تسجيل لكل جهاز.',
+  d2a:'واجهة وإرشادات بالألمانية',
+  d2b:'حساب واحد لأي عدد من الموازين',
+  d2L:'فتح beelogger.de',
+  dataNote:'إنها الرسالة اللاسلكية نفسها: المُحوِّل في The Things Network يُخرج الصيغتين معاً. استعمل منصة واحدة أو الاثنتين معاً، أو اسحب القراءات إلى خادمك الخاص دون الرجوع إلينا.',
 
   whyKicker:'الفجوة في السوق',
   whyTitle:'لماذا وُجد TanenBase',
