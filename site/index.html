@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" id="metaDesc" content="TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="canonical" href="https://tanen.eu/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tanen.eu/">
+<meta property="og:site_name" content="TanenBase">
+<meta property="og:title" content="TanenBase - offene Stockwaage fuer Imkerinnen und Imker">
+<meta property="og:description" content="Gewicht und Temperatur des Bienenstocks, per Funk, jahrelang mit einer Batterie. Offener Quellcode, offene Baudaten, kein Abo.">
+<meta property="og:image" content="https://tanen.eu/media/platform.jpeg">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:locale:alternate" content="ar">
+<title>TanenBase - Offene Stockwaage</title>
+<style>
+/* =========================================================================
+   tanen.eu - Startseite.
+   Gleiche Regeln wie die Bedien-Oberflaeche der Station (web/index.html),
+   damit Seite und Geraet sich gleich anfuehlen:
+     - Fliesstext nie unter 1rem (= 18px), kein Grau heller als --dim (9:1)
+     - jedes bedienbare Element mindestens 60px hoch
+     - die Form traegt Bedeutung, nicht nur die Farbe
+   Alle Abstaende in logischen Eigenschaften (block/inline), damit die
+   arabische Fassung ohne Sonderregeln nach rechts laeuft.
+   ========================================================================= */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;
+  --surface:#ffffff;
+  --surface-2:#e4eaf4;
+  --border:#8f9cb5;
+  --border-strong:#4a5568;
+  --text:#0c1017;          /* 18:1 auf Weiss */
+  --dim:#39445a;           /* 9.6:1 auf Weiss */
+  --accent:#f0a500;        /* Marken-Gelb - immer Flaeche, nie Text */
+  --accent-ink:#231800;
+  --accent-edge:#a06d00;
+  --accent-soft:#fff4dc;
+  --green:#0a6b33;
+  --green-soft:#e2f3e8;
+  --red:#9e1030;
+  --red-soft:#fdeaee;
+  --blue:#0f4c96;
+  --blue-soft:#e6eefa;
+  --r:18px;
+  --max:1120px;
+  --stick:24px;            /* Sprungziel-Abstand, solange die Kopfzeile mitlaeuft */
+  --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;font-size:1rem;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:var(--blue);text-underline-offset:3px}
+a:hover{text-decoration-thickness:3px}
+img{max-inline-size:100%;block-size:auto;display:block}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-inline-size:var(--max);margin-inline:auto;padding-inline:20px}
+.sr-only{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Sprung-Link: erste Station der Tastatur, sonst unsichtbar */
+.skip{
+  position:absolute;inset-block-start:-200px;inset-inline-start:16px;z-index:60;
+  background:var(--accent);color:var(--accent-ink);border:3px solid var(--accent-edge);
+  border-radius:12px;padding:14px 22px;font-weight:800;text-decoration:none;
+}
+.skip:focus{inset-block-start:12px}
+
+/* ============================== Kopfbereich ==============================
+   Auf dem Handy laeuft die Kopfzeile mit nach oben weg: drei Zeilen aus
+   Marke, Sprache und Navigation wuerden sonst ein Drittel des Schirms
+   dauerhaft belegen. Ab Tablet-Breite bleibt sie stehen.               */
+.appbar{
+  background:var(--surface);border-block-end:3px solid var(--border-strong);
+  padding-block:calc(12px + env(safe-area-inset-top)) 12px;
+}
+@media (min-width:780px){
+  :root{--stick:170px}
+  .appbar{position:sticky;inset-block-start:0;z-index:30}
+}
+.appbar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.brand{
+  display:flex;align-items:center;gap:12px;flex:1 1 auto;
+  font-weight:800;font-size:1.3rem;color:var(--text);text-decoration:none;
+  min-block-size:56px;
+}
+.brand-mark{
+  inline-size:48px;block-size:48px;border-radius:13px;flex:none;
+  background:var(--accent);border:3px solid var(--accent-edge);
+  display:grid;place-items:center;color:var(--accent-ink);
+}
+.brand-mark svg{inline-size:30px;block-size:30px}
+.brand small{display:block;font-size:.72rem;font-weight:700;color:var(--dim);line-height:1.2}
+
+/* Sprachwahl: drei sichtbare Schalter statt Klappliste - nichts zum Aufklappen,
+   jede Sprache mit einem Griff erreichbar. */
+/* direction:ltr haelt DE|EN|AR immer in derselben Reihenfolge. Sonst
+   tauschen die Schalter beim Wechsel ins Arabische die Plaetze - und wer
+   zurueck nach Deutsch will, sucht den Knopf auf der falschen Seite. */
+.lang{display:flex;direction:ltr;gap:0;flex:none;border:3px solid var(--border-strong);border-radius:14px;overflow:hidden;background:var(--surface-2)}
+.lang button{
+  min-block-size:54px;min-inline-size:66px;padding:8px 16px;
+  font-size:1rem;font-weight:800;color:var(--dim);
+  border-inline-end:3px solid var(--border-strong);
+}
+.lang button:last-child{border-inline-end:0}
+.lang button:hover{background:var(--accent-soft);color:var(--text)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.lang button:focus-visible{outline-offset:-4px;border-radius:0}
+
+/* Navigation: immer eine eigene Zeile unter Marke und Sprachwahl.
+   Kein Klapp-Menue - was man nicht sieht, findet man auch nicht. Und keine
+   Zeile, die je nach Sprache mal passt und mal umbricht: die arabischen
+   Beschriftungen sind kurz, die englischen lang. */
+.nav{flex:1 1 100%;order:3}
+.nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px}
+.nav a{
+  display:inline-flex;align-items:center;min-block-size:52px;padding:8px 18px;
+  border:2px solid var(--border);border-radius:12px;background:var(--surface-2);
+  color:var(--text);font-size:.98rem;font-weight:700;text-decoration:none;
+}
+.nav a:hover{background:var(--accent-soft);border-color:var(--accent-edge)}
+/* Einziger Link der Kopfzeile, der die Seite verlaesst - deshalb in der
+   Signalfarbe statt grau. */
+.nav a.nav-setup{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.nav a.nav-setup:hover{background:#ffb61a}
+.nav a[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent-edge);box-shadow:inset 0 -5px 0 var(--accent-edge)}
+
+/* ================================ Knoepfe ================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  min-block-size:66px;padding:14px 30px;font-size:1.08rem;font-weight:800;
+  border-radius:999px;border:3px solid var(--accent-edge);
+  background:var(--accent);color:var(--accent-ink);text-decoration:none;text-align:center;
+}
+.btn:hover{background:#ffb61a}
+.btn:active{transform:translateY(2px)}
+.btn svg{inline-size:26px;block-size:26px;flex:none}
+.btn-outline{background:var(--surface);border:3px solid var(--border-strong);color:var(--text);border-radius:14px}
+.btn-outline:hover{background:var(--surface-2)}
+.btn-lg{min-block-size:76px;font-size:1.2rem;padding:16px 40px}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap}
+/* Knopf unter der Bildunterschrift: setzt deren Leiste fort, damit der Weg
+   zur Einrichtungsseite nicht nur oben in der Kopfzeile steht. */
+.shot-cta{background:var(--surface);padding:0 17px 17px}
+.shot-cta .btn{inline-size:100%;min-block-size:60px;font-size:1rem}
+
+/* ============================== Abschnitte ============================== */
+section{scroll-margin-block-start:var(--stick)}
+.band{padding-block:64px}
+.band-white{background:var(--surface);border-block:3px solid var(--border-strong)}
+.sec-head{max-inline-size:60ch;margin-block-end:36px}
+.kicker{
+  display:inline-block;font-size:.85rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent-ink);background:var(--accent-soft);border:2px solid var(--accent-edge);
+  border-radius:999px;padding:6px 16px;margin-block-end:14px;
+}
+h1{font-size:clamp(2.1rem,6vw,3.2rem);font-weight:800;line-height:1.12;letter-spacing:-.01em}
+h2{font-size:clamp(1.7rem,4.2vw,2.3rem);font-weight:800;line-height:1.2;margin-block-end:12px}
+h3{font-size:1.25rem;font-weight:800;line-height:1.3;margin-block-end:8px}
+.lead{font-size:1.18rem;line-height:1.6}
+p{font-size:1.05rem}
+.sec-head p{color:var(--dim);font-size:1.12rem}
+
+/* ================================= Start ================================= */
+.hero{background:var(--surface);border-block-end:3px solid var(--border-strong);padding-block:56px 64px}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
+@media (min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:52px}}
+.hero p.lead{margin-block:18px 28px;max-inline-size:56ch}
+.hero .btn-row{margin-block-end:22px}
+.hero-note{font-size:.98rem;color:var(--dim)}
+figure{margin:0}
+.shot{
+  border:3px solid var(--border-strong);border-radius:var(--r);overflow:hidden;
+  background:var(--surface-2);box-shadow:var(--shadow);
+}
+.shot img{inline-size:100%}
+/* Die Bildunterschrift sitzt im Rahmen, mit eigener Leiste - sonst klebt
+   der Text am Rand des Kastens. */
+.shot figcaption{
+  font-size:.95rem;color:var(--dim);line-height:1.5;
+  padding:13px 17px 15px;background:var(--surface);border-block-start:2px solid var(--border);
+}
+
+/* =============================== Kennzahlen =============================== */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-block-start:44px}
+@media (min-width:820px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:20px 18px;box-shadow:var(--shadow);
+}
+.stat b{
+  display:block;direction:ltr;font-family:ui-monospace,Consolas,monospace;
+  font-variant-numeric:tabular-nums;font-size:1.85rem;font-weight:800;line-height:1.15;
+}
+html[dir="rtl"] .stat b{text-align:right}
+/* Die Einheit steht in der Fliesstext-Schrift: in der Ziffernschrift mit
+   fester Zeichenbreite reisst sonst eine Luecke zwischen Zahl und Einheit. */
+.stat .u{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:.72em;margin-inline-start:.18em}
+/* nur die Beschriftung unter der Zahl - nicht die Einheit, die in <b> steckt */
+.stat>span{display:block;font-size:.95rem;font-weight:700;color:var(--dim);margin-block-start:6px}
+
+/* ================================ Karten ================================ */
+.cards{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:700px){.cards-2{grid-template-columns:1fr 1fr}}
+@media (min-width:980px){.cards-3{grid-template-columns:repeat(3,1fr)}}
+.card{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:24px;box-shadow:var(--shadow);
+}
+.band-white .card{background:var(--surface-2)}
+.card p{color:var(--dim)}
+.card p+p{margin-block-start:12px}
+.card-ico{
+  inline-size:56px;block-size:56px;border-radius:15px;margin-block-end:14px;
+  display:grid;place-items:center;border:3px solid;
+}
+.card-ico svg{inline-size:30px;block-size:30px}
+.ico-warn{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.ico-ok{background:var(--green-soft);border-color:var(--green);color:#054d23}
+.ico-acc{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
+.ico-blue{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+
+/* Antwort-Block: Haken-Liste, sichtbar von den Problem-Karten abgesetzt */
+.answer{
+  margin-block-start:26px;background:var(--green-soft);border:3px solid var(--green);
+  border-radius:var(--r);padding:26px;
+}
+.answer h3{color:#054d23}
+.answer ul{list-style:none;margin-block-start:16px;display:grid;gap:14px}
+@media (min-width:820px){.answer ul{grid-template-columns:1fr 1fr;gap:16px 30px}}
+.answer li{display:flex;gap:14px;align-items:flex-start;font-size:1.05rem;color:#08301a}
+.answer li svg{inline-size:28px;block-size:28px;flex:none;color:var(--green);margin-block-start:2px}
+.answer li b{display:block}
+
+/* ============================== Merkmale ============================== */
+.feat{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:980px){.feat{grid-template-columns:repeat(3,1fr)}}
+.feat .card ul{list-style:none;margin-block-start:16px;display:grid;gap:10px}
+.feat .card li{
+  display:flex;gap:10px;align-items:flex-start;font-size:.98rem;font-weight:700;color:var(--text);
+  border-block-start:2px dashed var(--border);padding-block-start:10px;
+}
+.feat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
+
+/* ============================== Tabelle ============================== */
+.tablewrap{overflow-x:auto;border:3px solid var(--border-strong);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;inline-size:100%;min-inline-size:520px}
+caption{text-align:start;padding:18px 22px 0;font-size:.98rem;color:var(--dim)}
+th,td{padding:16px 22px;text-align:start;border-block-end:2px solid var(--border);font-size:1.02rem;vertical-align:top}
+tr:last-child th,tr:last-child td{border-block-end:0}
+th{font-weight:800;inline-size:44%;background:var(--surface-2)}
+td{font-family:ui-monospace,Consolas,monospace;font-size:.98rem;color:var(--text)}
+html[dir="rtl"] td{direction:rtl}
+
+/* ============================== Bildstrecke ============================== */
+.gallery{display:grid;grid-template-columns:1fr;gap:24px}
+@media (min-width:760px){.gallery{grid-template-columns:1fr 1fr}}
+/* Die Kaesten einer Reihe sind gleich hoch; die Unterschrift fuellt den
+   Rest, damit unter dem kuerzeren Text kein leerer Streifen stehen bleibt. */
+.gallery .shot{display:flex;flex-direction:column}
+.gallery .shot figcaption{flex:1 0 auto}
+.gallery .shot img{aspect-ratio:16/9;object-fit:cover;inline-size:100%}
+/* Hochkant-Aufnahmen bekommen eine Deckelung: unbeschnitten wuerde ein
+   Handy-Bild in einer 520px breiten Spalte ueber 1100px hoch. */
+.gallery .portrait img{aspect-ratio:4/5;object-fit:cover;max-block-size:470px}
+/* Der Bildschirmabzug wird eingepasst statt beschnitten - beschnitten
+   waere von der Bedien-Oberflaeche nur ein Streifen zu sehen. */
+.gallery .screen img{object-fit:contain;background:var(--surface-2);padding:10px}
+
+/* ================================ Kontakt ================================ */
+.contact{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:24px;
+  padding:40px 28px;text-align:center;box-shadow:var(--shadow);
+}
+.contact p{max-inline-size:52ch;margin:16px auto 26px;color:var(--dim);font-size:1.1rem}
+.mail{
+  display:inline-block;direction:ltr;font-family:ui-monospace,Consolas,monospace;
+  font-size:clamp(1.25rem,4.5vw,1.7rem);font-weight:800;color:var(--text);
+  background:var(--accent-soft);border:3px solid var(--accent-edge);border-radius:14px;
+  padding:12px 22px;margin-block-end:26px;text-decoration:none;
+}
+.mail:hover{background:var(--accent)}
+.contact .btn-row{justify-content:center}
+
+/* ================================ Fusszeile ================================ */
+footer{background:var(--surface);border-block-start:3px solid var(--border-strong);padding-block:40px calc(40px + env(safe-area-inset-bottom))}
+.foot-grid{display:grid;grid-template-columns:1fr;gap:26px}
+@media (min-width:760px){.foot-grid{grid-template-columns:1.2fr 1fr 1fr}}
+footer h4{font-size:1.05rem;font-weight:800;margin-block-end:12px}
+footer ul{list-style:none;display:grid;gap:6px}
+footer li a{
+  display:inline-flex;align-items:center;min-block-size:48px;padding-block:6px;
+  font-size:1rem;font-weight:700;
+}
+footer p{font-size:.98rem;color:var(--dim)}
+.foot-bar{
+  margin-block-start:30px;padding-block-start:22px;border-block-start:3px solid var(--border);
+  display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;
+  font-size:.95rem;color:var(--dim);
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main" data-i18n="skip">Zum Inhalt springen</a>
+
+<header class="appbar">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <!-- Honigtopf: dasselbe Zeichen wie auf dem Etikett der Station -->
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+          <ellipse cx="24" cy="18" rx="10" ry="3"/>
+          <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+        </svg>
+      </span>
+      <span>TanenBase<small data-i18n="brandSub">Offene Stockwaage</small></span>
+    </a>
+
+    <nav class="nav" data-i18n-al="navLabel" aria-label="Hauptbereiche">
+      <ul>
+        <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+        <li><a href="#why" data-i18n="navWhy">Warum</a></li>
+        <li><a href="#open" data-i18n="navOpen">Offen</a></li>
+        <li><a href="#tech" data-i18n="navTech">Technik</a></li>
+        <li><a href="#contact" data-i18n="navContact">Kontakt</a></li>
+        <li><a class="nav-setup" href="setup/" data-i18n="navSetup">Einrichten</a></li>
+      </ul>
+    </nav>
+
+    <div class="lang" role="group" data-i18n-al="langLabel" aria-label="Sprache">
+      <button type="button" data-lang="de" lang="de" aria-pressed="true">DE</button>
+      <button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="ar" lang="ar" aria-pressed="false">AR</button>
+    </div>
+  </div>
+</header>
+
+<!-- tabindex="-1": ohne das setzt ein Teil der Browser den Tastatur-Fokus
+     beim Sprung-Link nicht mit um, und die naechste Tab-Taste landet wieder
+     ganz oben in der Kopfzeile. -->
+<main id="main" tabindex="-1">
+
+<!-- ================================ START ================================ -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker" data-i18n="heroKicker">Offene Technik für die Imkerei</span>
+        <h1 data-i18n="heroTitle">Ihr Bienenstock meldet sich von selbst.</h1>
+        <p class="lead" data-i18n="heroLead">TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen. Eine einzige Batterie reicht dafür viele Jahre. Kein Abo, keine monatliche Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.</p>
+        <div class="btn-row">
+          <a class="btn btn-lg" href="#features">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+            <span data-i18n="heroBtn1">Was das Gerät kann</span>
+          </a>
+          <a class="btn btn-lg btn-outline" href="https://github.com/hmd83/tanen" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 6.5L3.5 12l5 5.5"/><path d="M15.5 6.5L20.5 12l-5 5.5"/><path d="M13.5 4l-3 16"/></svg>
+            <span data-i18n="heroBtn2">Quellcode und Bauanleitung</span>
+          </a>
+          <a class="btn btn-lg btn-outline" href="setup/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3.1M12 18.1v3.1M21.2 12h-3.1M5.9 12H2.8M18.5 5.5l-2.2 2.2M7.7 16.3l-2.2 2.2M18.5 18.5l-2.2-2.2M7.7 7.7L5.5 5.5"/></svg>
+            <span data-i18n="heroBtn3">Station einrichten</span>
+          </a>
+        </div>
+        <p class="hero-note" data-i18n="heroNote">Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu</p>
+      </div>
+
+      <figure class="shot">
+        <img src="media/platform.jpeg" width="1200" height="554" alt="Bienenstock steht auf der Wiegeplattform von TanenBase, daneben das wetterfeste Gehäuse" data-i18n-alt="heroAlt" fetchpriority="high" decoding="async">
+      </figure>
+    </div>
+
+    <!-- Vier Zahlen, die den Unterschied ausmachen. Zahlen laufen immer
+         von links nach rechts, auch in der arabischen Fassung. -->
+    <div class="stats">
+      <div class="stat"><b>4<span class="u">&micro;A</span></b><span data-i18n="stat1">Stromaufnahme im Ruhezustand</span></div>
+      <div class="stat"><b>~9<span class="u" data-i18n="statY">Jahre</span></b><span data-i18n="stat2">mit einer AA-Batterie (rechnerisch)</span></div>
+      <div class="stat"><b>&plusmn;12<span class="u">g</span></b><span data-i18n="stat3">Restschwankung im Feldversuch</span></div>
+      <div class="stat"><b>0<span class="u">&euro;</span></b><span data-i18n="stat4">laufende Kosten, kein Abo</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== MERKMALE =============================== -->
+<section class="band" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-i18n="featTitle">Was das Gerät kann</h2>
+      <p data-i18n="featLead">Drei Dinge, und die richtig: lange durchhalten, ehrlich messen, ohne fremde Hilfe funken.</p>
+    </div>
+
+    <div class="feat">
+      <article class="card">
+        <span class="card-ico ico-ok" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2.5"/><path d="M21 10.5v3"/><path d="M5.5 10.5v3"/><path d="M9 10.5v3"/><path d="M12.5 10.5v3"/></svg>
+        </span>
+        <h3 data-i18n="f1T">Jahrelang mit einer Batterie</h3>
+        <p data-i18n="f1D">Zwischen zwei Messungen ist das Gerät praktisch aus. Der Funksender wird nur eingeschaltet, wenn es wirklich etwas zu melden gibt — nicht nach der Uhr, sondern wenn sich Gewicht oder Temperatur deutlich geändert haben.</p>
+        <ul>
+          <li data-i18n="f1a">Rund 4 Millionstel Ampere im Schlaf</li>
+          <li data-i18n="f1b">Eine AA-Lithiumzelle, kein Solarpanel am Stock</li>
+          <li data-i18n="f1c">Rechnerisch etwa neun Jahre Laufzeit</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <span class="card-ico ico-blue" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"/><circle cx="12" cy="14.5" r="2.5"/><path d="M4 20h16"/><path d="M6 8h5"/><path d="M13 8h5"/></svg>
+        </span>
+        <h3 data-i18n="f2T">Gewicht und Temperatur, verlässlich</h3>
+        <p data-i18n="f2D">Jede Waage reagiert auf Wärme: Sonne am Nachmittag, kühle Nacht — und schon steht dort ein Kilo Tracht, das nie da war. TanenBase misst die Temperatur mit und rechnet diesen Fehler heraus.</p>
+        <ul>
+          <li data-i18n="f2a">Sechs Tage im Freien mit bekanntem Gewicht geprüft</li>
+          <li data-i18n="f2b">Rund 12 Gramm Schwankung statt 63 Gramm</li>
+          <li data-i18n="f2c">Temperaturfühler im Stock, nicht nur am Gehäuse</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <span class="card-ico ico-acc" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17.5a9.9 9.9 0 010-11"/><path d="M19 6.5a9.9 9.9 0 010 11"/><path d="M8.5 14.5a5 5 0 010-5"/><path d="M15.5 9.5a5 5 0 010 5"/><circle cx="12" cy="12" r="1.6"/></svg>
+        </span>
+        <h3 data-i18n="f3T">Funk ohne Zwang</h3>
+        <p data-i18n="f3D">Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.</p>
+        <ul>
+          <li data-i18n="f3a">Kein Konto beim Hersteller, keine Zwangs-Wolke</li>
+          <li data-i18n="f3b">Eingerichtet per Bluetooth im Browser — keine App</li>
+          <li data-i18n="f3c">Die Daten laufen dort auf, wo Sie es festlegen</li>
+          <li data-i18n="f3d">Fertige Anbindung an BEEP und beelogger über The Things Network</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PROBLEM / MARKT ============================ -->
+<section class="band band-white" id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="whyKicker">Die Lücke am Markt</span>
+      <h2 data-i18n="whyTitle">Warum es TanenBase gibt</h2>
+      <p data-i18n="whyLead">Stockwaagen gibt es zu kaufen. Nur führen die meisten in dieselben vier Sackgassen — und die haben nichts mit Bienen zu tun, sondern mit dem Geschäftsmodell.</p>
+    </div>
+
+    <div class="cards cards-2">
+      <article class="card">
+        <span class="card-ico ico-warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.4-5-3.3"/></svg>
+        </span>
+        <h3 data-i18n="p1T">Teure, herstellergebundene Technik</h3>
+        <p data-i18n="p1D">Eine fertige Stockwaage kostet je nach Anbieter mehrere hundert Euro — und für jedes weitere Volk noch einmal dasselbe. Bezahlt wird nicht die Wägezelle, die ein Industrieteil für wenig Geld ist, sondern das geschlossene Drumherum.</p>
+      </article>
+
+      <article class="card">
+        <span class="card-ico ico-warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/><path d="M12 15v2.5"/></svg>
+        </span>
+        <h3 data-i18n="p2T">Abo-Zwang</h3>
+        <p data-i18n="p2D">Viele Geräte arbeiten nur mit laufendem Vertrag. Endet der Vertrag, schweigt die Waage und die alten Messreihen sind nicht mehr erreichbar — obwohl das Gerät auf Ihrem Grundstück steht und Ihnen gehört.</p>
+      </article>
+
+      <article class="card">
+        <span class="card-ico ico-warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/><path d="M4.5 5.5l15 13" stroke-width="2.6"/></svg>
+        </span>
+        <h3 data-i18n="p3T">Geplante Alterung</h3>
+        <p data-i18n="p3D">Stellt der Anbieter den Dienst ein oder verschwindet vom Markt, wird aus einwandfreier Technik Elektroschrott. Niemand außer dem Hersteller kann die Software erneuern, weil niemand sie kennt.</p>
+      </article>
+
+      <article class="card">
+        <span class="card-ico ico-warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2.5"/><path d="M21 10.5v3"/><path d="M5.5 10.5v3"/><path d="M9.5 14l5-4"/></svg>
+        </span>
+        <h3 data-i18n="p4T">Schwache Batterielaufzeit</h3>
+        <p data-i18n="p4D">Wer jede Stunde funkt, egal ob sich etwas geändert hat, braucht jede Saison eine neue Batterie oder ein Solarpanel samt Halterung. Beides sind Wege zum Stand, die Sie sonst nicht gehen müssten.</p>
+      </article>
+    </div>
+
+    <div class="answer">
+      <h3 data-i18n="ansTitle">Die Antwort von TanenBase</h3>
+      <ul>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span><b data-i18n="a1T">Standardbauteile statt Sonderanfertigung.</b><span data-i18n="a1D">Wägezelle, Funkmodul, Fühler: alles frei erhältlich und einzeln nachkaufbar.</span></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span><b data-i18n="a2T">Kein Vertrag, kein Konto.</b><span data-i18n="a2D">Die Station funkt in das Netz, das Sie bestimmen. Von uns kommt keine Rechnung.</span></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span><b data-i18n="a3T">Nichts ist verschlossen.</b><span data-i18n="a3D">Quellcode, Schaltplan und Messberichte liegen offen. Auch in zehn Jahren noch baubar und änderbar.</span></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span><b data-i18n="a4T">Strom sparen ist eingebaut.</b><span data-i18n="a4D">Das Gerät schläft fast die ganze Zeit und meldet sich, wenn es etwas zu melden gibt.</span></span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== OFFENHEIT ============================== -->
+<section class="band" id="open">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="openKicker">Apache-Lizenz 2.0</span>
+      <h2 data-i18n="openTitle">Offen — und zwar wirklich</h2>
+      <p data-i18n="openLead">Offen heißt hier nicht, dass ein Datenblatt zum Herunterladen bereitliegt. Es heißt: Sie bekommen alles, was nötig ist, um das Gerät selbst zu bauen, zu prüfen, zu ändern und weiterzugeben.</p>
+    </div>
+
+    <div class="cards cards-2">
+      <article class="card">
+        <h3 data-i18n="o1T">Alles liegt offen</h3>
+        <p data-i18n="o1D">Firmware, Schaltplan, Platinendaten, Aufbauanleitung und die vollständigen Messreihen der Temperaturkorrektur — samt der Stellen, an denen die Hardware schlecht abschneidet. Wer prüfen will, ob die Zahlen stimmen, kann es tun.</p>
+      </article>
+      <article class="card">
+        <h3 data-i18n="o2T">Reparieren statt wegwerfen</h3>
+        <p data-i18n="o2D">Das Gehäuse lässt sich öffnen, die Batterie ist eine gewöhnliche Zelle, die Bauteile sind einzeln zu bekommen. Für einen Tausch braucht es einen Schraubendreher und in seltenen Fällen einen Lötkolben, keine Rücksendung.</p>
+      </article>
+      <article class="card">
+        <h3 data-i18n="o3T">Ihre Daten gehören Ihnen</h3>
+        <p data-i18n="o3D">Die Station sendet an das Empfangsgerät oder das Netz, das Sie eintragen. Es gibt keinen Zwischenhändler, der mitliest, und keinen Dienst, dessen Fortbestand über Ihre Messreihen entscheidet.</p>
+      </article>
+      <article class="card">
+        <h3 data-i18n="o4T">Gemeinsam weiterbauen</h3>
+        <p data-i18n="o4D">Die Apache-Lizenz 2.0 erlaubt jedem, TanenBase zu nutzen, zu verändern und weiterzugeben — auch gewerblich, ohne Gebühr und ohne Erlaubnis einzuholen. Verbesserungen aus dem Imkerkreis fließen zurück ins Projekt.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BILDER / TECHNIK ============================ -->
+<section class="band band-white" id="tech">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-i18n="mediaTitle">Aus der Praxis</h2>
+      <p data-i18n="mediaLead">Keine Zeichnungen, sondern Aufnahmen der Geräte, mit denen die Zahlen auf dieser Seite gemessen wurden.</p>
+    </div>
+
+    <div class="gallery">
+      <figure class="shot">
+        <img src="media/platform-2.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wiegeplattform aus Holz mit aufgesetztem Bienenstock im Freien" data-i18n-alt="cap1Alt">
+        <figcaption data-i18n="cap1">Die Plattform im Einsatz: Der Stock steht auf der Waage, das wetterfeste Gehäuse an der Seite trägt Elektronik und Batterie.</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="media/loadcell.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wägezelle zwischen zwei Stahlplatten verschraubt" data-i18n-alt="cap2Alt">
+        <figcaption data-i18n="cap2">Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.</figcaption>
+      </figure>
+      <figure class="shot portrait">
+        <img src="media/enclosure.jpg" width="702" height="1000" loading="lazy" decoding="async" alt="Geöffnetes Gehäuse mit Platine, Funkmodul und Antenne" data-i18n-alt="cap3Alt">
+        <figcaption data-i18n="cap3">Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.</figcaption>
+      </figure>
+      <figure class="shot portrait screen">
+        <img src="media/app-setup.jpg" width="438" height="950" loading="lazy" decoding="async" alt="Einrichtungsseite im Handy-Browser mit großen Schaltflächen" data-i18n-alt="cap4Alt">
+        <figcaption data-i18n="cap4">Eingerichtet wird im Browser am Handy: große Schrift, große Knöpfe, keine App zum Installieren.</figcaption>
+        <div class="shot-cta">
+          <a class="btn" href="setup/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3.1M12 18.1v3.1M21.2 12h-3.1M5.9 12H2.8M18.5 5.5l-2.2 2.2M7.7 16.3l-2.2 2.2M18.5 18.5l-2.2-2.2M7.7 7.7L5.5 5.5"/></svg>
+            <span data-i18n="setupBtn">Einrichtungsseite öffnen</span>
+          </a>
+        </div>
+      </figure>
+    </div>
+
+    <div class="sec-head" style="margin-block:52px 24px">
+      <h2 data-i18n="techTitle">Technische Angaben</h2>
+      <p data-i18n="techLead">Für alle, die es genau wissen wollen. Für den täglichen Gebrauch müssen Sie hier nichts verstehen.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption data-i18n="techCap">Stand der aktuellen Ausbaustufe. Änderungen stehen im Änderungsprotokoll des Projekts.</caption>
+        <tbody>
+          <tr><th scope="row" data-i18n="t1L">Messwerte</th><td data-i18n="t1V">Gewicht, Temperatur im Stock, Batteriespannung</td></tr>
+          <tr><th scope="row" data-i18n="t2L">Wiegebereich</th><td data-i18n="t2V">bis 999 kg</td></tr>
+          <tr><th scope="row" data-i18n="t3L">Genauigkeit im Feldversuch</th><td data-i18n="t3V">rund 12 g Streuung über sechs Tage</td></tr>
+          <tr><th scope="row" data-i18n="t4L">Funk</th><td data-i18n="t4V">LoRaWAN Klasse A, EU868, OTAA</td></tr>
+          <tr><th scope="row" data-i18n="t5L">Datenpaket</th><td data-i18n="t5V">8 Byte je Meldung</td></tr>
+          <tr><th scope="row" data-i18n="t6L">Einrichtung</th><td data-i18n="t6V">Bluetooth, Bedienseite im Browser (Chrome oder Edge)</td></tr>
+          <tr><th scope="row" data-i18n="t7L">Ruhestrom</th><td data-i18n="t7V">rund 4 µA</td></tr>
+          <tr><th scope="row" data-i18n="t8L">Batterie</th><td data-i18n="t8V">eine AA-Lithiumzelle (ER14505)</td></tr>
+          <tr><th scope="row" data-i18n="t9L">Laufzeit (rechnerisch)</th><td data-i18n="t9V">rund 9 Jahre — Messung alle 15 min, Meldung alle 2 h</td></tr>
+          <tr><th scope="row" data-i18n="t10L">Rechner</th><td data-i18n="t10V">Nordic nRF54LM20A, Zephyr / nRF Connect SDK</td></tr>
+          <tr><th scope="row" data-i18n="t11L">Lizenz</th><td data-i18n="t11V">Apache-Lizenz 2.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ KONTAKT ================================ -->
+<section class="band" id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <h2 data-i18n="ctaTitle">Fragen? Schreiben Sie uns.</h2>
+      <p data-i18n="ctaLead">Ob Sie eine Station bauen wollen, bei den Bauteilen unsicher sind oder das Projekt in Ihrem Imkerverein einsetzen möchten — eine E-Mail genügt. Wir antworten auf Deutsch, Englisch und Arabisch.</p>
+      <a class="mail" href="mailto:info@tanen.eu">info@tanen.eu</a>
+      <div class="btn-row">
+        <a class="btn btn-lg" href="mailto:info@tanen.eu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>
+          <span data-i18n="ctaBtn">E-Mail schreiben</span>
+        </a>
+        <a class="btn btn-lg btn-outline" href="https://github.com/hmd83/tanen" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4H6a2 2 0 00-2 2v13a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="8" y="2.5" width="8" height="4" rx="1.5"/><path d="M8.5 11h7"/><path d="M8.5 15h4.5"/></svg>
+          <span data-i18n="ctaGit">Bauanleitung ansehen</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>TanenBase</h4>
+        <p data-i18n="footAbout">Offene Stockwaage für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.</p>
+      </div>
+      <div>
+        <h4 data-i18n="footNav">Bereiche</h4>
+        <ul>
+          <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+          <li><a href="#why" data-i18n="navWhy">Warum</a></li>
+          <li><a href="#open" data-i18n="navOpen">Offen</a></li>
+          <li><a href="#tech" data-i18n="navTech">Technik</a></li>
+          <li><a href="setup/" data-i18n="navSetup">Einrichten</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footContact">Kontakt</h4>
+        <ul>
+          <li><a href="mailto:info@tanen.eu">info@tanen.eu</a></li>
+          <li><a href="https://github.com/hmd83/tanen" rel="noopener" data-i18n="footRepo">Projekt auf GitHub</a></li>
+        </ul>
+        <!-- Fuer den Betrieb unter einer .eu-Adresse gehoeren hier noch
+             Impressum und Datenschutzerklaerung hin. Beides braucht echte
+             Angaben (Anschrift, Verantwortlicher) und wird bewusst nicht
+             erfunden. -->
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span data-i18n="footLic">Apache-Lizenz 2.0 — nutzen, ändern, weitergeben, auch gewerblich.</span>
+      <span>&copy; 2026 TanenBase</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+/* ============================== Sprachen ==============================
+   Deutsch ist die Vorgabe. Derselbe Aufbau wie in der Bedien-Oberflaeche
+   der Station: ein Woerterbuch je Sprache, _dir steuert die Laufrichtung. */
+const I18N = {
+
+/* ------------------------------- Deutsch ------------------------------- */
+de: {
+  _dir:'ltr',
+  pageTitle:'TanenBase — Offene Stockwaage',
+  metaDesc:'TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.',
+  skip:'Zum Inhalt springen',
+  brandSub:'Offene Stockwaage',
+  langLabel:'Sprache', navLabel:'Hauptbereiche',
+  navFeat:'Was es kann', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
+  navSetup:'Einrichten', setupBtn:'Einrichtungsseite öffnen',
+
+  heroKicker:'Offene Technik für die Imkerei',
+  heroTitle:'Ihr Bienenstock meldet sich von selbst.',
+  heroLead:'TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen. Eine einzige Batterie reicht dafür viele Jahre. Kein Abo, keine monatliche Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.',
+  heroBtn1:'Was das Gerät kann',
+  heroBtn2:'Quellcode und Bauanleitung',
+  heroBtn3:'Station einrichten',
+  heroNote:'Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu',
+  heroAlt:'Bienenstock steht auf der Wiegeplattform von TanenBase, daneben das wetterfeste Gehäuse',
+  stat1:'Stromaufnahme im Ruhezustand',
+  statY:'Jahre',
+  stat2:'mit einer AA-Batterie (rechnerisch)',
+  stat3:'Restschwankung im Feldversuch',
+  stat4:'laufende Kosten, kein Abo',
+
+  featTitle:'Was das Gerät kann',
+  featLead:'Drei Dinge, und die richtig: lange durchhalten, ehrlich messen, ohne fremde Hilfe funken.',
+  f1T:'Jahrelang mit einer Batterie',
+  f1D:'Zwischen zwei Messungen ist das Gerät praktisch aus. Der Funksender wird nur eingeschaltet, wenn es wirklich etwas zu melden gibt — nicht nach der Uhr, sondern wenn sich Gewicht oder Temperatur deutlich geändert haben.',
+  f1a:'Rund 4 Millionstel Ampere im Schlaf',
+  f1b:'Eine AA-Lithiumzelle, kein Solarpanel am Stock',
+  f1c:'Rechnerisch etwa neun Jahre Laufzeit',
+  f2T:'Gewicht und Temperatur, verlässlich',
+  f2D:'Jede Waage reagiert auf Wärme: Sonne am Nachmittag, kühle Nacht — und schon steht dort ein Kilo Tracht, das nie da war. TanenBase misst die Temperatur mit und rechnet diesen Fehler heraus.',
+  f2a:'Sechs Tage im Freien mit bekanntem Gewicht geprüft',
+  f2b:'Rund 12 Gramm Schwankung statt 63 Gramm',
+  f2c:'Temperaturfühler im Stock, nicht nur am Gehäuse',
+  f3T:'Funk ohne Zwang',
+  f3D:'Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.',
+  f3a:'Kein Konto beim Hersteller, keine Zwangs-Wolke',
+  f3b:'Eingerichtet per Bluetooth im Browser — keine App',
+  f3c:'Die Daten laufen dort auf, wo Sie es festlegen',
+  f3d:'Fertige Anbindung an BEEP und beelogger über The Things Network',
+
+  whyKicker:'Die Lücke am Markt',
+  whyTitle:'Warum es TanenBase gibt',
+  whyLead:'Stockwaagen gibt es zu kaufen. Nur führen die meisten in dieselben vier Sackgassen — und die haben nichts mit Bienen zu tun, sondern mit dem Geschäftsmodell.',
+  p1T:'Teure, herstellergebundene Technik',
+  p1D:'Eine fertige Stockwaage kostet je nach Anbieter mehrere hundert Euro — und für jedes weitere Volk noch einmal dasselbe. Bezahlt wird nicht die Wägezelle, die ein Industrieteil für wenig Geld ist, sondern das geschlossene Drumherum.',
+  p2T:'Abo-Zwang',
+  p2D:'Viele Geräte arbeiten nur mit laufendem Vertrag. Endet der Vertrag, schweigt die Waage und die alten Messreihen sind nicht mehr erreichbar — obwohl das Gerät auf Ihrem Grundstück steht und Ihnen gehört.',
+  p3T:'Geplante Alterung',
+  p3D:'Stellt der Anbieter den Dienst ein oder verschwindet vom Markt, wird aus einwandfreier Technik Elektroschrott. Niemand außer dem Hersteller kann die Software erneuern, weil niemand sie kennt.',
+  p4T:'Schwache Batterielaufzeit',
+  p4D:'Wer jede Stunde funkt, egal ob sich etwas geändert hat, braucht jede Saison eine neue Batterie oder ein Solarpanel samt Halterung. Beides sind Wege zum Stand, die Sie sonst nicht gehen müssten.',
+  ansTitle:'Die Antwort von TanenBase',
+  a1T:'Standardbauteile statt Sonderanfertigung.',
+  a1D:'Wägezelle, Funkmodul, Fühler: alles frei erhältlich und einzeln nachkaufbar.',
+  a2T:'Kein Vertrag, kein Konto.',
+  a2D:'Die Station funkt in das Netz, das Sie bestimmen. Von uns kommt keine Rechnung.',
+  a3T:'Nichts ist verschlossen.',
+  a3D:'Quellcode, Schaltplan und Messberichte liegen offen. Auch in zehn Jahren noch baubar und änderbar.',
+  a4T:'Strom sparen ist eingebaut.',
+  a4D:'Das Gerät schläft fast die ganze Zeit und meldet sich, wenn es etwas zu melden gibt.',
+
+  openKicker:'Apache-Lizenz 2.0',
+  openTitle:'Offen — und zwar wirklich',
+  openLead:'Offen heißt hier nicht, dass ein Datenblatt zum Herunterladen bereitliegt. Es heißt: Sie bekommen alles, was nötig ist, um das Gerät selbst zu bauen, zu prüfen, zu ändern und weiterzugeben.',
+  o1T:'Alles liegt offen',
+  o1D:'Firmware, Schaltplan, Platinendaten, Aufbauanleitung und die vollständigen Messreihen der Temperaturkorrektur — samt der Stellen, an denen die Hardware schlecht abschneidet. Wer prüfen will, ob die Zahlen stimmen, kann es tun.',
+  o2T:'Reparieren statt wegwerfen',
+  o2D:'Das Gehäuse lässt sich öffnen, die Batterie ist eine gewöhnliche Zelle, die Bauteile sind einzeln zu bekommen. Für einen Tausch braucht es einen Schraubendreher und in seltenen Fällen einen Lötkolben, keine Rücksendung.',
+  o3T:'Ihre Daten gehören Ihnen',
+  o3D:'Die Station sendet an das Empfangsgerät oder das Netz, das Sie eintragen. Es gibt keinen Zwischenhändler, der mitliest, und keinen Dienst, dessen Fortbestand über Ihre Messreihen entscheidet.',
+  o4T:'Gemeinsam weiterbauen',
+  o4D:'Die Apache-Lizenz 2.0 erlaubt jedem, TanenBase zu nutzen, zu verändern und weiterzugeben — auch gewerblich, ohne Gebühr und ohne Erlaubnis einzuholen. Verbesserungen aus dem Imkerkreis fließen zurück ins Projekt.',
+
+  mediaTitle:'Aus der Praxis',
+  mediaLead:'Keine Zeichnungen, sondern Aufnahmen der Geräte, mit denen die Zahlen auf dieser Seite gemessen wurden.',
+  cap1:'Die Plattform im Einsatz: Der Stock steht auf der Waage, das wetterfeste Gehäuse an der Seite trägt Elektronik und Batterie.',
+  cap1Alt:'Wiegeplattform aus Holz mit aufgesetztem Bienenstock im Freien',
+  cap2:'Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.',
+  cap2Alt:'Wägezelle zwischen zwei Stahlplatten verschraubt',
+  cap3:'Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.',
+  cap3Alt:'Geöffnetes Gehäuse mit Platine, Funkmodul und Antenne',
+  cap4:'Eingerichtet wird im Browser am Handy: große Schrift, große Knöpfe, keine App zum Installieren.',
+  cap4Alt:'Einrichtungsseite im Handy-Browser mit großen Schaltflächen',
+
+  techTitle:'Technische Angaben',
+  techLead:'Für alle, die es genau wissen wollen. Für den täglichen Gebrauch müssen Sie hier nichts verstehen.',
+  techCap:'Stand der aktuellen Ausbaustufe. Änderungen stehen im Änderungsprotokoll des Projekts.',
+  t1L:'Messwerte', t1V:'Gewicht, Temperatur im Stock, Batteriespannung',
+  t2L:'Wiegebereich', t2V:'bis 999 kg',
+  t3L:'Genauigkeit im Feldversuch', t3V:'rund 12 g Streuung über sechs Tage',
+  t4L:'Funk', t4V:'LoRaWAN Klasse A, EU868, OTAA',
+  t5L:'Datenpaket', t5V:'8 Byte je Meldung',
+  t6L:'Einrichtung', t6V:'Bluetooth, Bedienseite im Browser (Chrome oder Edge)',
+  t7L:'Ruhestrom', t7V:'rund 4 µA',
+  t8L:'Batterie', t8V:'eine AA-Lithiumzelle (ER14505)',
+  t9L:'Laufzeit (rechnerisch)', t9V:'rund 9 Jahre — Messung alle 15 min, Meldung alle 2 h',
+  t10L:'Rechner', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
+  t11L:'Lizenz', t11V:'Apache-Lizenz 2.0',
+
+  ctaTitle:'Fragen? Schreiben Sie uns.',
+  ctaLead:'Ob Sie eine Station bauen wollen, bei den Bauteilen unsicher sind oder das Projekt in Ihrem Imkerverein einsetzen möchten — eine E-Mail genügt. Wir antworten auf Deutsch, Englisch und Arabisch.',
+  ctaBtn:'E-Mail schreiben',
+  ctaGit:'Bauanleitung ansehen',
+
+  footAbout:'Offene Stockwaage für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.',
+  footNav:'Bereiche', footContact:'Kontakt', footRepo:'Projekt auf GitHub',
+  footLic:'Apache-Lizenz 2.0 — nutzen, ändern, weitergeben, auch gewerblich.'
+},
+
+/* ------------------------------- English ------------------------------- */
+en: {
+  _dir:'ltr',
+  pageTitle:'TanenBase — Open Hive Scale',
+  metaDesc:'TanenBase is an open hive scale: it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0.',
+  skip:'Skip to content',
+  brandSub:'Open hive scale',
+  langLabel:'Language', navLabel:'Main sections',
+  navFeat:'What it does', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
+  navSetup:'Set up', setupBtn:'Open the setup page',
+
+  heroKicker:'Open technology for beekeepers',
+  heroTitle:'Your hive reports for itself.',
+  heroLead:'TanenBase weighs the hive, measures its temperature and sends the readings to you by radio. One battery lasts for years. No subscription, no monthly fee, and no manufacturer who can switch your device off one day.',
+  heroBtn1:'What the device does',
+  heroBtn2:'Source code and build guide',
+  heroBtn3:'Set up a station',
+  heroNote:'Apache License 2.0 — free to use, commercially as well. Questions to info@tanen.eu',
+  heroAlt:'Beehive standing on the TanenBase weighing platform, with the weatherproof enclosure beside it',
+  stat1:'current draw while asleep',
+  statY:'years',
+  stat2:'on one AA battery (calculated)',
+  stat3:'residual scatter in the field test',
+  stat4:'running costs, no subscription',
+
+  featTitle:'What the device does',
+  featLead:'Three things, done properly: last a long time, measure honestly, transmit without anyone else’s permission.',
+  f1T:'Years on a single battery',
+  f1D:'Between two measurements the device is practically off. The transmitter is powered up only when there is genuinely something to report — not by the clock, but when weight or temperature has clearly changed.',
+  f1a:'About 4 millionths of an amp while asleep',
+  f1b:'One AA lithium cell, no solar panel on the hive',
+  f1c:'Roughly nine years of calculated service life',
+  f2T:'Weight and temperature you can trust',
+  f2D:'Every scale reacts to heat: afternoon sun, a cool night — and suddenly it shows a kilo of nectar that was never there. TanenBase measures the temperature as well and takes that error back out.',
+  f2a:'Tested outdoors for six days against a known weight',
+  f2b:'About 12 grams of scatter instead of 63 grams',
+  f2c:'Temperature probe inside the hive, not just on the enclosure',
+  f3T:'Radio without strings attached',
+  f3D:'Readings go out over LoRaWAN — a radio system for small amounts of data over long distances, with no mobile contract. You either put up your own receiver or use an open network such as The Things Network.',
+  f3a:'No manufacturer account, no forced cloud',
+  f3b:'Set up over Bluetooth in the browser — no app to install',
+  f3c:'The data arrives wherever you decide it should',
+  f3d:'Ready-made link to BEEP and beelogger over The Things Network',
+
+  whyKicker:'The gap in the market',
+  whyTitle:'Why TanenBase exists',
+  whyLead:'You can buy a hive scale. Most of them, though, lead into the same four dead ends — and those have nothing to do with bees and everything to do with the business model.',
+  p1T:'Expensive, vendor-locked hardware',
+  p1D:'A ready-made hive scale costs several hundred euros depending on the supplier — and the same again for every further colony. What you pay for is not the load cell, which is an inexpensive industrial part, but the closed system built around it.',
+  p2T:'Subscription lock-in',
+  p2D:'Many devices only work with an active contract. When the contract ends the scale falls silent and the old records are out of reach — even though the device stands on your land and belongs to you.',
+  p3T:'Planned obsolescence',
+  p3D:'If the supplier shuts the service down or leaves the market, perfectly good hardware becomes electronic waste. Nobody but the manufacturer can renew the software, because nobody else has ever seen it.',
+  p4T:'Poor battery life',
+  p4D:'Transmitting every hour whether anything changed or not means a new battery every season, or a solar panel and its bracket. Both are trips to the apiary you would otherwise not have to make.',
+  ansTitle:'How TanenBase answers that',
+  a1T:'Standard parts, not custom ones.',
+  a1D:'Load cell, radio module, probe: all openly available and replaceable one by one.',
+  a2T:'No contract, no account.',
+  a2D:'The station transmits into the network you choose. No invoice ever comes from us.',
+  a3T:'Nothing is locked away.',
+  a3D:'Source code, schematic and measurement reports are all public. Still buildable and modifiable in ten years.',
+  a4T:'Saving power is built in.',
+  a4D:'The device sleeps almost all the time and speaks up when there is something to say.',
+
+  openKicker:'Apache License 2.0',
+  openTitle:'Open — and genuinely so',
+  openLead:'Open here does not mean a datasheet is available for download. It means you get everything needed to build, verify, change and pass on the device yourself.',
+  o1T:'Everything is out in the open',
+  o1D:'Firmware, schematic, board files, assembly guide and the complete measurement series behind the temperature correction — including the places where the hardware comes off badly. Anyone who wants to check whether the numbers hold up can do so.',
+  o2T:'Repair instead of replace',
+  o2D:'The enclosure opens, the battery is an ordinary cell, the parts can be bought individually. A swap takes a screwdriver and occasionally a soldering iron, not a return shipment.',
+  o3T:'Your data belongs to you',
+  o3D:'The station sends to the receiver or the network you enter. There is no middleman reading along, and no service whose survival decides the fate of your records.',
+  o4T:'Build on it together',
+  o4D:'The Apache License 2.0 lets anyone use, modify and pass on TanenBase — commercially too, without a fee and without asking permission. Improvements from beekeepers flow back into the project.',
+
+  mediaTitle:'From the field',
+  mediaLead:'Not renderings — photographs of the very equipment the numbers on this page were measured on.',
+  cap1:'The platform in service: the hive stands on the scale, and the weatherproof enclosure beside it holds the electronics and the battery.',
+  cap1Alt:'Wooden weighing platform outdoors with a beehive placed on it',
+  cap2:'The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.',
+  cap2Alt:'Load cell bolted between two steel plates',
+  cap3:'The build inside the enclosure: processor, radio module with its antenna, and the load-cell amplifier. Every part is available separately.',
+  cap3Alt:'Opened enclosure showing the board, radio module and antenna',
+  cap4:'Setup happens in the phone browser: large type, large buttons, no app to install.',
+  cap4Alt:'Setup page in a phone browser with large buttons',
+
+  techTitle:'Specifications',
+  techLead:'For those who want the detail. For everyday use you need to understand none of it.',
+  techCap:'As of the current revision. Changes are recorded in the project changelog.',
+  t1L:'Readings', t1V:'weight, in-hive temperature, battery voltage',
+  t2L:'Weighing range', t2V:'up to 999 kg',
+  t3L:'Field-test accuracy', t3V:'about 12 g of scatter over six days',
+  t4L:'Radio', t4V:'LoRaWAN Class A, EU868, OTAA',
+  t5L:'Data packet', t5V:'8 bytes per report',
+  t6L:'Setup', t6V:'Bluetooth, control page in the browser (Chrome or Edge)',
+  t7L:'Sleep current', t7V:'about 4 µA',
+  t8L:'Battery', t8V:'one AA lithium cell (ER14505)',
+  t9L:'Service life (calculated)', t9V:'about 9 years — measuring every 15 min, reporting every 2 h',
+  t10L:'Processor', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
+  t11L:'Licence', t11V:'Apache License 2.0',
+
+  ctaTitle:'Questions? Write to us.',
+  ctaLead:'Whether you want to build a station, are unsure about the parts, or would like to use the project in your beekeeping association — an email is enough. We answer in German, English and Arabic.',
+  ctaBtn:'Send an email',
+  ctaGit:'View the build guide',
+
+  footAbout:'Open hive scale for weight and temperature. Built for permanent service in the apiary, not for a display case.',
+  footNav:'Sections', footContact:'Contact', footRepo:'Project on GitHub',
+  footLic:'Apache License 2.0 — use it, change it, pass it on, commercially as well.'
+},
+
+/* ------------------------------- العربية ------------------------------- */
+ar: {
+  _dir:'rtl',
+  pageTitle:'TanenBase — ميزان خلايا مفتوح المصدر',
+  metaDesc:'TanenBase ميزان خلايا مفتوح المصدر: يزن الخلية، ويقيس حرارتها، ويرسل القراءات عبر LoRaWAN. سنوات على بطارية واحدة، بلا اشتراك، برخصة Apache-2.0.',
+  skip:'انتقل إلى المحتوى',
+  brandSub:'ميزان خلايا مفتوح المصدر',
+  langLabel:'اللغة', navLabel:'الأقسام الرئيسية',
+  navFeat:'ماذا يفعل', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
+  navSetup:'الإعداد', setupBtn:'فتح صفحة الإعداد',
+
+  heroKicker:'تقنية مفتوحة لتربية النحل',
+  heroTitle:'خليتك تُبلغك بنفسها.',
+  heroLead:'يزن TanenBase الخلية، ويقيس حرارتها، ويرسل القراءات إليك لاسلكياً. بطارية واحدة تكفي سنوات طويلة. بلا اشتراك، وبلا رسوم شهرية، وبلا شركة تستطيع إيقاف جهازك يوماً ما.',
+  heroBtn1:'ماذا يفعل الجهاز',
+  heroBtn2:'الشيفرة ودليل التركيب',
+  heroBtn3:'إعداد المحطة',
+  heroNote:'رخصة Apache 2.0 — الاستعمال مجاني، وللأغراض التجارية أيضاً. للاستفسار: info@tanen.eu',
+  heroAlt:'خلية نحل قائمة على منصة الوزن، وإلى جانبها العلبة المقاومة للطقس',
+  stat1:'استهلاك التيار أثناء السكون',
+  statY:'سنة',
+  stat2:'ببطارية AA واحدة (حسابياً)',
+  stat3:'التذبذب المتبقي في الاختبار الميداني',
+  stat4:'تكاليف جارية، بلا اشتراك',
+
+  featTitle:'ماذا يفعل الجهاز',
+  featLead:'ثلاثة أمور يتقنها: عمر طويل، وقياس صادق، وإرسال لا يحتاج إذن أحد.',
+  f1T:'سنوات ببطارية واحدة',
+  f1D:'بين قياس وآخر يكون الجهاز مطفأً عملياً. ولا يُشغَّل جهاز الإرسال إلا حين يوجد ما يستحق الإبلاغ فعلاً — لا حسب الساعة، بل حين يتغير الوزن أو الحرارة تغيراً واضحاً.',
+  f1a:'نحو أربعة أجزاء من المليون من الأمبير أثناء النوم',
+  f1b:'خلية ليثيوم AA واحدة، بلا لوح شمسي على الخلية',
+  f1c:'عمر تشغيلي يقارب تسع سنوات حسابياً',
+  f2T:'وزن وحرارة يُعتمد عليهما',
+  f2D:'كل ميزان يتأثر بالحرارة: شمس الظهيرة ثم ليل بارد، فيظهر كيلوغرام من الرحيق لم يوجد قط. يقيس TanenBase الحرارة أيضاً ويطرح هذا الخطأ من النتيجة.',
+  f2a:'اختبار ستة أيام في الهواء الطلق بوزن معلوم',
+  f2b:'نحو 12 غراماً من التذبذب بدل 63 غراماً',
+  f2c:'مجس الحرارة داخل الخلية، لا على العلبة فقط',
+  f3T:'إرسال بلا قيود',
+  f3D:'تخرج القراءات عبر LoRaWAN، وهو نظام لاسلكي لكميات بيانات صغيرة عبر مسافات بعيدة، بلا عقد هاتف محمول. إما أن تنصب جهاز استقبال خاصاً بك، أو تستعمل شبكة مفتوحة مثل The Things Network.',
+  f3a:'بلا حساب لدى الشركة المصنّعة وبلا سحابة إجبارية',
+  f3b:'الضبط عبر البلوتوث من المتصفح — دون تطبيق',
+  f3c:'تصل البيانات إلى حيث تقرر أنت',
+  f3d:'ربط جاهز مع BEEP وbeelogger عبر The Things Network',
+
+  whyKicker:'الفجوة في السوق',
+  whyTitle:'لماذا وُجد TanenBase',
+  whyLead:'موازين الخلايا متوفرة للشراء، لكن أغلبها يقود إلى الطرق المسدودة الأربعة نفسها — وهي طرق لا علاقة لها بالنحل، بل بنموذج العمل التجاري.',
+  p1T:'أجهزة غالية ومقيدة بالمورّد',
+  p1D:'يكلف الميزان الجاهز مئات اليوروات حسب المورّد، ثم المبلغ نفسه عن كل طائفة إضافية. والثمن ليس ثمن خلية الوزن، فهي قطعة صناعية زهيدة، بل ثمن النظام المغلق المبني حولها.',
+  p2T:'الارتهان للاشتراك',
+  p2D:'كثير من الأجهزة لا يعمل إلا بعقد ساري المفعول. وحين ينتهي العقد يصمت الميزان وتصبح السجلات القديمة بعيدة المنال، مع أن الجهاز قائم في أرضك وملك لك.',
+  p3T:'التقادم المخطط له',
+  p3D:'إذا أوقفت الشركة الخدمة أو خرجت من السوق، تحولت أجهزة سليمة تماماً إلى نفايات إلكترونية. ولا أحد سوى المصنّع يستطيع تجديد البرمجية، لأن أحداً غيره لم يرها قط.',
+  p4T:'عمر بطارية قصير',
+  p4D:'الإرسال كل ساعة سواء تغير شيء أم لا يعني بطارية جديدة كل موسم، أو لوحاً شمسياً بحاملِه. وكلاهما رحلة إلى المنحل كنت في غنى عنها.',
+  ansTitle:'كيف يجيب TanenBase عن ذلك',
+  a1T:'قطع قياسية لا قطع خاصة.',
+  a1D:'خلية الوزن ووحدة الإرسال والمجس: كلها متاحة في السوق ويمكن استبدالها واحدة واحدة.',
+  a2T:'بلا عقد وبلا حساب.',
+  a2D:'ترسل المحطة إلى الشبكة التي تختارها أنت. ولن تصلك منا فاتورة أبداً.',
+  a3T:'لا شيء مغلق.',
+  a3D:'الشيفرة والمخطط الكهربائي وتقارير القياس كلها منشورة. وستظل قابلة للبناء والتعديل بعد عشر سنوات.',
+  a4T:'توفير الطاقة مدمج في التصميم.',
+  a4D:'ينام الجهاز معظم الوقت ولا يتكلم إلا حين يكون لديه ما يقوله.',
+
+  openKicker:'رخصة Apache 2.0',
+  openTitle:'مفتوح — بالمعنى الحقيقي',
+  openLead:'ليس المقصود بالانفتاح هنا أن ورقة مواصفات متاحة للتنزيل، بل أن بين يديك كل ما يلزم لبناء الجهاز بنفسك والتحقق منه وتعديله ونقله إلى غيرك.',
+  o1T:'كل شيء منشور',
+  o1D:'البرمجية والمخطط الكهربائي وملفات اللوحة ودليل التركيب وسلاسل القياس الكاملة لتصحيح الحرارة — بما في ذلك المواضع التي يظهر فيها العتاد بصورة سيئة. ومن أراد التحقق من صحة الأرقام فبإمكانه ذلك.',
+  o2T:'الإصلاح بدل الاستبدال',
+  o2D:'العلبة تُفتح، والبطارية خلية عادية، والقطع تُشترى مفردة. ويحتاج التبديل إلى مفك براغي وأحياناً إلى كاوية لحام، لا إلى إرجاع الجهاز إلى المصنع.',
+  o3T:'بياناتك ملك لك',
+  o3D:'ترسل المحطة إلى جهاز الاستقبال أو الشبكة التي تدخلها أنت. لا وسيط يطّلع على القراءات، ولا خدمة يتوقف مصير سجلاتك على بقائها.',
+  o4T:'نبني عليه معاً',
+  o4D:'تتيح رخصة Apache 2.0 لأي شخص استعمال TanenBase وتعديله ونقله — تجارياً أيضاً، بلا رسوم وبلا استئذان. والتحسينات القادمة من النحّالين تعود إلى المشروع.',
+
+  mediaTitle:'من الميدان',
+  mediaLead:'ليست رسوماً تخيلية، بل صور للأجهزة نفسها التي قيست عليها أرقام هذه الصفحة.',
+  cap1:'المنصة أثناء الخدمة: الخلية قائمة على الميزان، والعلبة المقاومة للطقس إلى جانبها تحمل الإلكترونيات والبطارية.',
+  cap1Alt:'منصة وزن خشبية في الهواء الطلق وعليها خلية نحل',
+  cap2:'خلية الوزن بين صفيحتين فولاذيتين — وهذه القطعة بالذات اختُبرت ستة أيام في الهواء الطلق بوزن معلوم.',
+  cap2Alt:'خلية وزن مثبتة ببراغٍ بين صفيحتين فولاذيتين',
+  cap3:'التركيب داخل العلبة: المعالج، ووحدة الإرسال مع هوائيها، ومضخّم خلية الوزن. وكل قطعة متوفرة على حدة.',
+  cap3Alt:'علبة مفتوحة تظهر اللوحة ووحدة الإرسال والهوائي',
+  cap4:'يجري الضبط من متصفح الهاتف: خط كبير وأزرار كبيرة وبلا تطبيق يُثبَّت.',
+  cap4Alt:'صفحة الضبط في متصفح الهاتف بأزرار كبيرة',
+
+  techTitle:'المواصفات',
+  techLead:'لمن يريد التفصيل. أما الاستعمال اليومي فلا يتطلب فهم أي مما يلي.',
+  techCap:'حسب الإصدار الحالي. والتغييرات مدونة في سجل تغييرات المشروع.',
+  t1L:'القراءات', t1V:'الوزن، حرارة داخل الخلية، جهد البطارية',
+  t2L:'مجال الوزن', t2V:'حتى 999 كغ',
+  t3L:'الدقة في الاختبار الميداني', t3V:'نحو 12 غ تذبذب على مدى ستة أيام',
+  t4L:'الإرسال اللاسلكي', t4V:'LoRaWAN الفئة A، EU868، OTAA',
+  t5L:'حزمة البيانات', t5V:'8 بايت لكل بلاغ',
+  t6L:'الضبط', t6V:'بلوتوث، وصفحة تحكم في المتصفح (Chrome أو Edge)',
+  t7L:'تيار السكون', t7V:'نحو 4 ميكرو أمبير',
+  t8L:'البطارية', t8V:'خلية ليثيوم AA واحدة (ER14505)',
+  t9L:'العمر التشغيلي (حسابياً)', t9V:'نحو 9 سنوات — قياس كل 15 دقيقة وبلاغ كل ساعتين',
+  t10L:'المعالج', t10V:'Nordic nRF54LM20A، Zephyr / nRF Connect SDK',
+  t11L:'الرخصة', t11V:'رخصة Apache 2.0',
+
+  ctaTitle:'لديك سؤال؟ راسلنا.',
+  ctaLead:'سواء أردت بناء محطة، أو ترددت في اختيار القطع، أو رغبت في استعمال المشروع في جمعيتك للنحالين — تكفي رسالة بريد إلكتروني. ونحن نجيب بالألمانية والإنكليزية والعربية.',
+  ctaBtn:'أرسل رسالة',
+  ctaGit:'اطّلع على دليل التركيب',
+
+  footAbout:'ميزان خلايا مفتوح المصدر للوزن والحرارة. مصمم للخدمة الدائمة في المنحل، لا للعرض في خزانة.',
+  footNav:'الأقسام', footContact:'اتصل بنا', footRepo:'المشروع على GitHub',
+  footLic:'رخصة Apache 2.0 — استعمله وعدّله وانقله، وللأغراض التجارية أيضاً.'
+}
+
+};
+
+const LANG_STORE = 'tanen-site-lang';
+let lang = 'de';
+
+function t(key){ return (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key; }
+
+function applyLang(next){
+  if (!I18N[next]) next = 'de';
+  lang = next;
+  try { localStorage.setItem(LANG_STORE, lang); } catch (e) {}
+
+  const html = document.documentElement;
+  html.lang = lang;
+  html.dir = I18N[lang]._dir;
+
+  document.title = t('pageTitle');
+  document.getElementById('metaDesc').setAttribute('content', t('metaDesc'));
+
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
+
+  document.querySelectorAll('.lang button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+}
+
+document.querySelectorAll('.lang button').forEach(b => {
+  b.addEventListener('click', () => applyLang(b.dataset.lang));
+});
+
+/* Deutsch ist die Vorgabe. Nur eine frueher getroffene Wahl geht davor -
+   die Sprache des Browsers wird bewusst nicht ausgewertet, damit dieselbe
+   Adresse allen dieselbe Seite zeigt, ueber die man sich unterhalten kann. */
+(function initLang(){
+  let start = null;
+  try { start = localStorage.getItem(LANG_STORE); } catch (e) {}
+  applyLang(I18N[start] ? start : 'de');
+})();
+
+/* ========================= Aktueller Bereich =========================
+   Der Punkt in der Kopfzeile zeigt, wo man gerade ist - eine Orientierung,
+   die man sonst nur durch Scrollen zurueckgewinnt. */
+(function trackSection(){
+  const links = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
+  const targets = links
+    .map(a => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) }))
+    .filter(x => x.el);
+  if (!targets.length || !('IntersectionObserver' in window)) return;
+
+  const seen = new Map();
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => seen.set(e.target.id, e.intersectionRatio));
+    let best = null, bestRatio = 0;
+    seen.forEach((ratio, id) => { if (ratio > bestRatio) { bestRatio = ratio; best = id; } });
+    targets.forEach(({ a, el }) => {
+      if (best && el.id === best) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }, { rootMargin: '-140px 0px -55% 0px', threshold: [0, .25, .5, .75, 1] });
+
+  targets.forEach(({ el }) => io.observe(el));
+})();
+</script>
+</body>
+</html>
