@@ -26,7 +26,7 @@ carrier PCB fits both modules — only the underlying GPIO numbers differ. See
 |----------|-----------------|----------|
 | D0 | P1.00 | DS18B20 data (1-Wire). **Wio-SX1262 rework required:** its K1 button + 10K pull-up ship on D0 and stop 1-Wire working entirely — trace must be cut, see Tanen_Base_pcb/README.md |
 | D1 | P1.31 | SX1262 DIO1 |
-| D2 | P1.30 | SX1262 RST |
+| D2 | P1.30 | SX1262 RST **+ external TanenButton** (bare switch to GND). Armed as a System OFF wake source in `power.c`; the internal pull-up holds NRESET high while asleep, so the radio keeps sleeping |
 | D3 | P1.29 | SX1262 BUSY |
 | D4 | P1.03 | SX1262 NSS (SPI CS) |
 | D5 | P1.07 | **LORA_RF_SW1** — Wio-SX1262 antenna-switch control. NOT a spare GPIO: driven RF control line, do not repurpose (a pull-up here parks the switch and bills the System OFF budget) |
@@ -35,7 +35,7 @@ carrier PCB fits both modules — only the underlying GPIO numbers differ. See
 | D8/SCK | P1.04 | SPI SCK (spi23) |
 | D9/MISO | P1.05 | SPI MISO (spi23) |
 | D10/MOSI | P1.06 | SPI MOSI (spi23) |
-| D19 | P0.00 | External TanenButton (XIAO bottom pad, not on the 7-pin header) — wake from System OFF. Port choice is arbitrary; D11/P3.00 works equally well |
+| D19 | P0.00 | *(free)* — held the external TanenButton until 2026-09-07, when it moved to D2. Bottom pad, never routed on carrier v0.1 |
 | — | P0.09 | On-board TanenButton (wake from System OFF) |
 | — | P1.22–P1.24 | RGB LEDs (active HIGH) |
 | — | P1.17 / P1.18 | nPM1300 PMIC I2C — SCL / SDA |

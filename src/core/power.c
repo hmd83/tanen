@@ -15,20 +15,41 @@ LOG_MODULE_REGISTER(power, LOG_LEVEL_INF);
 /* TanenButton on P0.09 (board DTS: button0 / sw0) */
 #define BUTTON_PIN NRF_GPIO_PIN_MAP(0, 9)
 
-/* External TanenButton on D19 = P0.00 (XIAO bottom pad, not on the 7-pin
- * headers). Same behaviour as the on-board one: either press wakes into SETUP,
- * so the two latches are simply OR-ed.
+/* External TanenButton on D2 = P1.30, SHARED with the SX1262 NRESET net
+ * (reset-gpios on the lora0 node). Same behaviour as the on-board one: either
+ * press wakes into SETUP, so the two latches are simply OR-ed.
  *
- * P0.00 has no alternate function; P0.03/P0.04 (D22/D23) carry GRTC PWM /
- * CLKOUT32K, so avoid those.
+ * Moved here from D19 = P0.00 on 2026-09-07: D2 is on a 7-pin header and the
+ * carrier already routes it, where D19 is a XIAO bottom pad that needed a
+ * flying wire. Wiring is a bare momentary switch to GND — no external pull-up,
+ * no cap. Datasheet 'Port capabilities': P0, P1 and P3 are all wakeup sources
+ * with SENSE/DETECT; only P2 is not.
  *
- * This was briefly on D11 = P3.00 and moved here on 2026-08-29 while chasing a
- * 54 uA System OFF reading that was blamed on P3 being a peripheral-domain
- * port. THAT WAS WRONG — the 54 uA was a leak on the carrier board, and
- * swapping the carrier fixed it. P3 was never shown to cost anything. P0 is
- * kept only because the on-board button is already here and there is no reason
- * to churn the wiring; do not cite a power argument for the port choice. */
-#define EXT_BUTTON_PIN NRF_GPIO_PIN_MAP(0, 0)
+ * Sharing NRESET is safe because SETUP is a once-a-year calibration action and
+ * the device is asleep 99.8% of the time (185 s awake/day at MS=900 s /
+ * TX=14400 s):
+ *  - Asleep: input + pull-up + SENSE_LOW. The pull-up (12/14/16 kOhm) holds
+ *    NRESET high — exactly what the old 'drive RST HIGH' did — so the radio
+ *    stays in its warm-start sleep.
+ *  - A press pulls NRESET low: the SoC wakes AND the SX1262 resets. The radio
+ *    reset is free: every wake is a full SoC reset, and sx126x_variant_init()
+ *    configures reset-gpios GPIO_OUTPUT_ACTIVE (active LOW), so it drives
+ *    NRESET low at device init anyway and holds the radio in reset until the
+ *    app runs the LoRa init.
+ *  - Awake: the pin belongs to the sx126x driver as an output, so a press is
+ *    NOT latched and is simply lost (~0.2% of presses). Shorting a
+ *    standard-drive pad to GND is harmless (I_OH,SD 1/3/4 mA vs a 15 mA
+ *    all-GPIO budget). The SETUP LED is the user's feedback: no LED, press
+ *    again.
+ *  - A switch that fails CLOSED holds NRESET low: wake loop draining the cell
+ *    plus a radio stuck in reset. Visible server-side within one heartbeat.
+ *
+ * History: was D11 = P3.00, moved to D19 = P0.00 on 2026-08-29 while chasing a
+ * 54 uA System OFF reading blamed on P3 being a peripheral-domain port. THAT
+ * WAS WRONG — the 54 uA was a carrier-board leak and a carrier swap fixed it.
+ * No port has ever been shown to cost anything; do not cite a power argument
+ * for the port choice. Avoid D22/D23 (P0.03/P0.04 carry GRTC PWM/CLKOUT32K). */
+#define EXT_BUTTON_PIN NRF_GPIO_PIN_MAP(1, 30)
 
 /* On-board py25q64ha NOR on spi00 — pins per the board dtsi (spi00 pinctrl +
  * cs/hold/wp-gpios). spi00 and the flash node are both disabled, so the
@@ -100,7 +121,7 @@ wake_reason_t power_get_wake_reason(void)
         cached_reason = WAKE_REASON_TIMER;
     } else if (latch || ext_latch || (cause & RESET_LOW_POWER_WAKE)) {
         LOG_INF("Wake: button%s%s", latch ? " [P0.09]" : "",
-                ext_latch ? " [D19]" : "");
+                ext_latch ? " [D2]" : "");
         cached_reason = WAKE_REASON_BUTTON;
     } else {
         LOG_INF("Wake: reset (cause=0x%08x)", cause);
@@ -221,11 +242,12 @@ static void gpio_disconnect_all(void)
     nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(1, 5));
     nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(1, 6));
 
-    /* SX1262: drive CS+RST HIGH to keep radio sleeping (floating CS wakes it) */
+    /* SX1262: drive CS HIGH to keep radio sleeping (floating CS wakes it).
+     * RST=P1.30 is deliberately NOT driven here — it is EXT_BUTTON_PIN, armed
+     * as input + pull-up + SENSE_LOW at the end of this function. The pull-up
+     * holds NRESET high, which is what the old drive-HIGH was for. */
     nrf_gpio_cfg_output(NRF_GPIO_PIN_MAP(1, 3));   /* CS=P1.03 HIGH */
     nrf_gpio_pin_set(NRF_GPIO_PIN_MAP(1, 3));
-    nrf_gpio_cfg_output(NRF_GPIO_PIN_MAP(1, 30));  /* RST=P1.30 HIGH */
-    nrf_gpio_pin_set(NRF_GPIO_PIN_MAP(1, 30));
     nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(1, 29));  /* BUSY=P1.29 */
     nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(1, 31));  /* DIO1=P1.31 */
 
@@ -258,8 +280,9 @@ static void gpio_disconnect_all(void)
      *               a pull here (parks the switch + bills the sleep budget).
      * P0.07/P0.08 (i2c30), P1.13/P1.14 (pdm20) — disabled, untouched. */
 
-    /* TanenButtons: on-board P0.09 and external D19 (P0.00), both on the LP
-     * domain. Either press wakes into SETUP. */
+    /* TanenButtons: on-board P0.09 (LP domain) and external D2 = P1.30
+     * (peripheral domain, shared with SX1262 NRESET). Either press wakes into
+     * SETUP. P1.30 is armed here, after the SX1262 pin sweep above. */
     button_arm_sense(BUTTON_PIN);
     button_arm_sense(EXT_BUTTON_PIN);
 }

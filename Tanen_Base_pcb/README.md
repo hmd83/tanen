@@ -57,7 +57,7 @@ either module:
 |----------|-------------|---------------|-----------------|
 | D0 | DS18B20 data (1-Wire) — mandatory K1 cut, see below | P1.04 | P1.00 |
 | D1 | SX1262 DIO1 | P1.05 | P1.31 |
-| D2 | SX1262 RST | P1.06 | P1.30 |
+| D2 | SX1262 RST + external TanenButton | P1.06 | P1.30 |
 | D3 | SX1262 BUSY | P1.07 | P1.29 |
 | D4 | SX1262 NSS | P1.10 | P1.03 |
 | D5 | LORA_RF_SW1 (Wio-SX1262 ant. switch) | P1.11 | P1.07 |
@@ -93,24 +93,48 @@ wake source (`gpio_disconnect_all()` in [`src/core/power.c`](../src/core/power.c
 and R2 reinforces the internal pull-up. P0.09 is not on any header, so that wire
 has to land on the XIAO on-board switch pad.
 
-### External button: D19 (P0.00)
+### External button: D2 (P1.30) — shares the SX1262 NRESET net
 
-The second TanenButton lands on **D19 = P0.00**, a XIAO *bottom pad* — not one of
-the two 7-pin headers, so **carrier v0.1 does not route it** and it needs a
-flying wire. Add a 2-pin net for it in v0.2.
+> **Field-verified 2026-09-09** — bare switch to GND on D2, wake from System OFF
+> into SETUP, no issues observed.
 
-Any wake-capable port works — P0, P1 and P3 all support SENSE/DETECT on this SoC
-(P2 does not). P0.00 was chosen only to match the on-board P0.09 key. Avoid
-D22/D23 (P0.03/P0.04 carry GRTC PWM / CLKOUT32K); D19, D20, D21 and D24 are
-plain GPIO. D11 = P3.00 works equally well.
+The second TanenButton lands on **D2 = P1.30**, the same net as the SX1262
+**NRESET**. D2 is on a 7-pin header, so **carrier v0.1 already routes it** — no
+flying wire, and v0.2 needs no new net. (It was on D19 = P0.00, a bottom pad,
+until 2026-09-07; **D19 is now free**.)
 
-Wiring: momentary switch to
-GND, plus **10 kΩ to +3V3 and 100 nF to GND** if the run leaves the enclosure —
-the pin is sense-armed during System OFF, so a long unfiltered wire is a false-wake
-antenna and every false wake costs a full boot.
+Wiring: a plain momentary switch from D2 to GND. Nothing else — no pull-up, no
+cap. The SoC's internal pull-up (R_PU = 12 / 14 / 16 kΩ min/typ/max) holds the
+line high while the pin is sense-armed in System OFF, and that is also what
+keeps the SX1262 out of reset.
+
+**Why sharing a reset line is acceptable here.** SETUP is a once-a-year
+calibration action and the station is asleep 99.8 % of the time (185 s awake per
+day at T_meas = 900 s / T_tx = 14400 s, from `docs/POWER_BUDGET.md` §1):
+
+- **Asleep (99.8 %)** — press pulls NRESET low: the SoC wakes *and* the SX1262
+  resets. The radio reset is free, because every wake is a full SoC reset and
+  the sx126x driver drives NRESET low at device init anyway.
+- **Awake (0.2 %)** — the pin is a driver-owned output, so the press is not
+  latched and is simply lost. Shorting a standard-drive pad to GND is harmless:
+  I_OH,SD is 1 / 3 / 4 mA against a 15 mA recommended all-GPIO budget. The SETUP
+  LED is the user's feedback — no LED, press again.
+- **Switch fails closed** — NRESET held low: wake loop draining the cell *and* a
+  radio stuck in reset. Missing uplinks make it visible server-side within one
+  heartbeat interval.
+
+Add **100 nF to GND** at the switch only if the button wire leaves the
+enclosure. On D19 a coupled glitch cost a spurious boot; on D2 it also resets
+the radio, possibly mid-TX. 100 nF against the ~14 kΩ pull-up is ~1.4 ms —
+harmless next to the driver's 20 ms reset pulse.
+
+Port note: any wake-capable port works. The nRF54LM20A datasheet *Port
+capabilities* table lists P0, P1 and P3 as wakeup sources with pin sense/detect
+and GPIOTE; **P2 has none of the three** and cannot wake the system at all.
+Avoid D22/D23 (P0.03/P0.04 carry GRTC PWM / CLKOUT32K).
 
 Firmware already supports it: `button_arm_sense()` in
-[`src/core/power.c`](../src/core/power.c) arms P0.09 and P3.00 identically, and
+[`src/core/power.c`](../src/core/power.c) arms P0.09 and P1.30 identically, and
 either press wakes into SETUP.
 
 ### Differences that *are* worth knowing
