@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>TanenBase Stockwaage — Benutzerhandbuch</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 16mm 16mm; }
+
+:root {
+  --ink:      #1a202c;
+  --muted:    #4a5568;
+  --line:     #cbd5e0;
+  --honey:    #d69e2e;
+  --honey-bg: #fffbeb;
+  --danger:   #9b2c2c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 190mm;
+  margin: 0 auto;
+  padding: 12mm 8mm;
+  hyphens: auto;
+}
+
+/* ---------- Ueberschriften ---------- */
+h1 {
+  font-size: 24pt;
+  line-height: 1.2;
+  margin: 0 0 4mm;
+  padding-bottom: 3mm;
+  border-bottom: 3px solid var(--honey);
+}
+h2 {
+  font-size: 16pt;
+  margin: 0 0 4mm;
+  padding: 2mm 0 2mm 3mm;
+  border-left: 5px solid var(--honey);
+  background: var(--honey-bg);
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 12.5pt;
+  margin: 7mm 0 2mm;
+  color: #2d3748;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h4 { font-size: 11pt; margin: 5mm 0 2mm; break-after: avoid; page-break-after: avoid; }
+
+/* Jedes Kapitel auf eine neue Seite; das erste nicht. */
+h2 { break-before: page; page-break-before: always; }
+h2:first-of-type { break-before: auto; page-break-before: auto; }
+
+p { margin: 0 0 3mm; orphans: 3; widows: 3; }
+
+/* ---------- Listen ---------- */
+ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+li { margin-bottom: 1.5mm; }
+li > ul, li > ol { margin-top: 1.5mm; }
+
+/* ---------- Bilder ---------- */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 3mm 0 1mm;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* ---------- Bildunterschriften / Hinweise (Blockquotes) ---------- */
+blockquote {
+  margin: 0 0 4mm;
+  padding: 2.5mm 4mm;
+  border-left: 3px solid var(--line);
+  background: #f7fafc;
+  color: var(--muted);
+  font-size: 9.5pt;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+blockquote p { margin: 0 0 1.5mm; }
+blockquote p:last-child { margin-bottom: 0; }
+
+/* ---------- Tabellen ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 4mm;
+  font-size: 9.5pt;
+  break-inside: auto;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 1.8mm 2.5mm;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #edf2f7; font-weight: 600; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+thead { display: table-header-group; }
+
+/* ---------- Sonstiges ---------- */
+hr { border: 0; border-top: 1px solid var(--line); margin: 6mm 0; }
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 9pt;
+  background: #edf2f7;
+  padding: 0.5mm 1.2mm;
+  border-radius: 2px;
+}
+a { color: #1a202c; text-decoration: underline; }
+strong { font-weight: 600; }
+
+/* Inhaltsverzeichnis: im Druck sind Sprungmarken nutzlos, aber die Gliederung
+   bleibt als Uebersicht wertvoll. */
+h2#inhalt + ol { font-size: 11pt; }
+
+@media print {
+  body { padding: 0; max-width: none; }
+  a { text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<h1>TanenBase Stockwaage — Benutzerhandbuch</h1>
+<p><strong>Für Imkerinnen und Imker. Ohne Technikkenntnisse.</strong></p>
+<p>Dieses Handbuch führt Sie durch Aufbau, Montage, Einrichtung und Kalibrierung
+Ihrer TanenBase Stockwaage. Sie brauchen dafür kein Elektronikwissen und keine
+App.</p>
+<hr />
+<h2>Inhalt</h2>
+<ol>
+<li><a href="#1-vorbereitung--hardware-%C3%BCberblick">Vorbereitung &amp; Hardware-Überblick</a></li>
+<li><a href="#2-montage-am-bienenstock">Montage am Bienenstock</a></li>
+<li><a href="#3-erstinbetriebnahme--web-interface">Erstinbetriebnahme &amp; Web-Interface</a></li>
+<li><a href="#4-kalibrierung-der-waage">Kalibrierung der Waage</a></li>
+<li><a href="#5-fehlerbehebung--pflege">Fehlerbehebung &amp; Pflege</a></li>
+<li><a href="#6-anbindung-an-eine-auswerteplattform-optional">Anbindung an eine Auswerteplattform (optional)</a></li>
+</ol>
+<hr />
+<h2>1. Vorbereitung &amp; Hardware-Überblick</h2>
+<h3>Was die Waage für Sie tut</h3>
+<p>Die TanenBase steht unter Ihrem Bienenstock und macht drei Dinge:</p>
+<ul>
+<li>Sie <strong>wiegt</strong> den Stock — auf wenige Gramm genau.</li>
+<li>Sie <strong>misst die Temperatur</strong>.</li>
+<li>Sie <strong>funkt</strong> die Werte in regelmäßigen Abständen zu Ihnen — ohne Kabel und
+ohne Mobilfunkvertrag.</li>
+</ul>
+<p>So sehen Sie von zu Hause aus, ob der Nektar fließt, ob geschwärmt wurde oder ob
+ein Volk plötzlich leichter wird — ohne den Stock zu öffnen.</p>
+<p>Zwischen den Messungen schläft die Station fast vollständig. Ein Satz Batterien
+hält deshalb <strong>mehrere Jahre</strong>.</p>
+<blockquote>
+<p><strong>Wichtig:</strong> Die Station braucht <strong>keinen Netzstrom</strong> und <strong>kein WLAN</strong>. Nur
+die eingelegten Batterien und Funkempfang am Standort.</p>
+</blockquote>
+<h3>Die Teile im Überblick</h3>
+<table>
+<thead>
+<tr>
+<th>Teil</th>
+<th>Wozu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Wägezelle</strong> (Bosche H40A-C3-0150)</td>
+<td>Der eigentliche Gewichtssensor. Sitzt mittig unter der Waage.</td>
+</tr>
+<tr>
+<td><strong>Waagengestell</strong></td>
+<td>Zwei Platten (oben/unten), zwischen denen die Wägezelle sitzt. Selbst gebaut oder fertig gekauft.</td>
+</tr>
+<tr>
+<td><strong>Elektronik-Gehäuse</strong></td>
+<td>Wetterfeste Box mit durchsichtigem Deckel. Darin steckt die Technik.</td>
+</tr>
+<tr>
+<td><strong>Roter Knopf</strong></td>
+<td>Seitlich am Gehäuse. Damit starten Sie die Einrichtung.</td>
+</tr>
+<tr>
+<td><strong>Aufkleber mit QR-Code</strong></td>
+<td>Auf der Box. Enthält die Gerätenummer (<strong>DevEUI</strong>) Ihrer Station.</td>
+</tr>
+<tr>
+<td><strong>Zwei Kabelverschraubungen</strong></td>
+<td>Unten an der Box. Hier gehen die Kabel wasserdicht heraus.</td>
+</tr>
+<tr>
+<td><strong>Temperaturfühler</strong></td>
+<td>Wasserdichter Fühler am Kabel. Kommt an die Wägezelle (siehe Kapitel 2.4).</td>
+</tr>
+<tr>
+<td><strong>Batterien</strong> — 3 × AA Lithium (1,5 V)</td>
+<td>Versorgen alles. In Reihe ergeben sie rund 5 Volt. <strong>Nicht aufladbar!</strong></td>
+</tr>
+<tr>
+<td><strong>Antenne</strong></td>
+<td>Liegt im Gehäuse. Nicht knicken, nicht mit Metall abdecken.</td>
+</tr>
+</tbody>
+</table>
+<img src="../media/web_screens/20260902_183139.jpg" alt="Die Station geschlossen, in der Hand" width="240">
+<blockquote>
+<p><strong>[Bild 1: Die geschlossene Station]</strong> — Gut zu sehen: der <strong>rote Knopf</strong>
+rechts am Gehäuse, der Aufkleber mit <strong>QR-Code und Gerätenummer</strong>
+(„EA5B1435F…&quot;) und die <strong>zwei Kabelverschraubungen</strong> unten, aus denen die
+beiden schwarzen Kabel kommen.</p>
+</blockquote>
+<img src="../media/Tanen%20base%20assambled.jpg" alt="Die Station geöffnet" width="300">
+<blockquote>
+<p><strong>[Bild 2: Blick in die geöffnete Station]</strong> — Nur für den Notfall wichtig.
+Sie sehen die Platine, den kleinen Schiebeschalter <strong>„OFF / ON&quot;</strong> oben rechts,
+die <strong>blaue Klemme</strong> für den Temperaturfühler und die <strong>grüne Klemme</strong> für die
+Wägezelle. Im Normalbetrieb bleibt der Deckel zu.</p>
+</blockquote>
+<img src="../media/loadcell.jpeg" alt="Die Wägezelle von unten" width="520">
+<blockquote>
+<p><strong>[Bild 3: Die Wägezelle aus der Nähe]</strong> — Auf dem hellen Aluminiumblock steht
+die Nummer <strong>N-150-B</strong> und darunter ein <strong>Pfeil nach unten (⇓)</strong>. Dieser Pfeil
+muss beim Einbau nach unten zeigen. Merken Sie sich das — es ist der häufigste
+Montagefehler.</p>
+</blockquote>
+<img src="../media/platform.jpeg" alt="Die fertige Plattform" width="520">
+<blockquote>
+<p><strong>[Bild 4: Die fertige Waage im Feld]</strong> — Schwarz lackierte Holzplattform, das
+Elektronik-Gehäuse ist an der Kante festgeschraubt, die Kabel laufen nach unten.</p>
+</blockquote>
+<h3>Was Sie zusätzlich brauchen</h3>
+<p><strong>Werkzeug</strong></p>
+<ul>
+<li>Schraubendreher (Kreuzschlitz) und Schraubenschlüssel</li>
+<li><strong>Wasserwaage</strong> — unbedingt nötig</li>
+<li>Kabelbinder</li>
+<li>Optional: Aluminium-Klebeband und etwas Wärmeleitpaste für den Temperaturfühler</li>
+</ul>
+<p><strong>Zum Kalibrieren</strong></p>
+<ul>
+<li>Ein <strong>Gewicht, das Sie genau kennen</strong> — z. B. ein voller 10-Liter-Wasserkanister
+(10 Liter Wasser = 10,0 kg) oder ein abgewogener Betonstein.</li>
+<li>Je schwerer, desto genauer. <strong>10 bis 25 kg</strong> sind ideal.</li>
+</ul>
+<p><strong>Zum Einrichten</strong></p>
+<ul>
+<li>Ein <strong>Android-Handy</strong> oder ein <strong>Laptop</strong> (Windows / Mac / Linux)</li>
+<li>Darauf der Browser <strong>Chrome</strong> oder <strong>Edge</strong></li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>iPhone und iPad funktionieren nicht.</strong> Safari und Firefox ebenfalls nicht.
+Diese Browser können die Bluetooth-Verbindung zur Station technisch nicht
+aufbauen. Leihen Sie sich für die Einrichtung ein Android-Gerät oder nehmen Sie
+einen Laptop mit.</p>
+</blockquote>
+<h3>Sicherheitshinweise</h3>
+<ul>
+<li>Es sind <strong>Lithium-Primärzellen. Niemals laden.</strong> Nicht öffnen, nicht ins Feuer
+werfen, nicht kurzschließen.</li>
+<li><strong>Immer alle drei Zellen gemeinsam wechseln</strong> und nie alte mit neuen mischen.</li>
+<li>Schließen Sie <strong>kein USB-Kabel</strong> an, solange die Batterien eingelegt sind.</li>
+<li><strong>Nicht auf die Plattform steigen.</strong> Das nimmt Ihnen die Wägezelle übel.</li>
+<li>Die Waage ist wetterfest, aber <strong>kein Tauchgerät</strong>. Nicht mit dem
+Hochdruckreiniger abspritzen.</li>
+</ul>
+<hr />
+<h2>2. Montage am Bienenstock</h2>
+<h3>2.1 Das Prinzip in einem Satz</h3>
+<p>In der <strong>Mitte</strong> zwischen zwei Platten sitzt <strong>eine einzige Wägezelle</strong>, die die
+komplette obere Platte trägt. Deshalb ist es egal, wo genau auf der Plattform der
+Stock steht — das Gewicht stimmt trotzdem.</p>
+<p>Diese Bauart heißt <strong>Single-Point-Zelle</strong>. Sie ist der Grund, warum die Waage so
+einfach zu bauen ist.</p>
+<img src="../media/platform_2.jpeg" alt="Die Waage von der Seite" width="520">
+<blockquote>
+<p><strong>[Bild 5: Der Aufbau von der Seite]</strong> — Sehr gut zu erkennen: unten die
+Bodenplatte, oben der Rahmen, und <strong>genau dazwischen in der Mitte</strong> die
+silberne Wägezelle mit ihren beiden Verteilerplatten. Die obere Platte
+<strong>schwebt</strong> — sie berührt nur die Wägezelle, sonst nichts.</p>
+</blockquote>
+<h3>2.2 Das Gestell bauen</h3>
+<p>Sie können jedes Gestell verwenden, das stabil ist. Eine sehr gute, bebilderte
+Bauanleitung finden Sie hier:</p>
+<p>👉 <strong><a href="https://honey-pi.de/teil-4-aufbau-des-waagengestells/">HoneyPi — Aufbau des Waagengestells</a></strong></p>
+<p>Ob Sie Holz, Alu-Profil oder Stahl verwenden, ist Ihnen überlassen. <strong>Wichtig ist
+allein, dass die Wägezelle richtig eingebaut ist.</strong> Halten Sie sich dabei an die
+folgenden fünf Regeln.</p>
+<h3>2.3 Die fünf Regeln für die Wägezelle</h3>
+<p><strong>Regel 1 — Der Pfeil zeigt nach unten</strong></p>
+<p>Auf der Wägezelle ist ein Pfeil (⇓) eingraviert (siehe Bild 3). Er zeigt in die
+Richtung, aus der die Last kommt — also <strong>nach unten zum Boden</strong>. Falsch herum
+eingebaut misst die Waage negativ oder gar nicht.</p>
+<p><strong>Regel 2 — Fest verschraubt zwischen zwei steifen Platten</strong></p>
+<ul>
+<li>Die <strong>untere Hälfte</strong> der Zelle wird auf die Bodenplatte geschraubt.</li>
+<li>Die <strong>obere Hälfte</strong> trägt die obere Platte.</li>
+<li>Verwenden Sie auf beiden Seiten <strong>alle Schraubenlöcher</strong> und ziehen Sie die
+Schrauben <strong>fest</strong> an.</li>
+<li>Legen Sie zwischen Zelle und Holz jeweils eine <strong>Metall-Verteilerplatte</strong>
+(siehe Bild 5). Direkt auf Holz geschraubt arbeitet die Zelle mit dem Holz mit,
+und die Werte wandern.</li>
+</ul>
+<p><strong>Regel 3 — Die obere Platte muss frei schweben</strong></p>
+<p>Das ist die wichtigste Regel überhaupt.</p>
+<ul>
+<li>Rundherum muss ein <strong>Spalt von mindestens 5–10 mm</strong> bleiben.</li>
+<li>Nichts darf die obere Platte berühren: kein Stein, kein Grashalm, kein Kabel,
+keine Nachbarbeute, kein Spanngurt zum Boden.</li>
+<li>Prüfen Sie das nach dem Aufbau von Hand: obere Platte leicht anheben und
+loslassen — sie muss frei federn.</li>
+</ul>
+<blockquote>
+<p>💡 <strong>Merksatz:</strong> Was die obere Platte berührt, wird nicht mitgewogen. Ein
+einziger Grashalm kann Ihnen ein halbes Kilo Honigertrag verstecken.</p>
+</blockquote>
+<p><strong>Regel 4 — Kabel nach unten, mit Schlaufe</strong></p>
+<p>Das Kabel der Wägezelle läuft nach unten weg (siehe Bild 5). Legen Sie kurz vor
+dem Gehäuse eine <strong>Tropfschlaufe</strong> — eine Hängeschlaufe nach unten —, damit
+Wasser am Kabel abtropft und nicht in die Verschraubung läuft. Befestigen Sie das
+Kabel mit Kabelbindern, aber <strong>niemals stramm gespannt</strong>. Zug am Kabel verfälscht
+die Messung.</p>
+<p><strong>Regel 5 — Nicht überlasten</strong></p>
+<p>Die Zelle verträgt 150 kg. Ein Stock wiegt selten mehr als 60 kg. Trotzdem:
+<strong>nicht draufsteigen, nicht als Hebel benutzen, nichts draufwerfen.</strong> Ein
+einziger harter Stoß kann die Zelle dauerhaft verbiegen.</p>
+<h3>2.4 Der Temperaturfühler — direkt an die Wägezelle</h3>
+<p>Das ist der Trick, der Ihre Waage genau macht.</p>
+<p><strong>Warum?</strong> Metall dehnt sich bei Wärme aus. Die Wägezelle zeigt bei Sonne deshalb
+ein anderes Gewicht an als nachts — obwohl sich am Stock nichts geändert hat. Die
+Station rechnet diesen Fehler automatisch heraus. Dafür muss sie aber wissen,
+<strong>wie warm die Wägezelle gerade ist</strong>. Nicht die Luft. Nicht der Stock. <strong>Die
+Zelle.</strong></p>
+<p><strong>So machen Sie es richtig:</strong></p>
+<ol>
+<li>Legen Sie den Temperaturfühler <strong>direkt an den Aluminiumkörper</strong> der Wägezelle
+an — flach anliegend, nicht in der Luft baumelnd.</li>
+<li>Befestigen Sie ihn mit <strong>zwei Kabelbindern</strong> oder einem Streifen
+<strong>Aluminium-Klebeband</strong>. Ein Klecks Wärmeleitpaste dazwischen ist ideal, aber
+nicht zwingend.</li>
+<li>Der Fühler muss <strong>im Schatten</strong> liegen — also unter der Plattform. Nie in der
+direkten Sonne.</li>
+<li>Legen Sie auch hier eine <strong>Tropfschlaufe</strong> ins Kabel.</li>
+</ol>
+<blockquote>
+<p><strong>[Foto einfügen: Temperaturfühler mit Kabelbindern an der Wägezelle
+befestigt, Nahaufnahme von unten]</strong></p>
+</blockquote>
+<img src="../media/loadcell_2.jpeg" alt="Die Wägezelle im eingebauten Zustand" width="520">
+<blockquote>
+<p><strong>[Bild 6: Einbaulage der Wägezelle]</strong> — So sieht der fertige Einbau von unten
+aus. Der Temperaturfühler gehört an diesen Aluminiumblock.</p>
+</blockquote>
+<blockquote>
+<p>ℹ️ <strong>Hinweis:</strong> Wenn Sie stattdessen die <strong>Temperatur im Stock</strong> messen wollen,
+stecken Sie den Fühler in den Stock. Dann verlieren Sie aber die automatische
+Korrektur, und Ihr Gewicht schwankt über den Tag um mehrere hundert Gramm.
+<strong>Unsere klare Empfehlung: Fühler an die Wägezelle.</strong></p>
+</blockquote>
+<h3>2.5 Das Elektronik-Gehäuse befestigen</h3>
+<ol>
+<li>Schrauben Sie das Gehäuse <strong>auf die obere Platte</strong> oder an den Rahmen — so wie
+in Bild 4.</li>
+<li>Die <strong>Kabelverschraubungen müssen nach unten zeigen</strong>. Nie nach oben, sonst
+läuft Regenwasser hinein.</li>
+<li>Ziehen Sie beide <strong>Verschraubungen handfest</strong> nach, bis die Kabel nicht mehr
+rutschen.</li>
+<li>Stellen Sie das Gehäuse möglichst in den <strong>Schatten</strong> — unter dem Blechdach,
+an der Nordseite oder mit einem kleinen Brett darüber.</li>
+<li>Ziehen Sie alle <strong>vier Deckelschrauben</strong> gleichmäßig an. Die Dichtung muss
+rundum anliegen.</li>
+<li><strong>Kein Metall über der Antenne.</strong> Kein Blechdach direkt darüber, kein
+Metallgitter. Das schluckt den Funk.</li>
+</ol>
+<blockquote>
+<p><strong>[Foto einfügen: Elektronik-Gehäuse an der Plattform verschraubt,
+Kabelverschraubungen nach unten, Tropfschlaufen sichtbar]</strong></p>
+</blockquote>
+<h3>2.6 Aufstellen und ausrichten</h3>
+<ol>
+<li><strong>Untergrund vorbereiten.</strong> Zwei Betonplatten, Gehwegplatten oder
+Betonsteine. Der Boden muss <strong>fest</strong> sein. Auf weicher Erde sackt die Waage im
+Lauf des Jahres ab, und Ihre Werte wandern mit.</li>
+<li><strong>Waage aufstellen.</strong> Nichts darf wackeln. Zum Prüfen an allen vier Ecken
+drücken — kippelt sie, unterlegen Sie.</li>
+<li><strong>Ausrichten mit der Wasserwaage.</strong> Prüfen Sie in <strong>beide Richtungen</strong> (längs
+und quer). Eine schräge Waage misst zu wenig.</li>
+<li><strong>Stock aufsetzen.</strong> Möglichst <strong>mittig</strong>. Flugloch in die gewohnte Richtung.</li>
+<li><strong>Letzte Kontrolle:</strong> Gehen Sie einmal rundherum. Berührt irgendetwas die
+obere Platte? Gras, Steine, Kabel, der Nachbarstock, ein Spanngurt? Dann weg
+damit.</li>
+</ol>
+<blockquote>
+<p><strong>[Foto einfügen: Bienenstock steht mittig auf der Plattform, Gesamtansicht am
+Bienenstand]</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>[Foto einfügen: Wasserwaage längs und quer auf der oberen Platte]</strong></p>
+</blockquote>
+<hr />
+<h2>3. Erstinbetriebnahme &amp; Web-Interface</h2>
+<h3>3.1 Vorbereitung</h3>
+<ul>
+<li><strong>Android-Handy oder Laptop</strong> mit <strong>Chrome</strong> oder <strong>Edge</strong> bereitlegen.</li>
+<li><strong>Bluetooth einschalten.</strong></li>
+<li>Auf dem Handy zusätzlich den <strong>Standort</strong> einschalten — Android verlangt das
+für die Bluetooth-Suche.</li>
+<li>Sie sollten <strong>neben der Waage stehen</strong>. Die Reichweite beträgt wenige Meter.</li>
+</ul>
+<h3>3.2 Batterien einlegen</h3>
+<ol>
+<li>Vier Deckelschrauben lösen, Deckel abnehmen.</li>
+<li><strong>Drei AA-Lithiumzellen</strong> in den Batteriehalter einlegen — auf <strong>+ und −</strong>
+achten. Immer alle drei zusammen, immer gleiche Marke, immer frisch.</li>
+<li>Den kleinen Schalter auf der Platine auf <strong>ON</strong> stellen (siehe Bild 2).</li>
+<li>Deckel wieder auflegen. Zum Einrichten reicht es, ihn lose aufzulegen —
+festschrauben können Sie am Ende.</li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>Nur AA-Lithiumzellen</strong> (z. B. Energizer Ultimate Lithium). Keine
+Alkaline-Batterien — die laufen im Freien aus und brechen bei Frost ein. Keine
+Akkus.</p>
+</blockquote>
+<h3>3.3 Die Bedienseite öffnen</h3>
+<p>Öffnen Sie in <strong>Chrome</strong> oder <strong>Edge</strong>:</p>
+<h3>👉 <strong>http://tanen.eu/setup</strong></h3>
+<p>Alternativ: <strong>QR-Code auf dem Aufkleber scannen</strong> — der führt zur selben Seite.</p>
+<p>Sie brauchen <strong>keine App</strong> und müssen <strong>nichts installieren</strong>. Die Seite läuft im
+Browser.</p>
+<img src="../media/web_screens/Screenshot_20260902_202330_Chrome.jpg" alt="Die Startseite der Bedienoberfläche" width="250">
+<blockquote>
+<p><strong>[Bild 7: Startseite „Gerät verbinden&quot;]</strong> — Oben rechts stellen Sie die
+<strong>Sprache</strong> um (Deutsch / English / عربي). In der Mitte stehen die beiden
+Schritte, unten der große gelbe Knopf <strong>„Verbinden&quot;</strong>.</p>
+</blockquote>
+<h3>3.4 Verbinden</h3>
+<ol>
+<li><strong>Drücken Sie den roten Knopf</strong> an der Station — <strong>kurz drücken und wieder
+loslassen</strong>. Nicht gedrückt halten.
+<ul>
+<li>Die Station ist jetzt <strong>3 Minuten lang</strong> im Einrichtungs-Modus.</li>
+<li>Bei durchsichtigem Deckel sehen Sie eine <strong>kleine Leuchtdiode</strong>, die
+währenddessen leuchtet.</li>
+<li><strong>Tut sich nichts?</strong> Dann war die Station in genau diesem Moment gerade
+wach und hat den Druck nicht mitbekommen — das passiert selten (etwa bei
+jedem 500. Mal). <strong>Einfach noch einmal kurz drücken.</strong></li>
+</ul>
+</li>
+<li>Tippen Sie auf der Webseite auf <strong>„Verbinden&quot;</strong>.</li>
+<li>Der Browser öffnet eine Liste. Wählen Sie darin den Eintrag
+<strong>„TanenBase-XXXX&quot;</strong> (die vier Zeichen sind Ihre Gerätenummer).</li>
+<li>Tippen Sie auf <strong>„Koppeln&quot;</strong> bzw. <strong>„Pair&quot;</strong>.</li>
+</ol>
+<img src="../media/web_screens/Screenshot_20260902_202342_Chrome.jpg" alt="Die Geräteauswahl des Browsers" width="250">
+<blockquote>
+<p><strong>[Bild 8: Der Browser fragt nach dem Gerät]</strong> — Hier erscheint
+<strong>„TanenBase-57CD&quot;</strong>. Antippen, dann rechts unten auf <strong>„Pair&quot;</strong>.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>Erscheint kein Gerät?</strong> Dann ist der Einrichtungs-Modus abgelaufen.
+Drücken Sie den roten Knopf einfach noch einmal und tippen Sie erneut auf
+„Verbinden&quot;.</p>
+</blockquote>
+<h3>3.5 Die Übersicht verstehen</h3>
+<p>Nach dem Verbinden landen Sie auf der <strong>Übersicht</strong>.</p>
+<img src="../media/web_screens/Screenshot_20260902_202411_Chrome.jpg" alt="Die Übersichtsseite" width="250">
+<blockquote>
+<p><strong>[Bild 9: Die Übersicht]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Was Sie sehen</th>
+<th>Was es bedeutet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grüne Blase „Verbunden&quot; mit Countdown (z. B. 2:45)</strong></td>
+<td>Die Verbindung steht. Der Countdown zeigt, wie lange der Einrichtungs-Modus noch läuft.</td>
+</tr>
+<tr>
+<td><strong>Große Zahl „Gewicht … kg&quot;</strong></td>
+<td>Das aktuelle Gewicht, live. Aktualisiert sich alle paar Sekunden.</td>
+</tr>
+<tr>
+<td><strong>Temperatur (°C)</strong></td>
+<td>Was der Fühler gerade misst.</td>
+</tr>
+<tr>
+<td><strong>Batterie (Volt)</strong></td>
+<td>Spannung aller drei Zellen zusammen. <strong>Frisch ≈ 5,0 V.</strong> Ab <strong>unter 3,6 V</strong> sollten Sie wechseln.</td>
+</tr>
+<tr>
+<td><strong>„Werte neu laden&quot;</strong></td>
+<td>Fragt alle Werte sofort neu ab.</td>
+</tr>
+<tr>
+<td><strong>„Funk-Test senden&quot;</strong></td>
+<td>Schickt einmalig ein Testsignal ins Funknetz. Damit prüfen Sie, ob am Standort Empfang ist.</td>
+</tr>
+</tbody>
+</table>
+<p>Ganz unten sind die <strong>vier Reiter</strong>:</p>
+<ul>
+<li><strong>Übersicht</strong> — die Live-Werte (diese Seite)</li>
+<li><strong>Waage</strong> — hier kalibrieren Sie (Kapitel 4)</li>
+<li><strong>Einstellungen</strong> — Zeiten und Alarm-Grenzen</li>
+<li><strong>Netzwerk</strong> — ⚠️ <strong>nur für Fachleute.</strong> Hier ändern Sie nichts.</li>
+</ul>
+<h3>3.6 Zeiten und Alarm-Grenzen einstellen</h3>
+<p>Gehen Sie auf den Reiter <strong>„Einstellungen&quot;</strong>.</p>
+<img src="../media/web_screens/Screenshot_20260902_202522_Chrome.jpg" alt="Zeiten einstellen" width="250">
+<blockquote>
+<p><strong>[Bild 10: Zeiten &amp; Alarm]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Was es bedeutet</th>
+<th>Empfehlung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Senden alle (Minuten)</strong></td>
+<td>Wie oft die Station funkt.</td>
+<td><strong>240</strong> (alle 4 Stunden). Häufiger senden verkürzt die Batterielaufzeit.</td>
+</tr>
+<tr>
+<td><strong>Messen alle (Minuten)</strong></td>
+<td>Wie oft die Station intern misst.</td>
+<td><strong>5</strong> bis <strong>15</strong></td>
+</tr>
+<tr>
+<td><strong>Alarm-Grenze Gewicht (kg)</strong></td>
+<td>Ändert sich das Gewicht plötzlich stärker, meldet sich die Station <strong>sofort</strong> — auch außerhalb der normalen Sendezeit.</td>
+<td><strong>2,0 kg</strong> (erkennt Schwarm, Diebstahl, Umsturz)</td>
+</tr>
+<tr>
+<td><strong>Alarm-Grenze Temperatur (°C)</strong></td>
+<td>Dasselbe für die Temperatur.</td>
+<td><strong>5,0 °C</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Tippen Sie danach auf den grünen Knopf <strong>„Einstellungen speichern&quot;</strong>. Es
+erscheint kurz die Meldung <strong>„Gespeichert&quot;</strong>.</p>
+<img src="../media/web_screens/Screenshot_20260902_202543_Chrome.jpg" alt="Alarm-Grenzen und Abschluss" width="220">
+<blockquote>
+<p><strong>[Bild 11: Alarm-Grenzen und „Einrichtung beenden&quot;]</strong></p>
+</blockquote>
+<h3>3.7 Einrichtung beenden</h3>
+<p><strong>Erst kalibrieren (Kapitel 4), dann beenden!</strong></p>
+<p>Wenn alles erledigt ist:</p>
+<ol>
+<li>Reiter <strong>„Einstellungen&quot;</strong> → ganz nach unten scrollen.</li>
+<li>Auf den roten Knopf <strong>„Einrichtung beenden&quot;</strong> tippen.</li>
+<li>Die Station startet neu, schaltet Bluetooth ab und geht in den normalen
+Betrieb.</li>
+</ol>
+<p>Jetzt können Sie den Deckel festschrauben.</p>
+<blockquote>
+<p>ℹ️ Der Einrichtungs-Modus endet auch <strong>von selbst nach 3 Minuten</strong>. Es geht
+nichts verloren — alles Gespeicherte bleibt gespeichert. Sie kommen jederzeit
+wieder hinein: roter Knopf, „Verbinden&quot;.</p>
+</blockquote>
+<hr />
+<h2>4. Kalibrierung der Waage</h2>
+<p><strong>Kalibrieren heißt: der Waage beibringen, was ein Kilogramm ist.</strong> Das machen
+Sie einmal beim Aufbau — und danach nur noch selten.</p>
+<h3>4.1 Wann Sie kalibrieren müssen</h3>
+<ul>
+<li>✅ Beim <strong>ersten Aufbau</strong> — immer</li>
+<li>✅ Nach jeder <strong>mechanischen Änderung</strong> (Schrauben gelöst, Zelle getauscht,
+Gestell umgebaut, Waage umgestellt)</li>
+<li>✅ Einmal im Jahr zur Kontrolle, z. B. im Frühjahr</li>
+<li>❌ <strong>Nicht</strong> nötig nach einem Batteriewechsel — die Werte bleiben gespeichert</li>
+</ul>
+<h3>4.2 Vorher lesen — drei Tipps, die den Unterschied machen</h3>
+<blockquote>
+<p><strong>Tipp 1 — Erst fertig aufbauen, dann kalibrieren.</strong>
+Die Waage muss <strong>an ihrem endgültigen Platz</strong> stehen, ausgerichtet und
+festgeschraubt. Kalibrieren Sie nie auf der Werkbank.</p>
+</blockquote>
+<blockquote>
+<p><strong>Tipp 2 — Kalibrieren Sie bei „normaler&quot; Temperatur, im Schatten.</strong>
+Die Station merkt sich beim Nullsetzen, <strong>wie warm es gerade war</strong>, und
+benutzt das als Bezugspunkt für ihre Temperaturkorrektur. Kalibrieren Sie
+deshalb <strong>nicht in der prallen Mittagssonne</strong> und nicht im Frost, sondern bei
+einer Temperatur, wie sie am Stand üblich ist. Morgens oder am frühen Abend ist
+ideal.</p>
+</blockquote>
+<blockquote>
+<p><strong>Tipp 3 — Kennen Sie Ihr Referenzgewicht wirklich?</strong>
+„So ungefähr 10 Kilo&quot; reicht nicht. Wiegen Sie Kanister oder Stein vorher auf
+einer Personen- oder Kofferwaage ab. Ein 10-Liter-Kanister <strong>randvoll mit
+Wasser</strong> wiegt 10,0 kg — das ist die einfachste zuverlässige Lösung.</p>
+</blockquote>
+<h3>4.3 Vorbereitung</h3>
+<ol>
+<li>Roten Knopf drücken, auf <strong>http://tanen.eu/setup</strong> verbinden (Kapitel 3.4).</li>
+<li>Auf den Reiter <strong>„Waage&quot;</strong> tippen.</li>
+</ol>
+<p>Sie sehen jetzt den Ablauf in <strong>drei Schritten</strong> — oben zeigen die Kreise
+<strong>1 – 2 – 3</strong>, wo Sie gerade sind.</p>
+<h3>4.4 Schritt 1: Nullpunkt setzen (Tarieren)</h3>
+<img src="../media/web_screens/Screenshot_20260902_202428_Chrome.jpg" alt="Schritt 1 der Kalibrierung" width="250">
+<blockquote>
+<p><strong>[Bild 12: „Schritt 1: Waage leer räumen&quot;]</strong></p>
+</blockquote>
+<p><strong>Zuerst entscheiden Sie, was Sie messen wollen:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Was Sie tun</th>
+<th>Was die Waage später anzeigt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A — Gesamtgewicht</strong> ⭐ empfohlen</td>
+<td>Plattform <strong>komplett leer</strong> räumen (auch den Stock herunternehmen)</td>
+<td>Das <strong>gesamte</strong> Gewicht: Beute + Waben + Bienen + Honig</td>
+</tr>
+<tr>
+<td><strong>B — Nur der Zuwachs</strong></td>
+<td>Die <strong>leere Beute</strong> stehen lassen und darauf tarieren</td>
+<td>Nur das, was <strong>dazukommt</strong> — also im Wesentlichen der Honig</td>
+</tr>
+</tbody>
+</table>
+<p>Wir empfehlen <strong>Variante A</strong>. Das Gesamtgewicht ist die aussagekräftigere Zahl,
+und Auswerteplattformen wie BEEP oder beelogger erwarten sie so.</p>
+<p><strong>So geht es:</strong></p>
+<ol>
+<li>Räumen Sie die Plattform entsprechend Ihrer Wahl leer.</li>
+<li><strong>Nichts anfassen, nicht anlehnen, nicht abstützen.</strong></li>
+<li>Warten Sie ein paar Sekunden, bis der Wert in der Übersicht ruhig steht.</li>
+<li>Tippen Sie auf den gelben Knopf <strong>„Auf Null setzen&quot;</strong>.</li>
+<li>Kurz erscheint <strong>„Gespeichert&quot;</strong>. Die Anzeige springt weiter zu Schritt 2.</li>
+</ol>
+<p><strong>Kontrolle:</strong> Wechseln Sie kurz auf <strong>„Übersicht&quot;</strong>. Dort muss jetzt <strong>0,00 kg</strong>
+stehen (Abweichungen von ein paar Gramm sind normal).</p>
+<h3>4.5 Schritt 2: Bekanntes Gewicht auflegen</h3>
+<img src="../media/web_screens/Screenshot_20260902_202454_Chrome.jpg" alt="Schritt 2 der Kalibrierung" width="250">
+<blockquote>
+<p><strong>[Bild 13: „Schritt 2: Bekanntes Gewicht auflegen&quot;]</strong></p>
+</blockquote>
+<ol>
+<li>
+<p>Legen Sie Ihr Referenzgewicht <strong>mittig auf die Plattform</strong> — den vollen
+Wasserkanister, einen abgewogenen Betonstein, Hantelscheiben.</p>
+<img src="../media/test_with_block.jpeg" alt="Kalibrierung mit einem Betonstein" width="240">
+<blockquote>
+<p><strong>[Bild 14: Referenzgewicht auf der Plattform]</strong> — Hier wurde ein
+abgewogener Betonstein verwendet.</p>
+</blockquote>
+</li>
+<li>
+<p>Warten Sie 5–10 Sekunden, bis sich nichts mehr bewegt.</p>
+</li>
+<li>
+<p>Tragen Sie im Feld <strong>„Gewicht in Kilogramm&quot;</strong> den <strong>genauen</strong> Wert ein.</p>
+<ul>
+<li>Mit <strong>Punkt</strong>, nicht mit Komma: <code>10.00</code></li>
+<li>Beispiel: 10 Liter Wasser → <code>10.00</code>; abgewogener Stein 12,4 kg → <code>12.40</code></li>
+</ul>
+</li>
+<li>
+<p>Tippen Sie auf den grünen Knopf <strong>„Jetzt einstellen&quot;</strong>.</p>
+</li>
+</ol>
+<blockquote>
+<p>⚠️ Erscheint <strong>„Bitte zuerst das Gewicht eintragen&quot;</strong>, ist das Feld noch leer.</p>
+</blockquote>
+<h3>4.6 Schritt 3: Bestätigung</h3>
+<p>Es erscheint der grüne Haken und der Text:</p>
+<blockquote>
+<p><strong>„Fertig! Die Waage ist eingestellt.&quot;</strong></p>
+</blockquote>
+<p>Darunter stehen zwei Zahlen:</p>
+<ul>
+<li><strong>Null-Punkt</strong> — der gespeicherte Nullwert</li>
+<li><strong>Umrechnung</strong> — der ermittelte Umrechnungsfaktor</li>
+</ul>
+<p>Notieren Sie sich beide Zahlen oder machen Sie einen Screenshot. Wenn später
+etwas seltsam aussieht, kann Ihr Betreuer damit sofort etwas anfangen.</p>
+<h3>4.7 Jetzt gegenprüfen — bitte nicht überspringen</h3>
+<ol>
+<li>Wechseln Sie auf <strong>„Übersicht&quot;</strong>.</li>
+<li>Das Referenzgewicht liegt noch drauf → es muss <strong>Ihr eingetragener Wert</strong>
+stehen (z. B. 10,00 kg).</li>
+<li><strong>Gewicht herunternehmen</strong> → die Anzeige muss auf <strong>0,00 kg</strong> zurückgehen.</li>
+<li><strong>Wieder drauflegen</strong> → wieder der richtige Wert.</li>
+<li>Legen Sie das Gewicht einmal <strong>an den Rand</strong> der Plattform statt in die Mitte
+→ der Wert muss <strong>fast gleich</strong> bleiben.
+<ul>
+<li>Weicht er deutlich ab, sitzt die Wägezelle schief oder nicht fest genug.
+Zurück zu Kapitel 2.3.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Alles gut?</strong> Dann Stock wieder aufsetzen, auf <strong>„Einstellungen&quot;</strong> gehen und
+<strong>„Einrichtung beenden&quot;</strong> tippen. Deckel zuschrauben. Fertig.</p>
+<blockquote>
+<p>💡 Wenn Sie nach <strong>Variante A</strong> tariert haben, zeigt die Waage jetzt das
+Gesamtgewicht Ihres Stocks. Notieren Sie diesen Startwert in Ihrem Stockbuch.</p>
+</blockquote>
+<hr />
+<h2>5. Fehlerbehebung &amp; Pflege</h2>
+<h3>5.1 Probleme beim Verbinden</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Ursache &amp; Lösung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>„Dieser Browser kann kein Bluetooth&quot;</strong></td>
+<td>Sie benutzen Safari, Firefox oder ein iPhone. → <strong>Chrome oder Edge</strong> auf Android/Laptop verwenden.</td>
+</tr>
+<tr>
+<td><strong>Nach „Verbinden&quot; erscheint keine Liste</strong></td>
+<td>Bluetooth am Handy aus. → Einschalten. Auf Android zusätzlich den <strong>Standort</strong> einschalten.</td>
+</tr>
+<tr>
+<td><strong>Liste ist leer / kein „TanenBase&quot;</strong></td>
+<td>Der Einrichtungs-Modus (3 Minuten) ist abgelaufen. → <strong>Roten Knopf erneut kurz drücken</strong>, dann sofort wieder „Verbinden&quot;.</td>
+</tr>
+<tr>
+<td><strong>Weiterhin nichts</strong></td>
+<td>Batterie leer oder Schalter auf OFF. → Deckel öffnen, Schalter auf <strong>ON</strong>, Batterie prüfen.</td>
+</tr>
+<tr>
+<td><strong>Verbindung bricht ab</strong></td>
+<td>Zu weit weg. → Näher als 5 Meter an die Station gehen.</td>
+</tr>
+<tr>
+<td><strong>Nach 3 Minuten ist alles weg</strong></td>
+<td>Das ist <strong>normal</strong>. Die Station spart Strom. Roter Knopf → neu verbinden.</td>
+</tr>
+</tbody>
+</table>
+<h3>5.2 Probleme mit dem Gewicht</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Ursache &amp; Lösung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Wert springt wild hin und her</strong></td>
+<td>Etwas berührt die obere Platte: Gras, Stein, Kabel, Nachbarbeute, Spanngurt. → Spalt rundum freimachen (Regel 3).</td>
+</tr>
+<tr>
+<td><strong>Anzeige immer 0,00 kg, egal was drauf liegt</strong></td>
+<td>Kabel der Wägezelle sitzt nicht fest in der Klemme. → Deckel öffnen, grüne Klemme prüfen.</td>
+</tr>
+<tr>
+<td><strong>Wert ist negativ</strong></td>
+<td>Beim Nullsetzen lag noch etwas auf der Waage, das jetzt fehlt. → Neu tarieren (Kapitel 4.4).</td>
+</tr>
+<tr>
+<td><strong>Wert wandert über den Tag um mehrere hundert Gramm</strong></td>
+<td>Sonne auf Plattform oder Wägezelle — <strong>oder</strong> der Temperaturfühler liegt nicht mehr an der Zelle an. → Fühler prüfen und neu befestigen (Kapitel 2.4), Waage beschatten.</td>
+</tr>
+<tr>
+<td><strong>Wert ist konstant zu hoch oder zu niedrig</strong></td>
+<td>Nullpunkt hat sich verschoben (Waage umgestellt, Boden gesackt). → Neu tarieren.</td>
+</tr>
+<tr>
+<td><strong>Wert ändert sich, je nachdem wo das Gewicht liegt</strong></td>
+<td>Wägezelle nicht fest oder verkantet. → Alle Schrauben nachziehen, mit der Wasserwaage neu ausrichten.</td>
+</tr>
+<tr>
+<td><strong>Plötzlich +200 g nach Regen</strong></td>
+<td>Das ist <strong>echt</strong> — Holz und Beute saugen Wasser. Nach ein bis zwei trockenen Tagen ist es wieder weg.</td>
+</tr>
+</tbody>
+</table>
+<h3>5.3 Probleme mit Temperatur, Batterie und Funk</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Ursache &amp; Lösung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Temperatur zeigt „--&quot; oder unsinnige Werte</strong></td>
+<td>Fühlerkabel lose oder gebrochen. → Blaue Klemme im Gehäuse prüfen (Bild 2). Bei Bruch Fühler tauschen. Die Waage wiegt weiter — nur ohne Temperaturkorrektur.</td>
+</tr>
+<tr>
+<td><strong>Temperatur viel höher als die Luft</strong></td>
+<td>Fühler liegt in der Sonne. → In den Schatten unter die Plattform verlegen.</td>
+</tr>
+<tr>
+<td><strong>Batterie unter 3,6 V</strong></td>
+<td>Zellen am Ende. → Alle drei gegen neue <strong>AA-Lithiumzellen</strong> tauschen. Die Kalibrierung bleibt erhalten.</td>
+</tr>
+<tr>
+<td><strong>Batterie neu, aber Anzeige niedrig</strong></td>
+<td>Eine Zelle sitzt falsch herum oder hat schlechten Kontakt. → Alle drei prüfen, Kontakte säubern. Alte und neue Zellen nie mischen.</td>
+</tr>
+<tr>
+<td><strong>Keine Daten kommen an</strong></td>
+<td>Kein Funkempfang am Standort. → Über „Funk-Test senden&quot; prüfen; Gehäuse höher setzen, Metall über der Antenne entfernen, ggf. Betreuer wegen Gateway-Abdeckung fragen.</td>
+</tr>
+<tr>
+<td><strong>Daten kommen an, aber nicht bei BEEP / beelogger</strong></td>
+<td>Gerät ist auf der Plattform nicht korrekt eingetragen. → Kapitel 6.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Niemals selbst tun:</strong> Batterie laden, USB anschließen, im Reiter
+„Netzwerk&quot; Zahlen ändern. Bei Funkproblemen wenden Sie sich an die Person, die
+Ihre Station eingerichtet hat.</p>
+</blockquote>
+<h3>5.4 Pflege — was Sie wann tun sollten</h3>
+<p><strong>Bei jedem Besuch am Stand (30 Sekunden)</strong></p>
+<ul>
+<li>Einmal rundherum schauen: Berührt etwas die obere Platte?</li>
+<li>Gras und Laub unter und neben der Plattform entfernen.</li>
+</ul>
+<p><strong>Im Frühjahr</strong></p>
+<ul>
+<li>Alle Schrauben an Gestell und Wägezelle nachziehen.</li>
+<li>Kabel und Kabelverschraubungen auf Marderbisse und Risse prüfen.</li>
+<li>Ameisennester und Propolis aus dem Spalt entfernen.</li>
+<li>Waage mit der Wasserwaage nachprüfen — der Boden arbeitet über den Winter.</li>
+<li><strong>Batteriespannung ablesen</strong> (roter Knopf → Übersicht).</li>
+<li>Kalibrierung mit dem Referenzgewicht gegenprüfen (Kapitel 4.7).</li>
+</ul>
+<p><strong>Im Herbst</strong></p>
+<ul>
+<li>Deckelschrauben und Dichtung prüfen.</li>
+<li>Freien Spalt sicherstellen — sonst friert die Plattform im Winter am Boden
+fest, und die Werte sind unbrauchbar.</li>
+<li>Bei viel Schnee: Schnee vorsichtig <strong>abfegen</strong>, nicht abkratzen.</li>
+</ul>
+<p><strong>Beim Umstellen der Waage</strong></p>
+<ul>
+<li>Nach jedem Standortwechsel: <strong>neu ausrichten und neu tarieren.</strong></li>
+</ul>
+<p><strong>Was Sie nie tun sollten</strong></p>
+<ul>
+<li>Auf die Plattform steigen</li>
+<li>Mit dem Hochdruckreiniger reinigen</li>
+<li>Den Stock ruckartig auf die Plattform fallen lassen</li>
+<li>Das Kabel der Wägezelle als Griff benutzen</li>
+</ul>
+<hr />
+<h2>6. Anbindung an eine Auswerteplattform (optional)</h2>
+<p>Ihre Station schickt ihre Werte über das Funknetz <strong>TTN (The Things Network)</strong>.
+Von dort können sie an eine kostenlose Auswerteplattform weitergereicht werden,
+die daraus Diagramme macht und die Messreihen aufbewahrt. Zwei Plattformen
+werden unterstützt:</p>
+<table>
+<thead>
+<tr>
+<th>Plattform</th>
+<th>Was sie ist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BEEP</strong> (<a href="https://beep.nl">beep.nl</a>)</td>
+<td>Offene Plattform aus den Niederlanden mit Diagrammen und digitalem Stockbuch. Im Feld erprobt.</td>
+</tr>
+<tr>
+<td><strong>beelogger</strong> (<a href="https://beelogger.de">beelogger.de</a>)</td>
+<td>Offenes deutschsprachiges Projekt rund um Stockwaagen; sein Community-Server nimmt dieselben Werte entgegen. Im Feld erprobt.</td>
+</tr>
+</tbody>
+</table>
+<p>Sie müssen sich <strong>nicht</strong> entscheiden: Es ist derselbe Funkspruch, und die
+Umsetzung in TTN liefert beide Formate gleichzeitig. Sie können also eine
+Plattform nutzen oder beide.</p>
+<blockquote>
+<p>ℹ️ <strong>Voraussetzung:</strong> Ihre Station muss bereits im Funknetz <strong>TTN (The Things
+Network)</strong> angemeldet sein und in Reichweite eines Gateways stehen. Das richtet
+in der Regel die Person ein, von der Sie die Station bekommen haben. Nur der
+letzte Schritt — das Gerät bei der Plattform eintragen — ist Ihre Aufgabe.</p>
+</blockquote>
+<h3>6.1 Was Sie brauchen</h3>
+<ul>
+<li>Ein kostenloses Konto bei der Plattform Ihrer Wahl —
+<strong><a href="https://beep.nl">beep.nl</a></strong> oder <strong><a href="https://beelogger.de">beelogger.de</a></strong></li>
+<li>Ihre <strong>Gerätenummer (DevEUI)</strong> — sie steht auf dem <strong>Aufkleber am Gehäuse</strong>
+(siehe Bild 1, z. B. <code>EA5B1435F…</code>)</li>
+</ul>
+<h3>6.2 Gerät bei BEEP eintragen</h3>
+<img src="../media/web_screens/beep_platform.png" alt="Geräte-Seite bei BEEP" width="600">
+<blockquote>
+<p><strong>[Bild 15: Die Seite „Geräte&quot; bei BEEP]</strong> — Die drei dunkelrot umrandeten
+Felder sind die entscheidenden.</p>
+</blockquote>
+<ol>
+<li>Bei <strong>beep.nl</strong> anmelden.</li>
+<li>Im Menü auf <strong>„Geräte&quot;</strong> gehen.</li>
+<li>Oben rechts auf <strong>„+ NEUES GERÄT HINZUFÜGEN&quot;</strong> klicken.</li>
+<li>Die Felder ausfüllen:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Was eintragen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Ein Name Ihrer Wahl, z. B. „Waage Streuobstwiese&quot;</td>
+</tr>
+<tr>
+<td><strong>Eindeutige Gerätekennung</strong></td>
+<td>Ihre <strong>DevEUI vom Aufkleber</strong> — genau so, ohne Leerzeichen</td>
+</tr>
+<tr>
+<td><strong>Typ</strong></td>
+<td>Aus der Liste <strong>„Other&quot;</strong> auswählen</td>
+</tr>
+<tr>
+<td><strong>Beute</strong></td>
+<td>Den Bienenstock auswählen, auf dem die Waage steht</td>
+</tr>
+<tr>
+<td>Hardware ID / Firmware version</td>
+<td>Leer lassen — füllt sich später von selbst</td>
+</tr>
+</tbody>
+</table>
+<ol start="5">
+<li>Oben rechts auf <strong>„✓ SICHERN&quot;</strong> klicken.</li>
+</ol>
+<p>Beim nächsten Funkspruch Ihrer Station erscheinen die Werte in BEEP. Das kann je
+nach Einstellung <strong>bis zu vier Stunden</strong> dauern. Wenn Sie nicht warten wollen:
+roter Knopf → <strong>„Funk-Test senden&quot;</strong>.</p>
+<h3>6.3 Werte an beelogger schicken</h3>
+<p>Wenn Sie lieber den <strong>beelogger-Community-Server</strong> nutzen — oder zusätzlich zu
+BEEP:</p>
+<ol>
+<li>Auf <strong><a href="https://beelogger.de">beelogger.de</a></strong> ein Konto anlegen und die Waage
+dort als Station eintragen. Halten Sie auch hier die <strong>DevEUI vom Aufkleber</strong>
+bereit.</li>
+<li>Der Weg von TTN zum Community-Server wird <strong>einmalig in TTN eingerichtet</strong> —
+das macht die Person, die Ihre Station betreut, nach der Anleitung von
+beelogger. Für Sie ändert sich an der Waage nichts.</li>
+<li>Danach erscheinen Gewicht, Temperatur und Batteriespannung dort genauso wie
+bei BEEP — beim nächsten Funkspruch, spätestens nach ein paar Stunden.</li>
+</ol>
+<blockquote>
+<p>ℹ️ Die Werte heißen bei beelogger <strong>Gewicht</strong>, <strong>TempOut</strong> und <strong>VBatt</strong>. Das
+ist derselbe Messwert wie bei BEEP, nur anders benannt.</p>
+</blockquote>
+<blockquote>
+<p>🔧 <strong>Für Fachleute:</strong> Ein einziger Webhook reicht für alle Waagen einer
+TTN-Anwendung:
+<code>https://community.beelogger.de/&lt;benutzername&gt;/{/devID}/beelogger_log.php?Passwort=&lt;passwort&gt;&amp;LORA=1</code>
+<code>{/devID}</code> setzt TTN bei jedem Funkspruch selbst ein — die Geräte müssen in
+TTN deshalb <code>beelogger1</code>, <code>beelogger2</code>, … heißen, passend zu den Stationen auf
+dem Community-Server. Das Passwort ist für alle Waagen dasselbe; genau deshalb
+genügt der eine Webhook. <code>LORA=1</code> sagt dem Server, dass der Wert über LoRaWAN
+kommt.</p>
+</blockquote>
+<h3>6.4 Wenn keine Daten ankommen</h3>
+<ul>
+<li>Steht die <strong>DevEUI exakt richtig</strong> im Feld „Eindeutige Gerätekennung&quot;
+(bei beelogger: in den Stationsdaten)?</li>
+<li>Ist bei BEEP unter <strong>Typ</strong> wirklich <strong>„Other&quot;</strong> ausgewählt?</li>
+<li>Ist eine <strong>Beute</strong> zugeordnet?</li>
+<li>Kommt am Standort überhaupt Funk an? → „Funk-Test senden&quot; und Betreuer fragen.</li>
+<li>Kommen die Werte in <strong>TTN</strong> an, aber auf der Plattform nicht? Dann liegt es an
+der Weiterleitung, nicht an der Waage → Betreuer fragen.</li>
+</ul>
+<blockquote>
+<p>🔧 <strong>Für Fachleute:</strong> In TTN wird als Uplink-Formatter
+<code>ttndecoder/tanen-decoder.js</code> eingetragen. Er entschlüsselt den 8-Byte-Rahmen
+einmal und gibt beide Namenssätze zugleich aus — <code>weight_kg</code>/<code>t</code>/<code>bv</code> für BEEP,
+<code>Gewicht</code>/<code>TempOut</code>/<code>VBatt</code> für beelogger; jede Plattform speichert, was sie
+kennt. Der BEEP-Webhook muss die Gerätenummer zusätzlich explizit in der URL
+mitführen, sonst verwirft BEEP die Daten stillschweigend:
+<code>https://api.beep.nl/api/lora_sensors?key=&lt;DevEUI&gt;</code></p>
+</blockquote>
+<h3>6.5 Weiterführende Hilfe</h3>
+<ul>
+<li><strong>BEEP-Anleitung zum Verbinden:</strong>
+<a href="https://beepsupport.freshdesk.com/en/support/solutions/articles/60000711459-how-to-install-your-beep-base-v3-3-5-connect-to-beep-webapp">beepsupport.freshdesk.com — Connect to BEEP webapp</a></li>
+<li><strong>BEEP-Plattform:</strong> <a href="https://beep.nl">beep.nl</a></li>
+<li><strong>beelogger-Projekt und Community-Server:</strong> <a href="https://beelogger.de">beelogger.de</a></li>
+</ul>
+<hr />
+<h2>Kurzanleitung zum Ausdrucken</h2>
+<p><strong>Waage aufstellen</strong></p>
+<ol>
+<li>Fester, ebener Untergrund (Betonplatten)</li>
+<li>Mit der Wasserwaage in <strong>beide</strong> Richtungen ausrichten</li>
+<li>Spalt rundum freihalten — <strong>nichts darf die obere Platte berühren</strong></li>
+<li>Temperaturfühler an die Wägezelle, Kabel mit Tropfschlaufe nach unten</li>
+<li>Stock mittig aufsetzen</li>
+</ol>
+<p><strong>Einrichten &amp; kalibrieren</strong></p>
+<ol>
+<li>Roten Knopf <strong>kurz drücken</strong> (3 Minuten Zeit)</li>
+<li>In Chrome/Edge <strong>http://tanen.eu/setup</strong> öffnen → <strong>„Verbinden&quot;</strong> →
+„TanenBase-XXXX&quot; → „Pair&quot;</li>
+<li>Reiter <strong>„Waage&quot;</strong> → Plattform leer → <strong>„Auf Null setzen&quot;</strong></li>
+<li>Bekanntes Gewicht auflegen → Wert eintragen (<code>10.00</code>) → <strong>„Jetzt einstellen&quot;</strong></li>
+<li>Gegenprüfen: Gewicht herunternehmen → 0,00 kg</li>
+<li>Reiter <strong>„Einstellungen&quot;</strong> → Zeiten prüfen → <strong>„Einstellungen speichern&quot;</strong></li>
+<li><strong>„Einrichtung beenden&quot;</strong> → Deckel zuschrauben</li>
+</ol>
+<p><strong>Im Zweifel:</strong> Roter Knopf, verbinden, Werte anschauen. Kaputtmachen können Sie
+dabei nichts.</p>
+
+</body>
+</html>

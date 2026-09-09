@@ -26,7 +26,7 @@ carrier PCB fits both modules — only the underlying GPIO numbers differ. See
 |----------|-----------------|----------|
 | D0 | P1.00 | DS18B20 data (1-Wire). **Wio-SX1262 rework required:** its K1 button + 10K pull-up ship on D0 and stop 1-Wire working entirely — trace must be cut, see Tanen_Base_pcb/README.md |
 | D1 | P1.31 | SX1262 DIO1 |
-| D2 | P1.30 | SX1262 RST |
+| D2 | P1.30 | SX1262 RST **+ external TanenButton** (bare switch to GND). Armed as a System OFF wake source in `power.c`; the internal pull-up holds NRESET high while asleep, so the radio keeps sleeping |
 | D3 | P1.29 | SX1262 BUSY |
 | D4 | P1.03 | SX1262 NSS (SPI CS) |
 | D5 | P1.07 | **LORA_RF_SW1** — Wio-SX1262 antenna-switch control. NOT a spare GPIO: driven RF control line, do not repurpose (a pull-up here parks the switch and bills the System OFF budget) |
@@ -35,7 +35,7 @@ carrier PCB fits both modules — only the underlying GPIO numbers differ. See
 | D8/SCK | P1.04 | SPI SCK (spi23) |
 | D9/MISO | P1.05 | SPI MISO (spi23) |
 | D10/MOSI | P1.06 | SPI MOSI (spi23) |
-| D19 | P0.00 | External TanenButton (XIAO bottom pad, not on the 7-pin header) — wake from System OFF. Port choice is arbitrary; D11/P3.00 works equally well |
+| D19 | P0.00 | *(free)* — held the external TanenButton until 2026-09-07, when it moved to D2. Bottom pad, never routed on carrier v0.1 |
 | — | P0.09 | On-board TanenButton (wake from System OFF) |
 | — | P1.22–P1.24 | RGB LEDs (active HIGH) |
 | — | P1.17 / P1.18 | nPM1300 PMIC I2C — SCL / SDA |
@@ -127,7 +127,7 @@ TanenBase/
 ├── third_party/                # Vendored Seeed XIAO nRF54LM20A board def
 ├── test_apps/measure_loop/     # Standalone sensor bring-up app
 ├── web/                        # Web Bluetooth config page + downlink encoder
-├── ttndecoder/                 # TTN payload formatters (BEEP + custom)
+├── ttndecoder/                 # TTN payload formatters (unified BEEP + beelogger)
 ├── Tanen_Base_pcb/             # KiCad carrier board (schematic, PCB, gerbers)
 ├── scripts/                    # Toolchain discovery helper
 └── *.conf, Kconfig, CMakeLists.txt, pm_static.yml, sysbuild.conf
@@ -398,6 +398,20 @@ Big-endian encoding. All fields fixed-width for deterministic decoder on TTN.
 
 Total: 8 bytes per uplink (widened from 7 bytes on 2026-07-07 — uint16 grams topped out at 65.535 kg). Failed-sensor sentinels: weight `0xFFFFFF`, battery `0xFFFF`, temp `0x7FFF` — TTN decoder must map these to null, not a literal value. The weight sentinel sits far above the 999 kg clamp so a maxed-out real reading can't be mistaken for a dead sensor.
 
+### Server-Side Decoding
+
+`ttndecoder/tanen-decoder.js` is the formatter to install in TTN (Payload formatters → Uplink). It parses the frame once and emits both supported platforms' key sets into one `decoded_payload`, so a single formatter feeds both integrations:
+
+| Reading | BEEP key | beelogger key | Unit |
+|---------|----------|---------------|------|
+| Weight | `weight_kg` | `Gewicht` | kg |
+| Temperature | `t` | `TempOut` | °C |
+| Battery | `bv` | `VBatt` | V |
+
+Each server persists the keys it recognises and ignores the others; `flags`, `anomaly_weight`, `anomaly_temp`, `heartbeat` are diagnostics visible in TTN live data only. The BEEP keys keep the original decoder's quantisation (10 g / 10 mV), the beelogger keys carry full payload precision — same reading, different rounding, by design. The per-platform predecessors (`beepdecoder.js` = `custumdecoder.js`, `tanen-beelogger-decoder.js`) remain in the folder for reference and are no longer the ones to deploy.
+
+Integration wiring differs per platform. BEEP needs `?key=<DevEUI>` on the webhook base URL (see the note below). beelogger's community server takes `https://community.beelogger.de/<username>/{/devID}/beelogger_log.php?Passwort=<password>&LORA=1` — `{/devID}` is substituted by TTN per uplink, so TTN device IDs are named `beelogger1`, `beelogger2`, … to match the registered stations, and because the password is shared across stations one webhook covers the whole application. Both paths are confirmed receiving from the same uplink.
+
 **BEEP ingestion note (2026-07-07):** widening this payload initially appeared to break BEEP (`api.beep.nl/api/lora_sensors`) — decoded correctly in TTN console, but data never showed up in BEEP. That was a false lead. Root cause: BEEP's key-routing falls back to `payload_fields.hardware_serial` (a TTN **Stack V2** field) when no explicit `key` is given; this project's webhook uses TTN **V3**, which puts the device identifier at `end_device_ids.dev_eui` instead — so BEEP couldn't match the measurement to a registered device, regardless of payload width. Fixed by adding `?key=<DevEUI>` to the BEEP webhook URL in TTN Console (Integrations → Webhooks) — an external config change, not a firmware/decoder change. Reference: `ttndecoder/Beep-Sensor-data-API-v0.5.pdf`.
 
 ---
@@ -408,7 +422,7 @@ Total: 8 bytes per uplink (widened from 7 bytes on 2026-07-07 — uint16 grams t
 1. Add `drivers/<sensor>.c/h` implementing `<sensor>_init()` / `<sensor>_read()`
 2. Add the source to `target_sources()` in `CMakeLists.txt`
 3. Add acquisition call in `features/measurement/measure.c`, plus a `MEAS_VALID_<SENSOR>` bit
-4. Extend payload format and **both** TTN decoders (`ttndecoder/*.js`) as needed
+4. Extend payload format and the TTN decoder (`ttndecoder/tanen-decoder.js`) as needed — add the field under both platforms' key sets
 
 ### Adding a New Radio Protocol
 1. Add `drivers/<proto>.c/h` wrapping the Zephyr radio API

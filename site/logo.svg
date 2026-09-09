@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"
+     role="img" aria-labelledby="tanenbase-logo-title">
+  <title id="tanenbase-logo-title">TanenBase</title>
+
+  <!-- TanenBase brand mark: the honey pot from the station's own label.
+       Black on white, no gradients, so it survives a favicon, a fax and
+       a laser printer alike.
+
+       Drop in anywhere:
+         <img src="logo.svg" alt="TanenBase" width="40" height="40">
+         <link rel="icon" href="logo.svg">
+
+       The strokes are currentColor, which resolves to black on its own.
+       Inline the file instead and it follows the CSS color property, so
+       color:#fff on a dark ground gives the reversed mark for free. -->
+
+  <rect x="1.5" y="1.5" width="61" height="61" rx="16"
+        fill="#ffffff" stroke="currentColor" stroke-width="3"/>
+
+  <g transform="translate(13.8, 5.6) scale(0.76)"
+     fill="none" stroke="currentColor"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"
+          stroke-width="3.4"/>
+    <ellipse cx="24" cy="18" rx="10" ry="3" stroke-width="2.8"/>
+    <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32" stroke-width="2.8"/>
+  </g>
+</svg>
