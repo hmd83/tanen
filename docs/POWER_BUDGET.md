@@ -1,8 +1,11 @@
-# TanenBase — Power Budget Reference (3.6 V)
+# TanenBase — Power Budget Reference
 
 PPK2 baseline @ Vbat = 3.6 V. Use for battery ETA calc & regression detection.
-Date: 2026-07-25 (XIAO nRF54LM20A port; sleep 5.29 → 4.5 µA, Q_measure 16 → 12 mC,
-Q_tx 200 → 63 mC; battery frozen to ER14505 — see §5.1).
+Date: 2026-09-10 (pack changed to **3× AAA 1.5 V Li/FeS₂ in series** — 1200 mAh,
+4.5 V nominal, **5.2 V measured fresh**. See §5.2: this is the configuration §5.1
+had ruled out on the input-voltage window, deployed anyway with the margin
+documented. Charge/current figures below are unchanged 2026-07-25 PPK2 captures
+at 3.6 V; they have **not** been re-measured on the 4.5 V pack).
 
 ---
 
@@ -97,7 +100,8 @@ Stretching T_meas is now the biggest single lever — 15 → 30 min saves
 
 | Battery | V_nom | Cap | Usable (90 %) | Energy life | SD-cap |
 |---|---|---|---|---|---|
-| **ER14505 AA Li-SOCl₂** | **3.6 V** | **2400 mAh** | **2160** | **9.3 y** | **~10 y** ⭐ chosen |
+| **3× AAA Li/FeS₂ series** | **4.5 V** (5.2 V fresh) | **1200 mAh** | **1080** | **4.6 y** | **~20 y** ⭐ deployed |
+| ER14505 AA Li-SOCl₂ | 3.6 V | 2400 mAh | 2160 | 9.3 y | ~10 y (previous choice, §5.1) |
 | Tadiran TLP-93111 (HLC AA) | 3.6 V | 2100 mAh | 1890 | 8.1 y | ~10 y, no passivation |
 | ER17505 A Li-SOCl₂ | 3.6 V | 3600 mAh | 3240 | 13.9 y | ~10–15 y |
 | ER26500 C Li-SOCl₂ | 3.6 V | 8500 mAh | 7650 | 32.8 y | ~15 y |
@@ -106,13 +110,31 @@ Stretching T_meas is now the biggest single lever — 15 → 30 min saves
 | LiPo 1S 1000 mAh | 3.7 V | 1000 mAh | 900 | 3.9 y | ~3 y (cycle) |
 
 > SD = self-discharge. Real life is `min(energy life, SD-cap)`.
-> Li-SOCl₂ self-discharge ~1 %/year.
+> Li-SOCl₂ self-discharge ~1 %/year; Li/FeS₂ likewise <1 %/year, ~20 y shelf.
 
-Every Li-SOCl₂ option is now self-discharge-capped rather than energy-capped —
-the AA already outlives its own ~10 y SD limit. **Cell choice is driven by the
-§5.1 voltage window and §6 pulse capability, not by capacity.**
+The deployed AAA pack is the one row that is **energy-capped, not SD-capped**:
+4.6 y of charge against a ~20 y shelf life. Capacity is now the binding
+constraint, which it never was with the Li-SOCl₂ options — every one of those
+outlived its own ~10 y self-discharge limit.
 
-### 5.1 Why AA Li-SOCl₂ and not AA lithium (decision, 2026-07-25)
+Life by schedule, deployed pack (1080 mAh usable, §3 daily figures):
+
+| T_meas / T_tx | mAh/day | Life |
+|---|---|---|
+| 15 min / 1 h | 0.848 | 3.5 y |
+| **15 min / 2 h** | **0.638** | **4.6 y** ← baseline |
+| 15 min / 4 h | 0.533 | 5.5 y |
+| 30 min / 2 h | 0.478 | 6.2 y |
+| 30 min / 4 h | 0.373 | 7.9 y |
+| 60 min / 4 h | 0.293 | 10.1 y |
+| 60 min / 6 h | 0.258 | 11.5 y |
+
+> These are **conservative**: they carry the 3.6 V charge figures straight over.
+> If the nPM1300 buck scales active current as `I_bat ∝ 1/V_in` (§7), the same
+> schedules land ~20 % better — 5.6 y at the baseline. Unverified on this pack;
+> do not quote the higher number until a PPK2 run at 4.5 V confirms it.
+
+### 5.1 Why AA Li-SOCl₂ and not 1.5 V lithium (decision, 2026-07-25 — superseded by §5.2)
 
 Constraint: **no additional ICs** — no buck, no LDO. The pack therefore drives
 the XIAO BAT pin, i.e. the nPM1300 VBAT input, directly:
@@ -144,6 +166,58 @@ the ~10 y self-discharge cap dominates, so the gain over a single cell is ~0.7 y
 — and blocking diodes (needed to stop cross-charging) leak ~0.5 µA each, adding
 ~1.5 µA to a 4.5 µA sleep budget. Not worth it.
 
+### 5.2 Deployed pack: 3× AAA 1.5 V Li/FeS₂ (2026-09-10)
+
+The field units run **three AAA lithium-metal (Li/FeS₂) cells in series**:
+1200 mAh, 4.5 V nominal, UL-certified with leak-proof seal and short-circuit
+protection, <1 %/year self-discharge, −40 … +60 °C. **Measured fresh pack OCV:
+5.2 V.**
+
+This is the configuration §5.1 rejected. It is deployed with the deviation
+recorded rather than hidden:
+
+| | Value |
+|---|---|
+| Fresh pack (measured) | **5.2 V** |
+| nPM1300 VBAT recommended max | 4.45 V → **exceeded by 0.75 V** |
+| nPM1300 VBAT absolute max | 5.5 V → **0.3 V of headroom (6 %)** |
+| Plateau (3× ~1.5 V) | ~4.5 V — still 0.05 V over the recommended max |
+| EOL (3× 1.0 V) | 3.0 V ✓ comfortably inside the window |
+
+What this means in practice:
+
+- The part is **outside its recommended operating range from fresh until the
+  pack falls under 4.45 V**, i.e. below ~1.48 V/cell. On the Li/FeS₂ plateau
+  that is most of the pack's life, not a brief top-of-charge excursion.
+- It stays under the 5.5 V absolute maximum, so this is a
+  spec-margin/lifetime-risk deviation, not an instant-destruction one. Nordic
+  gives no accuracy or longevity guarantee above 4.45 V.
+- **Cold makes it worse**: Li/FeS₂ OCV rises as temperature drops, and the
+  quoted −40 °C capability means the pack can sit even higher than 5.2 V at a
+  winter hive. Check fresh OCV cold, not just at room temperature.
+- The **VBAT ADC reading is suspect near the top** — nPM1300's VBAT measurement
+  range tops out around 5 V, so a fresh pack may read clipped or non-linear.
+  Uplinked `bv`/`VBatt` values above ~5 V should not be trusted until this is
+  measured (§10).
+
+Mitigations available without adding an IC: put the cells in **after** a short
+pre-drain so the pack starts nearer 4.5 V, or accept the deviation and treat
+"fresh-pack readings" as indicative. The clean fix stays what §7 says it is — a
+buck (TPS62840-class) — which the no-extra-ICs constraint still excludes.
+
+What the change buys, against the ER14505 it replaces:
+
+- **No passivation** — Li/FeS₂ has none, so the depassivation step and the
+  first-TX sag risk (§6) simply go away.
+- **Cold**: −40 °C rated, against Li-SOCl₂ degrading below −20 °C. This closes
+  the old §10 cold-temperature question.
+- **Pulse**: enormous margin over the 91.7 mA TX peak (§6), where the ER14505
+  was the marginal row.
+- **Cost**: it is what the deployed units are actually built with.
+
+What it costs: life drops **9.3 y → 4.6 y** at the baseline schedule (1200 mAh
+against 2400 mAh, §5), and the input-voltage deviation above.
+
 ---
 
 ## 6. Pulse / passivation notes
@@ -158,13 +232,21 @@ the ~10 y self-discharge cap dominates, so the gain over a single cell is ~0.7 y
 | ER34615 D bobbin | 250 mA | 500 mA | OK |
 | Tadiran HLC | — | 5000 mA | excellent |
 | 18650 Li-ion | 2000 mA+ | 5000 mA | excellent |
-| L91 AA (Li/FeS₂) | 2000 mA | 3000 mA | excellent — but see §5.1, voltage rules it out |
+| **AAA Li/FeS₂ (deployed pack)** | **~1000 mA** † | **~2000 mA** † | **yes — 10× margin on the 91 mA peak** |
+| L91 AA (Li/FeS₂) | 2000 mA | 3000 mA | excellent — voltage was the objection, see §5.1/§5.2 |
 
-⚠️ **The chosen ER14505 is the marginal row.** 91 mA peak against a 100 mA
-continuous / 200 mA pulse rating. The 470 µF low-ESR bulk cap is not optional
-here — it is what keeps the TX burst off the cell.
+† AAA Li/FeS₂ figures are class values for the chemistry, **not read off the
+deployed cell's datasheet** — confirm before quoting them anywhere else. Even at
+half these numbers the margin is large.
 
-**Passivation** (Li-SOCl₂ only): after long storage, R_int can rise from ~80 mΩ → 1–10 Ω → first-TX voltage sag → join fail. Mitigations:
+⚠️ The **ER14505 was the marginal row** — 91 mA peak against a 100 mA continuous
+/ 200 mA pulse rating — and that is the constraint the deployed AAA pack removes.
+Keep the 470 µF low-ESR bulk cap anyway: it is also what holds the rail up
+through the TX burst across three series cells and their contact resistance.
+
+**Passivation** (Li-SOCl₂ only — **does not apply to the deployed Li/FeS₂
+pack**): after long storage, R_int can rise from ~80 mΩ → 1–10 Ω → first-TX
+voltage sag → join fail. Retained for anyone running the §5.1 cell. Mitigations:
 - 470 µF low-ESR bulk cap on Vbat rail (mandatory, see above)
 - **Tadiran PulsesPlus TLP-93111 (AA, HLC)** — drop-in AA replacement, no
   passivation by design, huge pulse margin; costs ~1.2 y of life (§5). Take this
@@ -195,14 +277,18 @@ If load is **buck-regulated**: I_bat ∝ 1/V_in.
 > on this board at µA loads. In sleep a series dropper costs the full leak with
 > no 1/V_in compensation.
 
-### 3× 1.5 V AA (4.5 V) + 2× Schottky → ~3.6 V
+### 3× 1.5 V cells (4.5 V) + 2× Schottky → ~3.6 V
 
 **Rejected.** Schottky is a fixed drop, not a regulator: the pack still swings
-5.4 V fresh → 3.0 V EOL, so BAT lands ~4.8 V fresh — over the nPM1300's 4.45 V
-limit (§5.1). A real buck (TPS62840-class) would solve it and give ~13–14 y, but
-adds an IC, which the design constraint excludes.
+5.2 V fresh → 3.0 V EOL, so BAT would land ~4.7 V fresh — over the nPM1300's
+4.45 V limit anyway (§5.1), while the drop costs the pack tail at EOL. The
+deployed pack therefore runs **direct to BAT with no series elements** and
+carries the over-voltage instead (§5.2). A real buck (TPS62840-class) is still
+the only clean fix; it adds an IC, which the design constraint excludes.
 
-Daily energy = 0.638 mAh × 3.6 V ≈ **2.30 mWh/day**.
+Daily energy = 0.638 mAh × 4.5 V ≈ **2.87 mWh/day** on the deployed pack
+(0.638 mAh × 3.6 V ≈ 2.30 mWh/day on the §5.1 cell). Same charge, more
+energy: §1 † is the reason a higher-voltage pack buys nothing in sleep.
 
 > The pre-2026-07-25 revision quoted 2.35 mWh/day against 1.22 mAh/day, which
 > does not reconcile (1.22 mAh × 3.6 V = 4.4 mWh). Recomputed here as
@@ -218,11 +304,11 @@ inside that window across its whole discharge curve *and* at fresh open-circuit.
 
 | Battery | Fresh OCV | EOL Vbat | In 2.3–4.45 V window? |
 |---|---|---|---|
-| **ER14505 (chosen)** | 3.67 V | 3.0 V | ✓ mid-window throughout |
+| **3× AAA Li/FeS₂ (deployed)** | **5.2 V measured** | 3.0 V | **✗ over the 4.45 V recommended max until the pack drops below ~1.48 V/cell — under the 5.5 V absolute max. Accepted deviation, see §5.2** |
+| ER14505 (§5.1 choice) | 3.67 V | 3.0 V | ✓ mid-window throughout |
 | Tadiran TLP-93111 | 3.67 V | 3.0 V | ✓ |
 | ER26500 | 3.67 V | 3.0 V | ✓ |
-| 3× 1.5 V AA series | 5.4 V | 3.0 V | ✗ over at fresh |
-| 2× 1.5 V AA series | 3.6 V | 2.0 V | ✗ under at EOL |
+| 2× 1.5 V cells series | 3.6 V | 2.0 V | ✗ under at EOL |
 
 Downstream of the PMIC: nRF54L DCDC min 1.8 V ✓, SX1262 PA min ~1.8 V ✓. The
 Wio-SX1262 sits on the XIAO's regulated 3V3, not on BAT — confirm this on the
@@ -234,7 +320,9 @@ module schematic before any BAT-side change.
 
 **For new schedule estimate**:
 1. Pick T_meas + T_tx from §3 (or compute via §2 formula).
-2. Life = `min(usable mAh / mAh/day, SD-cap years)` — for ER14505, 2160 mAh and a ~10 y cap.
+2. Life = `min(usable mAh / mAh/day, SD-cap years)` — for the deployed AAA
+   pack, **1080 mAh** usable and a ~20 y self-discharge cap, so it is the
+   energy term that binds (§5). For the §5.1 ER14505: 2160 mAh, ~10 y cap.
 
 **For PPK regression check**:
 - If next build shows sleep > **6 µA** → leak somewhere. First two suspects are
@@ -246,7 +334,9 @@ module schematic before any BAT-side change.
 
 **For circuit changes**:
 - Anything on the BAT rail → check §8 window first, at fresh OCV *and* EOL.
-- Change Vbat chemistry → recheck §5.1 (voltage), §6 (pulse), §8 (window).
+- Change Vbat chemistry → recheck §5.1/§5.2 (voltage), §6 (pulse), §8 (window).
+- **Measure fresh pack OCV before connecting it**, cold if the site gets cold:
+  the deployed pack already spends 5.2 V of its 5.5 V absolute budget (§5.2).
 
 ---
 
@@ -258,9 +348,17 @@ module schematic before any BAT-side change.
   output, not a BAT passthrough (§8).
 - ER14505 vs Tadiran TLP-93111 AA — decided by expected storage time before
   deploy (§6). If > 6 months, take the Tadiran.
-- Cold-temp operation? Li-SOCl₂ degrades < −20 °C. This is the one place the
-  ruled-out Li/FeS₂ chemistry was better (−40 °C) — if the hive site goes below
-  −20 °C, §5.1 needs revisiting and a buck may become unavoidable.
+- ~~Cold-temp operation? Li-SOCl₂ degrades < −20 °C.~~ **Closed 2026-09-10** —
+  the deployed pack is Li/FeS₂, rated −40 … +60 °C (§5.2).
+- **Does the nPM1300 VBAT ADC read a 5.2 V pack correctly?** Its measurement
+  range tops out near 5 V, so fresh-pack `bv`/`VBatt` values may be clipped or
+  non-linear. Compare a DMM against the uplinked value on a fresh pack before
+  anyone reads a battery curve off the platform (§5.2).
+- **How long does the pack sit above the 4.45 V recommended max?** Log Vbat over
+  a season: that number decides whether the deviation is a few weeks or most of
+  the pack's life, and whether a buck moves back onto the table (§5.2, §7).
+- Re-run the PPK2 capture **at 4.5 V** — every charge figure here is a 3.6 V
+  measurement, and §5's conservative life numbers assume no buck scaling (§7).
 - Bulk cap 470 µF confirmed low-ESR and rated for the 91 mA pulse?
 - Depassivation step in the production/deploy procedure?
 
@@ -268,6 +366,13 @@ module schematic before any BAT-side change.
 
 ## Changelog
 
+- **2026-09-10** — Pack changed to **3× AAA 1.5 V Li/FeS₂ in series** (1200 mAh,
+  4.5 V nom, 5.2 V measured fresh). Life 9.3 y → **4.6 y** at 15 min / 2 h.
+  Passivation risk and the cold-temperature open question drop out; the pulse
+  margin goes from marginal to 10×. In exchange the pack runs **above the
+  nPM1300's 4.45 V recommended VBAT maximum** for most of its life (§5.2) —
+  documented deviation, 0.3 V under the absolute maximum. Currents/charges are
+  still the 3.6 V captures; not re-measured at 4.5 V.
 - **2026-07-25** — nRF54LM20A port. Sleep 5.29 → 4.5 µA (NOR deep power-down +
   nPM1300 auto-ADC off). Q_measure 16 → 12 mC / 1.28 → 1.5 s. Q_tx 200 → 63 mC /
   14.1 → 6.8 s. Energy share flipped: Measure now dominates, not TX. Battery

@@ -218,6 +218,8 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 - Battery voltage read on demand from the nPM1300's factory-trimmed VBAT ADC — no divider, no external enable GPIO
 - All peripherals shut down before `sys_poweroff()`
 
+- Battery pack: **3× AAA 1.5 V Li/FeS₂ in series**, 1200 mAh, 4.5 V nominal, 5.2 V measured fresh — primary, non-rechargeable. ~4.6 y at 15 min / 2 h. Fresh pack is **above the nPM1300's 4.45 V recommended VBAT maximum** (5.5 V absolute): accepted deviation, [POWER_BUDGET.md](POWER_BUDGET.md) §5.2
+
 See [POWER_BUDGET.md](POWER_BUDGET.md) for the full PPK2 baseline, daily-charge
 formula, and battery ETA tables.
 

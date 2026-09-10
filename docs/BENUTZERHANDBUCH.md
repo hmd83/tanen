@@ -34,7 +34,10 @@ So sehen Sie von zu Hause aus, ob der Nektar fließt, ob geschwärmt wurde oder 
 ein Volk plötzlich leichter wird — ohne den Stock zu öffnen.
 
 Zwischen den Messungen schläft die Station fast vollständig. Ein Satz Batterien
-hält deshalb **mehrere Jahre**.
+hält deshalb **rund viereinhalb Jahre** — bei einer Messung alle 15 Minuten und
+einer Meldung alle zwei Stunden. Wer seltener messen und melden lässt, kommt auf
+deutlich mehr: bei stündlicher Messung und Meldung alle vier Stunden sind es
+rechnerisch etwa zehn Jahre.
 
 > **Wichtig:** Die Station braucht **keinen Netzstrom** und **kein WLAN**. Nur
 > die eingelegten Batterien und Funkempfang am Standort.
@@ -50,7 +53,7 @@ hält deshalb **mehrere Jahre**.
 | **Aufkleber mit QR-Code** | Auf der Box. Enthält die Gerätenummer (**DevEUI**) Ihrer Station. |
 | **Zwei Kabelverschraubungen** | Unten an der Box. Hier gehen die Kabel wasserdicht heraus. |
 | **Temperaturfühler** | Wasserdichter Fühler am Kabel. Kommt an die Wägezelle (siehe Kapitel 2.4). |
-| **Batterien** — 3 × AA Lithium (1,5 V) | Versorgen alles. In Reihe ergeben sie rund 5 Volt. **Nicht aufladbar!** |
+| **Batterien** — 3 × AAA Lithium (1,5 V, 1200 mAh) | Versorgen alles. In Reihe ergeben sie **frisch rund 5,2 Volt**. **Nicht aufladbar!** |
 | **Antenne** | Liegt im Gehäuse. Nicht knicken, nicht mit Metall abdecken. |
 
 <img src="../media/web_screens/20260902_183139.jpg" alt="Die Station geschlossen, in der Hand" width="240">
@@ -276,15 +279,16 @@ Zelle.**
 ### 3.2 Batterien einlegen
 
 1. Vier Deckelschrauben lösen, Deckel abnehmen.
-2. **Drei AA-Lithiumzellen** in den Batteriehalter einlegen — auf **+ und −**
+2. **Drei AAA-Lithiumzellen** in den Batteriehalter einlegen — auf **+ und −**
    achten. Immer alle drei zusammen, immer gleiche Marke, immer frisch.
 3. Den kleinen Schalter auf der Platine auf **ON** stellen (siehe Bild 2).
 4. Deckel wieder auflegen. Zum Einrichten reicht es, ihn lose aufzulegen —
    festschrauben können Sie am Ende.
 
-> ⚠️ **Nur AA-Lithiumzellen** (z. B. Energizer Ultimate Lithium). Keine
-> Alkaline-Batterien — die laufen im Freien aus und brechen bei Frost ein. Keine
-> Akkus.
+> ⚠️ **Nur AAA-Lithiumzellen** (Lithium-Metall, 1,5 V, z. B. Energizer Ultimate
+> Lithium AAA). Keine Alkaline-Batterien — die laufen im Freien aus und brechen
+> bei Frost ein. Keine Akkus. Lithiumzellen halten bis −40 °C durch und lagern
+> jahrelang, ohne sich selbst zu entleeren.
 
 ### 3.3 Die Bedienseite öffnen
 
@@ -340,7 +344,7 @@ Nach dem Verbinden landen Sie auf der **Übersicht**.
 | **Grüne Blase „Verbunden" mit Countdown (z. B. 2:45)** | Die Verbindung steht. Der Countdown zeigt, wie lange der Einrichtungs-Modus noch läuft. |
 | **Große Zahl „Gewicht … kg"** | Das aktuelle Gewicht, live. Aktualisiert sich alle paar Sekunden. |
 | **Temperatur (°C)** | Was der Fühler gerade misst. |
-| **Batterie (Volt)** | Spannung aller drei Zellen zusammen. **Frisch ≈ 5,0 V.** Ab **unter 3,6 V** sollten Sie wechseln. |
+| **Batterie (Volt)** | Spannung aller drei Zellen zusammen. **Frisch ≈ 5,2 V**, im Betrieb lange um 4,5 V. Ab **unter 3,6 V** sollten Sie wechseln. |
 | **„Werte neu laden"** | Fragt alle Werte sofort neu ab. |
 | **„Funk-Test senden"** | Schickt einmalig ein Testsignal ins Funknetz. Damit prüfen Sie, ob am Standort Empfang ist. |
 
@@ -545,7 +549,7 @@ etwas seltsam aussieht, kann Ihr Betreuer damit sofort etwas anfangen.
 |---|---|
 | **Temperatur zeigt „--" oder unsinnige Werte** | Fühlerkabel lose oder gebrochen. → Blaue Klemme im Gehäuse prüfen (Bild 2). Bei Bruch Fühler tauschen. Die Waage wiegt weiter — nur ohne Temperaturkorrektur. |
 | **Temperatur viel höher als die Luft** | Fühler liegt in der Sonne. → In den Schatten unter die Plattform verlegen. |
-| **Batterie unter 3,6 V** | Zellen am Ende. → Alle drei gegen neue **AA-Lithiumzellen** tauschen. Die Kalibrierung bleibt erhalten. |
+| **Batterie unter 3,6 V** | Zellen am Ende. → Alle drei gegen neue **AAA-Lithiumzellen** tauschen. Die Kalibrierung bleibt erhalten. |
 | **Batterie neu, aber Anzeige niedrig** | Eine Zelle sitzt falsch herum oder hat schlechten Kontakt. → Alle drei prüfen, Kontakte säubern. Alte und neue Zellen nie mischen. |
 | **Keine Daten kommen an** | Kein Funkempfang am Standort. → Über „Funk-Test senden" prüfen; Gehäuse höher setzen, Metall über der Antenne entfernen, ggf. Betreuer wegen Gateway-Abdeckung fragen. |
 | **Daten kommen an, aber nicht bei BEEP / beelogger** | Gerät ist auf der Plattform nicht korrekt eingetragen. → Kapitel 6. |

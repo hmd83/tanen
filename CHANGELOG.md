@@ -7,6 +7,20 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+### Changed
+- **Battery pack: single ER14505 AA Li-SOCl₂ → 3× AAA 1.5 V Li/FeS₂ in series**
+  (1200 mAh, 4.5 V nominal, **5.2 V measured fresh**). Life at 15 min / 2 h drops
+  9.3 y → **4.6 y** (~10 y at 60 min / 4 h). Gains: no passivation and no
+  depassivation step, −40 °C rating (closes the old cold-temperature question),
+  and ~10× pulse margin instead of the ER14505's marginal 91 mA row. Cost: the
+  pack runs **above the nPM1300's 4.45 V recommended VBAT maximum** until it
+  falls below ~1.48 V/cell, with 0.3 V to the 5.5 V absolute maximum — an
+  accepted, documented deviation (`docs/POWER_BUDGET.md` §5.2), not a fix.
+  Firmware is unchanged; charge/current figures are still 3.6 V PPK2 captures and
+  have not been re-measured at 4.5 V. Docs updated across README, POWER_BUDGET
+  (§5/§5.2/§6/§7/§8/§9/§10), ARCHITECTURE, TRD deviations, CONTRIBUTING, the user
+  manual and the site (2026-09-10)
+
 ### Added
 - **`ttndecoder/tanen-decoder.js`** — one uplink formatter for both supported
   platforms. Parses the 8-byte frame once and emits BEEP keys

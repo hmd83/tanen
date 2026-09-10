@@ -4,7 +4,7 @@
 [![Platform](https://img.shields.io/badge/platform-nRF54LM20A-brightgreen.svg)](https://www.seeedstudio.com/)
 [![SDK](https://img.shields.io/badge/nRF%20Connect%20SDK-v3.4.0-purple.svg)](https://developer.nordicsemi.com/)
 
-A LoRaWAN beehive monitor that runs for years on a single AA-sized primary cell.
+A LoRaWAN beehive monitor that runs for years on three AAA primary lithium cells.
 
 It weighs the hive, reads its temperature, and reports over LoRaWAN to The Things
 Network — then sleeps at about **4 µA**. Configuration and calibration happen
@@ -18,13 +18,13 @@ to plug in once the lid is closed.
 | **Sensors** | NAU7802 24-bit load-cell ADC · DS18B20 temperature · nPM1300 battery gauge |
 | **RTOS / SDK** | Zephyr 4.4 via nRF Connect SDK v3.4.0 |
 | **Sleep current** | ~4 µA (System OFF + GRTC wake) |
-| **Battery life** | ~9 years on an ER14505 AA Li-SOCl₂ at 15 min / 2 h reporting |
+| **Battery life** | ~4.6 years on 3× AAA Li/FeS₂ (1200 mAh) at 15 min / 2 h reporting — ~10 y at 60 min / 4 h |
 | **Uplink** | 8 bytes — weight (999 kg range), temperature, battery, flags |
 
 ![The scale platform in the field](media/platform.jpeg)
 
 *A node in the field: the hive stands on the platform, the IP-rated enclosure
-bolted to it holds the electronics and the AA cell, and the temperature probe
+bolted to it holds the electronics and the battery pack, and the temperature probe
 runs inside the hive.*
 
 📺 **[Build workshop walkthrough (YouTube)](https://www.youtube.com/watch?v=t2ags30G7-o)** ·
@@ -283,12 +283,23 @@ would give ~1.5× better signal-to-noise at the same absolute drift.*
 > [`Tanen_Base_pcb/README.md`](Tanen_Base_pcb/README.md) has the full pin-by-pin
 > mapping.
 
-**Battery:** ER14505 AA Li-SOCl₂, **primary / non-rechargeable**. The firmware
-deliberately deletes `charging-enable` from the nPM1300 charger node — with it
-armed, applying USB power would push charge current into a non-rechargeable
-lithium cell. Do not re-enable it unless you have also changed the cell.
-[`docs/POWER_BUDGET.md`](docs/POWER_BUDGET.md) covers the cell selection, the
-2.3–4.45 V input window, and the pulse-current margin.
+**Battery:** 3× AAA 1.5 V lithium (Li/FeS₂, 1200 mAh) in series — 4.5 V
+nominal, **5.2 V measured fresh** — **primary / non-rechargeable**. The firmware
+deliberately deletes `charging-enable` from the nPM1300 charger node; with it
+armed, applying USB power would push charge current into non-rechargeable cells.
+Do not re-enable it unless you have also changed the chemistry.
+
+⚠️ **The fresh pack sits above the nPM1300's recommended VBAT maximum.** The
+window is 2.3–4.45 V recommended, 5.5 V absolute; a fresh pack at 5.2 V is
+outside the recommended range and stays there until it falls below ~1.48 V/cell,
+with 0.3 V of headroom to the absolute maximum. This is a deliberate, documented
+deviation — see [`docs/POWER_BUDGET.md`](docs/POWER_BUDGET.md) §5.2, which also
+covers the ER14505 AA Li-SOCl₂ cell this replaced, the pulse-current margin, and
+what the swap bought (no passivation, −40 °C rating, 10× pulse headroom) and
+cost (9.3 y → 4.6 y).
+
+Measure a fresh pack's open-circuit voltage before connecting it, cold if the
+site gets cold — Li/FeS₂ OCV rises as temperature falls.
 
 ---
 
