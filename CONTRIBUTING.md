@@ -29,10 +29,16 @@ that way. Real DevEUIs, JoinEUIs, and AppKeys do not belong in this repository,
 in issues, or in logs pasted into issues.
 
 **Do not re-enable nPM1300 charging.** `boards/*.overlay` deletes
-`charging-enable` on purpose. The reference design runs a primary,
-non-rechargeable Li-SOCl₂ cell — charging it vents or ignites it. If you are
-building a rechargeable variant, change the cell and the overlay together, in the
-same commit, with a comment saying so.
+`charging-enable` on purpose. The deployed design runs three primary,
+non-rechargeable AAA lithium (Li/FeS₂) cells in series — charging them vents or
+ignites them. If you are building a rechargeable variant, change the cells and
+the overlay together, in the same commit, with a comment saying so.
+
+**Check `docs/POWER_BUDGET.md` §5.2 before touching the BAT rail.** That pack
+measures 5.2 V fresh and, per the chemistry's µA-drain plateau, stays above the
+nPM1300's 4.45 V recommended VBAT maximum for essentially its whole life; a
+worst-case fresh pack reaches 5.49 V against a 5.5 V absolute maximum. Accepted,
+documented deviation. Any change that raises BAT further is not acceptable.
 
 **Do not touch P2.00–P2.05 from software.** That is the on-board py25q64 NOR.
 `power.c` has a DO-NOT-TOUCH list; adding pins to it is fine, driving them is not.

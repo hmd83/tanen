@@ -2,6 +2,7 @@
 prj_credentials.conf
 *.pem
 *.key
+*.pw
 
 # --- Build output ------------------------------------------------------------
 build*/
@@ -36,6 +37,11 @@ Desktop.ini
 # --- Claude Code -------------------------------------------------------------
 # Per-machine permission state
 .claude/settings.local.json
+
+# --- Handbuch ----------------------------------------------------------------
+# Die HTML-Fassung ist die versionierte; das PDF baut scripts/build_manual_pdf.py
+# bei Bedarf mit --pdf.
+docs/BENUTZERHANDBUCH.pdf
 
 # --- Python ------------------------------------------------------------------
 # Byte-code from the analysis scripts under docs/
