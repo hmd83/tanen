@@ -53,7 +53,7 @@ rechnerisch etwa zehn Jahre.
 | **Aufkleber mit QR-Code** | Auf der Box. Enthält die Gerätenummer (**DevEUI**) Ihrer Station. |
 | **Zwei Kabelverschraubungen** | Unten an der Box. Hier gehen die Kabel wasserdicht heraus. |
 | **Temperaturfühler** | Wasserdichter Fühler am Kabel. Kommt an die Wägezelle (siehe Kapitel 2.4). |
-| **Batterien** — 3 × AAA Lithium (1,5 V, 1200 mAh) | Versorgen alles. In Reihe ergeben sie **frisch rund 5,2 Volt**. **Nicht aufladbar!** |
+| **Batterien** — 3 × AAA Lithium (1,5 V, 1200 mAh, z. B. BEVIGOR) | Versorgen alles. In Reihe ergeben sie **frisch rund 5,2 Volt**. **Nicht aufladbar!** |
 | **Antenne** | Liegt im Gehäuse. Nicht knicken, nicht mit Metall abdecken. |
 
 <img src="../media/web_screens/20260902_183139.jpg" alt="Die Station geschlossen, in der Hand" width="240">
@@ -113,6 +113,8 @@ rechnerisch etwa zehn Jahre.
   werfen, nicht kurzschließen.
 - **Immer alle drei Zellen gemeinsam wechseln** und nie alte mit neuen mischen.
 - Schließen Sie **kein USB-Kabel** an, solange die Batterien eingelegt sind.
+- Stellen Sie das Gehäuse **nicht in die pralle Sonne**. Im Schatten unter der
+  Plattform bleibt die Elektronik kühler und die Batteriespannung niedriger.
 - **Nicht auf die Plattform steigen.** Das nimmt Ihnen die Wägezelle übel.
 - Die Waage ist wetterfest, aber **kein Tauchgerät**. Nicht mit dem
   Hochdruckreiniger abspritzen.
@@ -285,10 +287,11 @@ Zelle.**
 4. Deckel wieder auflegen. Zum Einrichten reicht es, ihn lose aufzulegen —
    festschrauben können Sie am Ende.
 
-> ⚠️ **Nur AAA-Lithiumzellen** (Lithium-Metall, 1,5 V, z. B. Energizer Ultimate
-> Lithium AAA). Keine Alkaline-Batterien — die laufen im Freien aus und brechen
-> bei Frost ein. Keine Akkus. Lithiumzellen halten bis −40 °C durch und lagern
-> jahrelang, ohne sich selbst zu entleeren.
+> ⚠️ **Nur AAA-Lithiumzellen** (Lithium-Metall, 1,5 V — die verbauten sind
+> **BEVIGOR AAA Lithium**, gleichwertig ist z. B. Energizer Ultimate Lithium
+> AAA). Keine Alkaline-Batterien — die laufen im Freien aus und brechen bei Frost
+> ein. Keine Akkus. Lithiumzellen halten bis −40 °C durch und lagern jahrelang,
+> ohne sich selbst zu entleeren.
 
 ### 3.3 Die Bedienseite öffnen
 
@@ -344,7 +347,7 @@ Nach dem Verbinden landen Sie auf der **Übersicht**.
 | **Grüne Blase „Verbunden" mit Countdown (z. B. 2:45)** | Die Verbindung steht. Der Countdown zeigt, wie lange der Einrichtungs-Modus noch läuft. |
 | **Große Zahl „Gewicht … kg"** | Das aktuelle Gewicht, live. Aktualisiert sich alle paar Sekunden. |
 | **Temperatur (°C)** | Was der Fühler gerade misst. |
-| **Batterie (Volt)** | Spannung aller drei Zellen zusammen. **Frisch ≈ 5,2 V**, im Betrieb lange um 4,5 V. Ab **unter 3,6 V** sollten Sie wechseln. |
+| **Batterie (Volt)** | Spannung aller drei Zellen zusammen. **Frisch ≈ 5,2 V.** Der Wert bleibt sehr lange fast gleich — das ist normal und **kein** Zeichen, dass nichts gemessen wird. Erst am Ende fällt er zügig. Ab **unter 3,6 V** wechseln. |
 | **„Werte neu laden"** | Fragt alle Werte sofort neu ab. |
 | **„Funk-Test senden"** | Schickt einmalig ein Testsignal ins Funknetz. Damit prüfen Sie, ob am Standort Empfang ist. |
 

@@ -1,9 +1,12 @@
-"""Baut aus docs/BENUTZERHANDBUCH.md eine Druckfassung (HTML + PDF, A4).
+"""Baut aus docs/BENUTZERHANDBUCH.md eine Druckfassung (HTML, A4-tauglich).
 
-    python scripts/build_manual_pdf.py
+    python scripts/build_manual_pdf.py           # nur HTML
+    python scripts/build_manual_pdf.py --pdf     # zusaetzlich das PDF
 
-Erzeugt docs/BENUTZERHANDBUCH.html und docs/BENUTZERHANDBUCH.pdf.
-Braucht markdown-it-py, Pillow und Chrome oder Edge.
+Erzeugt docs/BENUTZERHANDBUCH.html. Das PDF ist seit 2026-09-10 nicht mehr im
+Repo (es lief bei jeder Textaenderung als 2,4-MB-Binaerdatei mit) — wer eines
+braucht, baut es mit --pdf oder druckt die HTML-Fassung aus dem Browser.
+Braucht markdown-it-py, Pillow und fuer --pdf Chrome oder Edge.
 
 Die HTML-Fassung verweist auf die Originalbilder in media/ und bleibt damit im
 Repo gueltig — wer Seitenzahlen im Ausdruck will, oeffnet sie und druckt aus dem
@@ -267,4 +270,7 @@ def build_pdf(body: str) -> None:
 if __name__ == "__main__":
     rendered = render_body()
     build_html(rendered)
-    build_pdf(rendered)
+    if "--pdf" in sys.argv[1:]:
+        build_pdf(rendered)
+    else:
+        print("PDF:  uebersprungen (mit --pdf bauen)")

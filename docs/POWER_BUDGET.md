@@ -153,10 +153,15 @@ series count that fits that window unregulated**:
 | 2× series | 3.6 V | **2.0 V** | drops under the 2.3 V minimum — loses the pack tail |
 | parallel | **1.5 V** | 1.0 V | far under the 2.3 V minimum |
 
-Note 1.5 V is the *nominal* figure — a fresh Li/FeS₂ AA sits at ~1.8 V
+Note 1.5 V is the *nominal* figure — a fresh Li/FeS₂ cell sits at ~1.8 V
 open-circuit, and at a 4.5 µA sleep load the pack is effectively unloaded, so
-OCV is what the PMIC actually sees. Worst at low temperature, where OCV is
-highest.
+OCV is what the PMIC actually sees.
+
+> **Correction (2026-09-10):** this note previously read "worst at low
+> temperature, where OCV is highest". That is backwards. Energizer's LiFeS₂
+> handbook: the low-drain plateau is "nominally 1.79 V @ 21 °C … that **increases
+> with temperature**". The worst case is a **hot** pack, not a cold one — see
+> §5.2.
 
 → **The cell must be natively 3.6 V.** In AA form that is Li-SOCl₂ (ER14505),
 which lands mid-window at 3.67 V fresh / 3.0 V EOL.
@@ -168,42 +173,64 @@ the ~10 y self-discharge cap dominates, so the gain over a single cell is ~0.7 y
 
 ### 5.2 Deployed pack: 3× AAA 1.5 V Li/FeS₂ (2026-09-10)
 
-The field units run **three AAA lithium-metal (Li/FeS₂) cells in series**:
-1200 mAh, 4.5 V nominal, UL-certified with leak-proof seal and short-circuit
-protection, <1 %/year self-discharge, −40 … +60 °C. **Measured fresh pack OCV:
-5.2 V.**
+The field units run **three BEVIGOR AAA lithium-iron-disulfide (Li/FeS₂) cells
+in series**: 1.5 V nominal, 1200 mAh, 7 g each, non-rechargeable, UL-certified
+(leak-proof seal, explosion-proof valve, short-circuit protection), <1 %/year
+self-discharge, vendor-quoted 20 y shelf life, −40 … +60 °C. **Measured fresh
+pack: 5.2 V at room temperature** (cold not measured).
 
 This is the configuration §5.1 rejected. It is deployed with the deviation
-recorded rather than hidden:
+recorded rather than hidden — and the chemistry data makes it a **larger**
+deviation than a single fresh-pack reading suggests:
 
-| | Value |
-|---|---|
-| Fresh pack (measured) | **5.2 V** |
-| nPM1300 VBAT recommended max | 4.45 V → **exceeded by 0.75 V** |
-| nPM1300 VBAT absolute max | 5.5 V → **0.3 V of headroom (6 %)** |
-| Plateau (3× ~1.5 V) | ~4.5 V — still 0.05 V over the recommended max |
-| EOL (3× 1.0 V) | 3.0 V ✓ comfortably inside the window |
+| | Per cell | Pack (×3) |
+|---|---|---|
+| Measured fresh, 21 °C | 1.73 V | **5.2 V** |
+| Fresh OCV spec spread † | 1.79 – 1.83 V | **5.37 – 5.49 V** |
+| Low-drain first plateau † | 1.79 V @ 21 °C, **rises with temperature** | ~5.37 V, higher when warm |
+| Low-drain second plateau † | 1.7 V @ 21 °C, falls with temperature | ~5.1 V |
+| nPM1300 VBAT recommended max | — | 4.45 V |
+| nPM1300 VBAT absolute max | — | 5.5 V |
+| EOL (1.0 V/cell) | 1.0 V | 3.0 V ✓ inside the window |
+
+† Energizer *Lithium Iron Disulfide Handbook & Application Manual* (LA522),
+§ "ultra low drain applications" and § OCV. Applied to the BEVIGOR cells as
+chemistry data, not vendor data.
 
 What this means in practice:
 
-- The part is **outside its recommended operating range from fresh until the
-  pack falls under 4.45 V**, i.e. below ~1.48 V/cell. On the Li/FeS₂ plateau
-  that is most of the pack's life, not a brief top-of-charge excursion.
-- It stays under the 5.5 V absolute maximum, so this is a
-  spec-margin/lifetime-risk deviation, not an instant-destruction one. Nordic
-  gives no accuracy or longevity guarantee above 4.45 V.
-- **Cold makes it worse**: Li/FeS₂ OCV rises as temperature drops, and the
-  quoted −40 °C capability means the pack can sit even higher than 5.2 V at a
-  winter hive. Check fresh OCV cold, not just at room temperature.
+- **This is not a top-of-charge excursion.** In µA-drain use — exactly this
+  application — Li/FeS₂ holds a two-stage profile: ~1.79 V/cell "nearly
+  independent of depth of discharge", then a step to ~1.7 V/cell. So the pack
+  sits **above the 4.45 V recommended maximum for essentially its whole service
+  life**, and only crosses back under it as the cells die.
+- **Hot is the worst case, not cold.** The first plateau *increases* with
+  temperature, and the cells are rated to +60 °C. A hive in full summer sun is
+  where the pack presents its highest voltage.
+- **The spec spread nearly eats the absolute maximum.** Three cells at the top
+  of Energizer's fresh range (1.83 V) give **5.49 V against nPM1300's 5.5 V
+  absolute maximum** — no usable margin. The measured 5.2 V is a comfortable
+  sample, not a bound. Anything above 5.5 V is out-of-spec for the PMIC, full
+  stop.
+- Between 4.45 V and 5.5 V Nordic guarantees nothing about accuracy or
+  longevity, but the part is not being driven past destruction either. Treat it
+  as a spec-margin and lifetime risk, tracked, not as a solved problem.
 - The **VBAT ADC reading is suspect near the top** — nPM1300's VBAT measurement
   range tops out around 5 V, so a fresh pack may read clipped or non-linear.
   Uplinked `bv`/`VBatt` values above ~5 V should not be trusted until this is
-  measured (§10).
+  checked against a DMM (§10).
 
-Mitigations available without adding an IC: put the cells in **after** a short
-pre-drain so the pack starts nearer 4.5 V, or accept the deviation and treat
-"fresh-pack readings" as indicative. The clean fix stays what §7 says it is — a
-buck (TPS62840-class) — which the no-extra-ICs constraint still excludes.
+Mitigations that need no extra IC:
+
+1. **Measure each cell before assembly** and reject any above ~1.80 V; three
+   1.83 V cells is the case that touches the absolute maximum.
+2. **Pre-drain a fresh pack** briefly so it starts on the lower plateau.
+3. Keep the pack out of direct sun — enclosure shading is already the rule for
+   the temperature sensor (see the user manual), and it caps the OCV rise.
+
+The clean fix stays what §7 says it is — a buck (TPS62840-class) — which the
+no-extra-ICs constraint still excludes. If the season-long Vbat log (§10)
+confirms the pack lives near 5.4 V, that constraint deserves re-opening.
 
 What the change buys, against the ER14505 it replaces:
 
@@ -213,7 +240,8 @@ What the change buys, against the ER14505 it replaces:
   the old §10 cold-temperature question.
 - **Pulse**: enormous margin over the 91.7 mA TX peak (§6), where the ER14505
   was the marginal row.
-- **Cost**: it is what the deployed units are actually built with.
+- **Availability**: it is what the deployed units are actually built with, off
+  the shelf.
 
 What it costs: life drops **9.3 y → 4.6 y** at the baseline schedule (1200 mAh
 against 2400 mAh, §5), and the input-voltage deviation above.
@@ -232,12 +260,13 @@ against 2400 mAh, §5), and the input-voltage deviation above.
 | ER34615 D bobbin | 250 mA | 500 mA | OK |
 | Tadiran HLC | — | 5000 mA | excellent |
 | 18650 Li-ion | 2000 mA+ | 5000 mA | excellent |
-| **AAA Li/FeS₂ (deployed pack)** | **~1000 mA** † | **~2000 mA** † | **yes — 10× margin on the 91 mA peak** |
+| **AAA Li/FeS₂ (deployed pack)** | **not published for AAA** † | **not published for AAA** † | **yes — the AA of the same chemistry is rated 2.0 A / 3.0 A; even a third of that is ~7× the 91 mA peak** |
 | L91 AA (Li/FeS₂) | 2000 mA | 3000 mA | excellent — voltage was the objection, see §5.1/§5.2 |
 
-† AAA Li/FeS₂ figures are class values for the chemistry, **not read off the
-deployed cell's datasheet** — confirm before quoting them anywhere else. Even at
-half these numbers the margin is large.
+† Energizer's LiFeS₂ handbook quotes **2.0 A continuous / 3.0 A pulse for the
+AA size** and does not give an AAA figure; BEVIGOR publishes none either. Do not
+quote a specific AAA number. The point stands regardless: the chemistry is built
+for camera-flash duty, and 91 mA is nowhere near its limit.
 
 ⚠️ The **ER14505 was the marginal row** — 91 mA peak against a 100 mA continuous
 / 200 mA pulse rating — and that is the constraint the deployed AAA pack removes.
@@ -354,9 +383,14 @@ module schematic before any BAT-side change.
   range tops out near 5 V, so fresh-pack `bv`/`VBatt` values may be clipped or
   non-linear. Compare a DMM against the uplinked value on a fresh pack before
   anyone reads a battery curve off the platform (§5.2).
-- **How long does the pack sit above the 4.45 V recommended max?** Log Vbat over
-  a season: that number decides whether the deviation is a few weeks or most of
-  the pack's life, and whether a buck moves back onto the table (§5.2, §7).
+- **How high does the pack actually sit, and for how long?** The handbook's
+  µA-drain two-stage profile says ~5.37 V for most of the pack's life, rising
+  with temperature; the one measurement we have is 5.2 V at room temperature.
+  Log Vbat over a season, and take one reading on a hot afternoon — that decides
+  whether the buck constraint has to be re-opened (§5.2, §7).
+- **Cell-level incoming check?** Three cells at the top of the 1.79–1.83 V fresh
+  spread put the pack at 5.49 V against a 5.5 V absolute maximum. Should
+  assembly reject cells above ~1.80 V (§5.2)?
 - Re-run the PPK2 capture **at 4.5 V** — every charge figure here is a 3.6 V
   measurement, and §5's conservative life numbers assume no buck scaling (§7).
 - Bulk cap 470 µF confirmed low-ESR and rated for the 91 mA pulse?
@@ -366,7 +400,17 @@ module schematic before any BAT-side change.
 
 ## Changelog
 
-- **2026-09-10** — Pack changed to **3× AAA 1.5 V Li/FeS₂ in series** (1200 mAh,
+- **2026-09-10 (b)** — Cell identified as **BEVIGOR AAA Li/FeS₂**; Energizer's
+  LiFeS₂ handbook (LA522) pulled in as the chemistry reference. Three corrections
+  to the (a) entry: the §5.1 "OCV is highest when cold" note was **backwards**
+  (the low-drain plateau rises with temperature — hot is the worst case); at µA
+  drain the pack holds ~1.79 V/cell "nearly independent of depth of discharge",
+  so it is over the 4.45 V recommended maximum for **essentially its whole life**,
+  not just while fresh; and the 1.79–1.83 V fresh spread puts a worst-case pack
+  at **5.49 V against the 5.5 V absolute maximum**. Mitigations and open
+  questions updated; invented AAA pulse figures replaced with the handbook's AA
+  numbers.
+- **2026-09-10 (a)** — Pack changed to **3× AAA 1.5 V Li/FeS₂ in series** (1200 mAh,
   4.5 V nom, 5.2 V measured fresh). Life 9.3 y → **4.6 y** at 15 min / 2 h.
   Passivation risk and the cold-temperature open question drop out; the pulse
   margin goes from marginal to 10×. In exchange the pack runs **above the

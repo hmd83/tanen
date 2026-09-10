@@ -8,6 +8,21 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Changed
+- **Cell identified and the voltage deviation re-assessed against the chemistry
+  handbook** (2026-09-10). The cells are **BEVIGOR AAA Li/FeS₂**. Energizer's
+  LiFeS₂ handbook corrects three things: the old "OCV is highest when cold" note
+  was backwards (the low-drain plateau *rises* with temperature — a hot hive is
+  the worst case); at µA drain Li/FeS₂ holds ~1.79 V/cell "nearly independent of
+  depth of discharge", so the pack is above the nPM1300's 4.45 V recommended
+  maximum for **essentially its whole life**, not only while fresh; and the
+  1.79–1.83 V fresh spread puts a worst-case pack at **5.49 V against the 5.5 V
+  absolute maximum**. Mitigations added (reject cells > ~1.80 V at assembly,
+  pre-drain, keep the enclosure out of the sun); invented AAA pulse ratings
+  replaced by the handbook's AA figures
+- **The built manual PDF is no longer versioned.** `docs/BENUTZERHANDBUCH.pdf`
+  (2.4 MB, rewritten on every text change) is out of the repo and gitignored;
+  `scripts/build_manual_pdf.py` now builds HTML only and takes `--pdf` when a
+  PDF is actually wanted. The HTML manual stays versioned (2026-09-10)
 - **Battery pack: single ER14505 AA Li-SOCl₂ → 3× AAA 1.5 V Li/FeS₂ in series**
   (1200 mAh, 4.5 V nominal, **5.2 V measured fresh**). Life at 15 min / 2 h drops
   9.3 y → **4.6 y** (~10 y at 60 min / 4 h). Gains: no passivation and no

@@ -122,7 +122,7 @@ data, hold-out validation and the (unflattering) hardware conclusions:
 | [`web/`](web/) | Web Bluetooth configuration page + standalone downlink encoder (no build step) |
 | [`ttndecoder/`](ttndecoder/) | TTN payload formatters — one unified BEEP + beelogger decoder, plus the older per-platform ones |
 | [`test_apps/measure_loop/`](test_apps/measure_loop/) | Standalone sensor bring-up app |
-| [`docs/`](docs/) | Architecture, power budget, sprint log, TRD, open questions |
+| [`docs/`](docs/) | Architecture, power budget, sprint log, TRD, open questions, German user manual (`BENUTZERHANDBUCH.md` + built HTML) |
 | [`docs/load_cells/`](docs/load_cells/) | Load-cell characterisation — data, analysis, host replay of the compensation |
 | [`media/`](media/) | Build photos and a bench-test clip |
 
@@ -283,23 +283,26 @@ would give ~1.5× better signal-to-noise at the same absolute drift.*
 > [`Tanen_Base_pcb/README.md`](Tanen_Base_pcb/README.md) has the full pin-by-pin
 > mapping.
 
-**Battery:** 3× AAA 1.5 V lithium (Li/FeS₂, 1200 mAh) in series — 4.5 V
-nominal, **5.2 V measured fresh** — **primary / non-rechargeable**. The firmware
+**Battery:** 3× BEVIGOR AAA 1.5 V lithium (Li/FeS₂, 1200 mAh) in series —
+4.5 V nominal, **5.2 V measured fresh at room temperature** — **primary /
+non-rechargeable**. The firmware
 deliberately deletes `charging-enable` from the nPM1300 charger node; with it
 armed, applying USB power would push charge current into non-rechargeable cells.
 Do not re-enable it unless you have also changed the chemistry.
 
-⚠️ **The fresh pack sits above the nPM1300's recommended VBAT maximum.** The
-window is 2.3–4.45 V recommended, 5.5 V absolute; a fresh pack at 5.2 V is
-outside the recommended range and stays there until it falls below ~1.48 V/cell,
-with 0.3 V of headroom to the absolute maximum. This is a deliberate, documented
-deviation — see [`docs/POWER_BUDGET.md`](docs/POWER_BUDGET.md) §5.2, which also
-covers the ER14505 AA Li-SOCl₂ cell this replaced, the pulse-current margin, and
-what the swap bought (no passivation, −40 °C rating, 10× pulse headroom) and
-cost (9.3 y → 4.6 y).
+⚠️ **The pack sits above the nPM1300's recommended VBAT maximum for
+essentially its whole life.** The window is 2.3–4.45 V recommended, 5.5 V
+absolute. At µA drain Li/FeS₂ holds a ~1.79 V/cell plateau that is nearly
+independent of depth of discharge and **rises with temperature**, so the pack
+only drops back inside the recommended range as the cells die. Worst case is a
+warm hive with cells at the top of the 1.79–1.83 V fresh spread: **5.49 V against
+a 5.5 V absolute maximum.** This is a deliberate, documented deviation — see
+[`docs/POWER_BUDGET.md`](docs/POWER_BUDGET.md) §5.2 for the chemistry data,
+mitigations, the ER14505 AA Li-SOCl₂ cell this replaced, and what the swap bought
+(no passivation, −40 °C rating, large pulse margin) and cost (9.3 y → 4.6 y).
 
-Measure a fresh pack's open-circuit voltage before connecting it, cold if the
-site gets cold — Li/FeS₂ OCV rises as temperature falls.
+Measure cells before assembly and reject any above ~1.80 V; keep the enclosure
+out of direct sun.
 
 ---
 
