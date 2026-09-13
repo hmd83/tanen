@@ -230,26 +230,59 @@ int config_init(void)
 	return 0;
 }
 
-/* LoRaWAN credentials */
-int config_get_dev_eui(uint8_t buf[8])   { memcpy(buf, dev_eui, 8);  return 0; }
-int config_get_join_eui(uint8_t buf[8])  { memcpy(buf, join_eui, 8); return 0; }
-int config_get_app_key(uint8_t buf[16])  { memcpy(buf, app_key, 16); return 0; }
+/* LoRaWAN credentials.
+ * Kept obfuscated at rest (RAM and ZMS flash) by XOR-ing with a per-device
+ * key derived from hwinfo_get_device_id(), so a raw flash dump or JTAG/SWD
+ * memory read no longer yields the plaintext DevEUI/JoinEUI/AppKey. */
+static void credential_cipher(uint8_t *buf, size_t len)
+{
+	uint8_t hwid[16] = {0};
+
+	(void)hwinfo_get_device_id(hwid, sizeof(hwid));
+	for (size_t i = 0; i < len; i++) {
+		buf[i] ^= hwid[i % sizeof(hwid)];
+	}
+}
+
+int config_get_dev_eui(uint8_t buf[8])
+{
+	memcpy(buf, dev_eui, 8);
+	credential_cipher(buf, 8);
+	return 0;
+}
+
+int config_get_join_eui(uint8_t buf[8])
+{
+	memcpy(buf, join_eui, 8);
+	credential_cipher(buf, 8);
+	return 0;
+}
+
+int config_get_app_key(uint8_t buf[16])
+{
+	memcpy(buf, app_key, 16);
+	credential_cipher(buf, 16);
+	return 0;
+}
 
 int config_set_dev_eui(const uint8_t buf[8])
 {
 	memcpy(dev_eui, buf, 8);
+	credential_cipher(dev_eui, 8);
 	return zms_store(ZMS_DEV_EUI_ID, dev_eui, 8);
 }
 
 int config_set_join_eui(const uint8_t buf[8])
 {
 	memcpy(join_eui, buf, 8);
+	credential_cipher(join_eui, 8);
 	return zms_store(ZMS_JOIN_EUI_ID, join_eui, 8);
 }
 
 int config_set_app_key(const uint8_t buf[16])
 {
 	memcpy(app_key, buf, 16);
+	credential_cipher(app_key, 16);
 	return zms_store(ZMS_APP_KEY_ID, app_key, 16);
 }
 
