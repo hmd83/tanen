@@ -8,6 +8,14 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Changed
+- **Power budget: TX with Extended Mode measured at 139 mC** (2026-09-13, PPK2:
+  11.13 s, 12.49 mA avg, 77.78 mA peak) — the BLE scan adds 76 mC to the 63 mC
+  uplink. Lifetimes recomputed with BLE sensors: 4.6 → **3.3 y** at 15 min / 2 h,
+  10 → 7 y at 60 min / 4 h; nodes without them are unchanged. POWER_BUDGET,
+  README, ARCHITECTURE, TRD, user manual and landing page updated
+- **Wording** (2026-09-13): the German setup page and manual say *Sensor(en)*
+  instead of *Fühler* for the Bluetooth sensors; the landing page says *keine
+  Cloud* instead of *keine Zwangs-Wolke* (English and Arabic aligned)
 - **Cell identified and the voltage deviation re-assessed against the chemistry
   handbook** (2026-09-10). The cells are **BEVIGOR AAA Li/FeS₂**. Energizer's
   LiFeS₂ handbook corrects three things: the old "OCV is highest when cold" note
@@ -36,7 +44,38 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   (§5/§5.2/§6/§7/§8/§9/§10), ARCHITECTURE, TRD deviations, CONTRIBUTING, the user
   manual and the site (2026-09-10)
 
+### Fixed
+- **SETUP with a dead or absent load cell: web app dropped after ~5 s, node
+  watchdog-reset** (2026-09-13). BLE live readings (and tare/calibrate) ran
+  `measure_run()` on the cooperative system workqueue; gpio-I2C busy-spins, and
+  with no NAU7802 every SCL edge spins out the 100 ms clock-stretch timeout
+  (~3.5 s per read, re-queued every 2 s). That starved the BT RX thread and
+  `main` → GATT stalled, then the 60 s watchdog reset the node, whose reset wake
+  skips SETUP. BLE sensor I/O now runs on a dedicated preemptible work queue,
+  a live read is skipped while the last one is pending, and the queue is drained
+  before SETUP returns. Pre-dates Extended Mode; found testing it on a bare board
+
 ### Added
+- **Extended Mode showcased on the landing page and in the README** (2026-09-13):
+  own section with the sensor photo and the live setup-page screenshot
+  (`media/BLE_Thermometer_Hygrometer_sensor.jpeg`,
+  `media/screen_shots/BLE_Thermometer_Hygrometer_screen.jpeg`; 460 px copies in
+  `site/media/`), nav link and spec-table row in DE/EN/AR
+- **Extended Mode — up to 3 SwitchBot Outdoor Meter BLE sensors** (2026-09-13).
+  At most 2 in-hive and 1 outside, set up in a new *Erweitert* tab of the web
+  page (MAC typed or read from a QR label, role, per-sensor and master switch),
+  stored in ZMS id 20; live readings show in the tab and on the overview.
+  Scanned only on transmitting wakes and before the LoRa join (≤ 8 s, ends as
+  soon as every enabled sensor has been heard); measure-only wakes never start
+  BT. Each sensor heard appends a 5-byte block (slot/role, temperature,
+  humidity, battery %) → 8/13/18/23-byte frames; a sensor not heard costs no
+  airtime, only flags bit 3. `tanen-decoder.js` counts blocks from the length:
+  the outside sensor becomes `t`/`TempOut` (+ `h`/`FeuchteOut`) and the DS18B20
+  moves to `t_0`; in-hive sensors map to `t_i`/`h_i`/`TempIn`/`FeuchteIn` and
+  `t_1`/`TempIn2`/`FeuchteIn2`. 8-byte frames decode exactly as before. New GATT
+  characteristics `0x000E` ExtConfig and `0x000F` ExtLive; jsQR 1.4.0 vendored as
+  `web/jsqr.js`, loaded only where the browser lacks `BarcodeDetector`.
+  Builds; **not yet verified on hardware**
 - **`ttndecoder/tanen-decoder.js`** — one uplink formatter for both supported
   platforms. Parses the 8-byte frame once and emits BEEP keys
   (`weight_kg`/`t`/`bv`) and beelogger keys (`Gewicht`/`TempOut`/`VBatt`) in the
