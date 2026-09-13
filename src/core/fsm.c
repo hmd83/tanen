@@ -12,6 +12,7 @@
 #include "../features/measurement/tempcomp.h"
 #endif
 #include "../features/transmission/transmit.h"
+#include "../features/ext_sensors/ext_sensors.h"
 #include "../features/anomaly/anomaly.h"
 #if IS_ENABLED(CONFIG_TANENBASE_BLE_CONFIG)
 #include "../features/ble_config/ble_svc.h"
@@ -137,6 +138,20 @@ static void fsm_measure_and_decide(void)
         current_state = FSM_STATE_TRANSMISSION;
         LOG_INF(">> State: TRANSMISSION (flags=0x%02x)", result.flags);
 
+        /* Extended Mode BLE sensors — scanned only on wakes that transmit,
+         * and before lora_init() so the scan can't straddle the LoRaMAC
+         * join/RX windows. A failed scan still sends the base frame. */
+        const ext_data_t *ext_p = NULL;
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+        ext_data_t ext;
+
+        if (config_ext_active()) {
+            (void)ext_scan_once(&ext, CONFIG_TANENBASE_EXT_SCAN_TIMEOUT_MS);
+            ext_p = &ext;
+            watchdog_feed();
+        }
+#endif
+
         /* Only init LoRa when TX is needed — saves power on measure-only wakes */
         err = lora_init();
         if (err) {
@@ -144,7 +159,7 @@ static void fsm_measure_and_decide(void)
             config_set_tx_pending(1);
         } else {
             watchdog_feed();
-            err = transmit_run(&data, result.flags);
+            err = transmit_run(&data, ext_p, result.flags);
             if (!err) {
                 /* Update last-TX'd values on success — only fields that
                  * carried a valid reading (sentinel must not become the

@@ -1,6 +1,7 @@
 #ifndef TANENBASE_CONFIG_H
 #define TANENBASE_CONFIG_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -88,5 +89,35 @@ int config_set_measurement_count(uint32_t val);
  * the next wake retries instead of staying silent until the next heartbeat. */
 int config_get_tx_pending(uint8_t *val);
 int config_set_tx_pending(uint8_t val);
+
+/* Extended Mode — up to EXT_SLOTS SwitchBot Outdoor Meter BLE sensors.
+ * All-uint8 layout, so the struct is the ZMS record and the ExtConfig GATT
+ * value byte for byte (26 bytes, no padding). */
+#define EXT_SLOTS           3
+#define EXT_CONFIG_VERSION  1
+#define EXT_ROLE_IN         0  /* in-hive */
+#define EXT_ROLE_OUT        1  /* out-of-hive: replaces the 1-Wire outside temp */
+#define EXT_MAX_IN          2
+#define EXT_MAX_OUT         1
+
+typedef struct {
+	uint8_t mac[6];  /* MSB first, as printed on the label */
+	uint8_t role;    /* EXT_ROLE_* */
+	uint8_t en;      /* 0/1 */
+} ext_slot_t;
+
+typedef struct {
+	uint8_t    version;  /* EXT_CONFIG_VERSION */
+	uint8_t    enabled;  /* master switch 0/1 */
+	ext_slot_t slot[EXT_SLOTS];
+} ext_config_t;
+
+int config_get_ext(ext_config_t *cfg);
+int config_set_ext(const ext_config_t *cfg);
+/* 0 if storable: known version, 0/1 flags, every enabled slot has a unique
+ * non-zero MAC, at most EXT_MAX_IN in-hive and EXT_MAX_OUT outside. */
+int config_ext_validate(const ext_config_t *cfg);
+/* Master on and at least one slot enabled — a transmitting wake must scan. */
+bool config_ext_active(void);
 
 #endif
