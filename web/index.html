@@ -314,7 +314,13 @@ html[dir="rtl"] .steps{direction:rtl}
 .qr-modal[hidden]{display:none}
 .qr-box{inline-size:min(100%,460px);background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:20px}
 .qr-box h3{font-size:1.25rem;font-weight:800;margin-block-end:6px}
-.qr-box video{display:block;inline-size:100%;max-width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:#000;margin-block:12px 16px}
+.qr-view{position:relative;margin-block:12px 8px;border-radius:12px;overflow:hidden;background:#000}
+.qr-box video{display:block;inline-size:100%;max-width:100%;aspect-ratio:1;object-fit:cover}
+/* Ziel-Quadrat = die Bildmitte, die vergroessert durchsucht wird. Der kleine
+   Code auf den Aufklebern braucht das: im ganzen Bild ist er zu winzig. */
+.qr-aim{position:absolute;inset:25%;border:4px solid var(--accent);border-radius:12px;box-shadow:0 0 0 999px rgba(12,16,23,.35);pointer-events:none}
+.qr-info{direction:ltr;text-align:center;font-size:.85rem;color:var(--dim);margin-block-end:12px}
+.qr-actions{margin-block-start:0}
 
 /* ================================ Hinweise ================================ */
 .note{
@@ -413,9 +419,17 @@ html[dir="rtl"] .steps{direction:rtl}
 <div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
   <div class="qr-box">
     <h3 id="qrTitle" data-i18n="qrTitle">QR-Code scannen</h3>
-    <p class="card-sub" data-i18n="qrHint">Halten Sie den Aufkleber des Sensors vor die Kamera.</p>
-    <video id="qrVideo" playsinline muted></video>
-    <button class="btn btn-outline btn-block" id="qrClose" data-i18n="cancel">Abbrechen</button>
+    <p class="card-sub" data-i18n="qrHint">Halten Sie den QR-Code etwa 15 cm vor die Kamera, mitten in das gelbe Quadrat, und warten Sie, bis das Bild scharf ist.</p>
+    <div class="qr-view">
+      <video id="qrVideo" playsinline muted></video>
+      <span class="qr-aim" aria-hidden="true"></span>
+    </div>
+    <p class="qr-info" id="qrInfo"></p>
+    <div class="btn-row qr-actions">
+      <button class="btn btn-outline" id="qrPhoto" type="button" data-i18n="qrPhoto">Foto aufnehmen</button>
+      <button class="btn btn-outline" id="qrClose" type="button" data-i18n="cancel">Abbrechen</button>
+    </div>
+    <input type="file" id="qrFile" accept="image/*" capture="environment" hidden>
   </div>
 </div>
 
@@ -893,7 +907,9 @@ const I18N = {
     bleNoMac: 'Noch keine Adresse eingetragen.', phMac: 'z. B. AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'Bitte speichern — dann erscheinen hier die Werte.',
     saveExt: 'Sensoren speichern', bleSensors: 'Bluetooth-Sensoren',
-    qrTitle: 'QR-Code scannen', qrHint: 'Halten Sie den Aufkleber des Sensors vor die Kamera.', cancel: 'Abbrechen',
+    qrTitle: 'QR-Code scannen', qrHint: 'Halten Sie den QR-Code etwa 15 cm vor die Kamera, mitten in das gelbe Quadrat, und warten Sie, bis das Bild scharf ist.', cancel: 'Abbrechen',
+    qrPhoto: 'Foto aufnehmen', stQrPhotoBusy: 'Foto wird ausgewertet …',
+    stQrPhotoNone: 'Auf dem Foto wurde kein QR-Code erkannt. Bitte scharf und von nahem fotografieren — oder die Adresse abtippen.',
     stMacBad: 'Sensor {n}: Die Adresse braucht 12 Zeichen (0–9, A–F).',
     stMacMissing: 'Sensor {n} ist eingeschaltet, hat aber keine Adresse.',
     stMacDup: 'Sensor {n}: Diese Adresse ist schon eingetragen.',
@@ -994,7 +1010,9 @@ const I18N = {
     bleNoMac: 'No address entered yet.', phMac: 'e.g. AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'Please save — then the values appear here.',
     saveExt: 'Save sensors', bleSensors: 'Bluetooth sensors',
-    qrTitle: 'Scan QR code', qrHint: 'Hold the sensor’s sticker in front of the camera.', cancel: 'Cancel',
+    qrTitle: 'Scan QR code', qrHint: 'Hold the QR code about 15 cm in front of the camera, inside the yellow square, and wait until the picture is sharp.', cancel: 'Cancel',
+    qrPhoto: 'Take a photo', stQrPhotoBusy: 'Reading the photo …',
+    stQrPhotoNone: 'No QR code found in the photo. Take a sharp close-up — or type the address in.',
     stMacBad: 'Sensor {n}: the address needs 12 characters (0–9, A–F).',
     stMacMissing: 'Sensor {n} is switched on but has no address.',
     stMacDup: 'Sensor {n}: this address is already in use.',
@@ -1095,7 +1113,9 @@ const I18N = {
     bleNoMac: 'لم يُدخل عنوان بعد.', phMac: 'مثال: AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'احفظ أولًا — ثم تظهر القيم هنا.',
     saveExt: 'حفظ الحساسات', bleSensors: 'حساسات البلوتوث',
-    qrTitle: 'مسح رمز QR', qrHint: 'ضع ملصق الحساس أمام الكاميرا.', cancel: 'إلغاء',
+    qrTitle: 'مسح رمز QR', qrHint: 'ضع رمز QR على بعد نحو 15 سم أمام الكاميرا داخل المربع الأصفر، وانتظر حتى تصبح الصورة واضحة.', cancel: 'إلغاء',
+    qrPhoto: 'التقاط صورة', stQrPhotoBusy: 'جارٍ قراءة الصورة …',
+    stQrPhotoNone: 'لم يُعثر على رمز QR في الصورة. التقط صورة واضحة عن قرب — أو اكتب العنوان.',
     stMacBad: 'الحساس {n}: العنوان يحتاج 12 خانة (0–9، A–F).',
     stMacMissing: 'الحساس {n} مُشغَّل لكن بلا عنوان.',
     stMacDup: 'الحساس {n}: هذا العنوان مستخدم بالفعل.',
@@ -1743,9 +1763,19 @@ async function saveExt() {
 }
 
 /* ================================ QR-Leser ================================
-   BarcodeDetector (Chrome auf Android), sonst jsQR aus jsqr.js - erst
-   bei Bedarf nachgeladen. Gesucht wird nur eine MAC im Text des Codes.   */
-let qrStream = null, qrSlot = -1, qrTimer = null, qrDetector = null, qrCanvas = null;
+   Die Aufkleber tragen einen sehr kleinen QR-Code (rund 5 mm). Deshalb:
+   - hohe Aufloesung, Dauer-Fokus und - wo das Handy es kann - 2x Zoom, damit
+     der Code aus Fokus-Abstand trotzdem gross genug im Bild ist;
+   - BarcodeDetector (Chrome auf Android) zuerst; wirft er beim Erkennen einen
+     Fehler, wird auf jsQR (jsqr.js, erst bei Bedarf geladen) umgeschaltet,
+     statt stumm endlos weiterzusuchen;
+   - abwechselnd die vergroesserte Bildmitte (das gelbe Quadrat) und das
+     ganze Bild;
+   - Rueckfall "Foto aufnehmen": die Kamera-App fokussiert naeher und liefert
+     volle Aufloesung; das Foto wird ganz und in Kacheln durchsucht.
+   Gesucht wird nur eine MAC im Text des Codes.                            */
+let qrStream = null, qrSlot = -1, qrPhotoSlot = -1, qrTimer = null, qrDetector = null, qrCanvas = null;
+let qrTick = 0, qrZoom = 1;
 
 function loadJsQr() {
   return new Promise((resolve, reject) => {
@@ -1758,34 +1788,95 @@ function loadJsQr() {
   });
 }
 
+async function makeQrDetector() {
+  if (!('BarcodeDetector' in window)) return null;
+  try {
+    const formats = await BarcodeDetector.getSupportedFormats();
+    return formats.includes('qr_code') ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/* Einen Ausschnitt (sx, sy, sw, sh) von Video oder Foto auf die Leinwand
+   bringen - laengste Seite auf `long` Pixel - und dort nach einem QR-Code
+   suchen. Liefert den Text oder null. */
+async function decodeArea(source, sx, sy, sw, sh, long, inversion) {
+  const k = long / Math.max(sw, sh);
+  const dw = Math.max(1, Math.round(sw * k)), dh = Math.max(1, Math.round(sh * k));
+  if (!qrCanvas) qrCanvas = document.createElement('canvas');
+  qrCanvas.width = dw;
+  qrCanvas.height = dh;
+  const ctx = qrCanvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(source, sx, sy, sw, sh, 0, 0, dw, dh);
+  if (qrDetector) {
+    try {
+      const codes = await qrDetector.detect(qrCanvas);
+      return codes.length ? codes[0].rawValue : null;
+    } catch (e) {
+      qrDetector = null;                          /* Dienst fehlt: weiter mit jsQR */
+      setQrInfo();
+      try { await loadJsQr(); } catch (e2) { return null; }
+    }
+  }
+  if (typeof jsQR !== 'function') return null;
+  const code = jsQR(ctx.getImageData(0, 0, dw, dh).data, dw, dh, { inversionAttempts: inversion });
+  return code ? code.data : null;
+}
+
+/* Dauer-Fokus und 2x Zoom, wo die Kamera es anbietet - sonst still ohne. */
+async function tuneQrCamera(track) {
+  qrZoom = 1;
+  if (!track || typeof track.getCapabilities !== 'function') return;
+  const caps = track.getCapabilities();
+  const adv = {};
+  if (Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) adv.focusMode = 'continuous';
+  if (caps.zoom && caps.zoom.max >= 2) adv.zoom = Math.max(caps.zoom.min || 1, 2);
+  if (!Object.keys(adv).length) return;
+  try {
+    await track.applyConstraints({ advanced: [adv] });
+    if (adv.zoom) qrZoom = adv.zoom;
+  } catch (e) {}
+}
+
+/* Kleine Technik-Zeile unter dem Bild: welcher Leser, welche Aufloesung -
+   damit sich ein Handy, das nicht liest, beschreiben laesst. */
+function setQrInfo() {
+  const video = document.getElementById('qrVideo');
+  const parts = [qrDetector ? 'BarcodeDetector' : 'jsQR'];
+  if (video.videoWidth) parts.push(video.videoWidth + '×' + video.videoHeight);
+  if (qrZoom > 1) parts.push('Zoom ' + qrZoom + '×');
+  document.getElementById('qrInfo').textContent = parts.join(' · ');
+}
+
 async function openQr(i) {
   if (qrStream) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     toast('stQrNoCam', 'err', { msg: 'getUserMedia' });
     return;
   }
-  qrDetector = null;
-  if ('BarcodeDetector' in window) {
-    try {
-      const formats = await BarcodeDetector.getSupportedFormats();
-      if (formats.includes('qr_code')) qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
-    } catch (e) { qrDetector = null; }
-  }
+  qrDetector = await makeQrDetector();
   if (!qrDetector) {
     try { await loadJsQr(); } catch (e) { toast('stQrNoReader', 'err'); return; }
   }
   try {
-    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    qrStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false,
+    });
   } catch (e) {
     toast('stQrNoCam', 'err', { msg: e.message });
     return;
   }
   qrSlot = i;
+  qrTick = 0;
+  await tuneQrCamera(qrStream.getVideoTracks()[0]);
   const video = document.getElementById('qrVideo');
   video.srcObject = qrStream;
   document.getElementById('qrModal').hidden = false;
   document.getElementById('qrClose').focus();
   try { await video.play(); } catch (e) {}
+  setQrInfo();
   qrTimer = setTimeout(scanQrFrame, 300);
 }
 
@@ -1793,29 +1884,28 @@ async function scanQrFrame() {
   qrTimer = null;
   if (!qrStream) return;
   const video = document.getElementById('qrVideo');
+  const w = video.videoWidth, h = video.videoHeight;
   let text = null;
-  try {
-    if (video.readyState >= 2) {
-      if (qrDetector) {
-        const codes = await qrDetector.detect(video);
-        if (codes.length) text = codes[0].rawValue;
+  if (video.readyState >= 2 && w && h) {
+    if (qrTick === 0) setQrInfo();
+    try {
+      if (qrTick++ % 2 === 0) {
+        const s = Math.round(Math.min(w, h) / 2);  /* das gelbe Quadrat */
+        text = await decodeArea(video, (w - s) / 2, (h - s) / 2, s, s, 900, 'dontInvert');
       } else {
-        const w = video.videoWidth, h = video.videoHeight;
-        if (!qrCanvas) qrCanvas = document.createElement('canvas');
-        qrCanvas.width = w;
-        qrCanvas.height = h;
-        const ctx = qrCanvas.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(video, 0, 0, w, h);
-        const code = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
-        if (code) text = code.data;
+        text = await decodeArea(video, 0, 0, w, h, qrDetector ? Math.max(w, h) : 1280, 'dontInvert');
       }
-    }
-  } catch (e) {}
-  if (!qrStream) return;                        /* waehrend detect() geschlossen */
-  if (text === null) { qrTimer = setTimeout(scanQrFrame, 200); return; }
+    } catch (e) {}
+  }
+  if (!qrStream) return;                        /* waehrend der Suche geschlossen */
+  if (text === null) { qrTimer = setTimeout(scanQrFrame, 150); return; }
 
   const slot = qrSlot;
   closeQr();
+  applyQrText(slot, text);
+}
+
+function applyQrText(slot, text) {
   const mac = findMac(text);
   if (!mac) { toast('stQrNoMac', 'err'); return; }
   const el = document.getElementById('slotMac' + slot);
@@ -1823,6 +1913,36 @@ async function scanQrFrame() {
   el.classList.remove('bad');
   renderExtLive();
   toast('stQrOk', 'ok', { mac });
+}
+
+/* Rueckfall Foto: ganzes Bild, Mitte und 3x3 ueberlappende Kacheln in halber
+   Groesse - der winzige Code liegt selten genau in der Bildmitte. */
+async function onQrPhoto(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  const slot = qrPhotoSlot;
+  if (!file || slot < 0) return;
+  toast('stQrPhotoBusy', 'info');
+  let text = null;
+  try {
+    if (!qrDetector) qrDetector = await makeQrDetector();
+    if (!qrDetector) await loadJsQr();
+    const bmp = await createImageBitmap(file);
+    const W = bmp.width, H = bmp.height, s = Math.round(Math.min(W, H) / 2);
+    const areas = [[0, 0, W, H], [(W - s) / 2, (H - s) / 2, s, s]];
+    for (let gy = 0; gy < 3; gy++) {
+      for (let gx = 0; gx < 3; gx++) areas.push([gx * (W - s) / 2, gy * (H - s) / 2, s, s]);
+    }
+    for (const [x, y, aw, ah] of areas) {
+      text = await decodeArea(bmp, x, y, aw, ah, qrDetector ? Math.max(aw, ah) : 1200, 'attemptBoth');
+      if (text !== null) break;
+    }
+    if (bmp.close) bmp.close();
+  } catch (e) {
+    text = null;
+  }
+  if (text === null) { toast('stQrPhotoNone', 'err'); return; }
+  applyQrText(slot, text);
 }
 
 function closeQr() {
@@ -1860,6 +1980,14 @@ function initExt() {
   }
   document.getElementById('saveExtBtn').addEventListener('click', saveExt);
   document.getElementById('qrClose').addEventListener('click', closeQr);
+  document.getElementById('qrPhoto').addEventListener('click', () => {
+    /* Live-Kamera zuerst freigeben - sonst bekommt die Kamera-App sie nicht.
+       click() bleibt synchron im Tipp, sonst blockt der Browser die Auswahl. */
+    qrPhotoSlot = qrSlot;
+    closeQr();
+    document.getElementById('qrFile').click();
+  });
+  document.getElementById('qrFile').addEventListener('change', onQrPhoto);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && qrStream) closeQr(); });
 }
 
