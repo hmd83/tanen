@@ -6,6 +6,8 @@ Date: 2026-09-10 (pack changed to **3× AAA 1.5 V Li/FeS₂ in series** — 1200
 had ruled out on the input-voltage window, deployed anyway with the margin
 documented. Charge/current figures below are unchanged 2026-07-25 PPK2 captures
 at 3.6 V; they have **not** been re-measured on the 4.5 V pack).
+Revised 2026-09-13: **TX with Extended Mode (BLE sensor scan) measured at
+139 mC** — the design figure for §2–§5 from here on, see §1.
 
 ---
 
@@ -15,7 +17,8 @@ at 3.6 V; they have **not** been re-measured on the 4.5 V pack).
 |---|---|---|---|---|---|
 | **Sleep** (System OFF) | 4.5 µA † | — | continuous | 0.27 mC/min | 16.2 µW |
 | **Measure** (sensor acq.) | 8.00 mA | 57.64 mA ‡ | 1.5 s | 12 mC | 28.8 mW |
-| **TX** (LoRa uplink) | 9.26 mA | 91.70 mA ‡ | 6.8 s | 63 mC | 33.3 mW |
+| **TX** (LoRa uplink, no BLE sensors) | 9.26 mA | 91.70 mA ‡ | 6.8 s | 63 mC | 33.3 mW |
+| **TX + Extended Mode** (BLE scan + uplink) | 12.49 mA | 77.78 mA | 11.13 s | **139 mC** | 45.0 mW |
 
 > Sleep includes NAU7802 in PUD power-down, SX1262 warm-start sleep (1.2 µA —
 > loramac-node `RadioSleep()` hardcodes `WarmStart=1`), DS18B20 standby,
@@ -29,6 +32,15 @@ at 3.6 V; they have **not** been re-measured on the 4.5 V pack).
 > which was the clue: **if the module is clean, the leak is downstream.**
 > Measure = NAU7802 init → per-wake internal offset cal → 10 SPS settle → cluster readout.
 > TX = LoRa join check + uplink + RX1/RX2 windows.
+> TX + Extended Mode = one BLE scan (continuous RX until every enabled sensor has
+> been heard, bounded by `CONFIG_TANENBASE_EXT_SCAN_TIMEOUT_MS` = 8 s), then the
+> uplink. PPK2 capture 2026-09-13 (raw: `docs/LoRa uplink_extend_mode.csv`): **139.02 mC over 11.13 s** — +76 mC / +4.3 s
+> on the plain TX row, so the scan more than doubles a TX wake. Measure-only
+> wakes are unaffected. **§2–§5 use 139 mC** (a node with Extended Mode on);
+> without BLE sensors the 63 mC row still holds (4.6 y at 15 min / 2 h, see the
+> in-line brackets in §3/§5). Capture conditions (Vbat, number of sensors,
+> restored session vs join) were not recorded, and the full-timeout case — a
+> configured sensor out of range, scan runs the whole 8 s — is not captured yet.
 > Avg I is charge ÷ duration.
 >
 > † **Flat across Vbat = 3.6 V → 5.0 V** (measured 2026-07-25, ~4.0 µA at 3.6 V,
@@ -37,7 +49,9 @@ at 3.6 V; they have **not** been re-measured on the 4.5 V pack).
 > at µA loads. Consequence: a higher-voltage pack buys nothing in sleep, and
 > costs proportionally more *energy* per day (4.5 µA × 5 V vs × 3.6 V).
 > ‡ Peaks carried over from the 2026-06-09 capture — **not re-measured**. §6 and
-> the bulk-cap sizing depend on the TX peak; re-verify before PCB release.
+> the bulk-cap sizing depend on the TX peak; re-verify before PCB release. The
+> 2026-09-13 Extended Mode TX capture peaked at 77.8 mA, under the 91.7 mA §6
+> keeps as its conservative figure.
 
 ---
 
@@ -58,7 +72,7 @@ mAh/day = Q_day_mC / 3600
 Constants @ 3.6 V:
 - `I_sleep = 4.5 µA`
 - `Q_measure = 12 mC`
-- `Q_tx = 63 mC`
+- `Q_tx = 139 mC` with Extended Mode (BLE scan + uplink); 63 mC without BLE sensors
 
 ---
 
@@ -66,72 +80,81 @@ Constants @ 3.6 V:
 
 | T_meas | T_tx | Sleep | Measure | TX | **Total mAh/day** |
 |---|---|---|---|---|---|
-| 15 min | 1 h | 0.108 | 0.320 | 0.420 | **0.848** |
-| 15 min | 2 h | 0.108 | 0.320 | 0.210 | **0.638** |
-| 15 min | 4 h | 0.108 | 0.320 | 0.105 | **0.533** |
-| 15 min | 6 h | 0.108 | 0.320 | 0.070 | **0.498** |
-| 30 min | 2 h | 0.108 | 0.160 | 0.210 | **0.478** |
-| 30 min | 4 h | 0.108 | 0.160 | 0.105 | **0.373** |
-| 30 min | 6 h | 0.108 | 0.160 | 0.070 | **0.338** |
-| 60 min | 2 h | 0.108 | 0.080 | 0.210 | **0.398** |
-| 60 min | 4 h | 0.108 | 0.080 | 0.105 | **0.293** |
-| 60 min | 6 h | 0.108 | 0.080 | 0.070 | **0.258** |
+| 15 min | 1 h | 0.108 | 0.320 | 0.927 | **1.355** |
+| 15 min | 2 h | 0.108 | 0.320 | 0.463 | **0.891** |
+| 15 min | 4 h | 0.108 | 0.320 | 0.232 | **0.660** |
+| 15 min | 6 h | 0.108 | 0.320 | 0.154 | **0.582** |
+| 30 min | 2 h | 0.108 | 0.160 | 0.463 | **0.731** |
+| 30 min | 4 h | 0.108 | 0.160 | 0.232 | **0.500** |
+| 30 min | 6 h | 0.108 | 0.160 | 0.154 | **0.422** |
+| 60 min | 2 h | 0.108 | 0.080 | 0.463 | **0.651** |
+| 60 min | 4 h | 0.108 | 0.080 | 0.232 | **0.420** |
+| 60 min | 6 h | 0.108 | 0.080 | 0.154 | **0.342** |
 
+> TX column at Q_tx = 139 mC (Extended Mode). Without BLE sensors it is
+> 0.420 / 0.210 / 0.105 / 0.070 for T_tx = 1 / 2 / 4 / 6 h — e.g. 0.638 mAh/day
+> at 15 min / 2 h.
 > Sleep floor = 0.108 mAh/day. Below this is impossible without sleep-current improvement.
 
 ---
 
-## 4. Energy share (15 min / 2 h, baseline)
+## 4. Energy share (15 min / 2 h, Extended Mode)
 
 ```
-Measure  50%  ██████████████████████████████
-TX       33%  ████████████████████
-Sleep    17%  ██████████
+TX       52%  ███████████████████████████████
+Measure  36%  ██████████████████████
+Sleep    12%  ███████
 ```
 
-⚠️ **This conclusion flipped in this revision.** TX used to be 55% of the budget;
-with Q_tx down 200 → 63 mC it is now 33%, and **Measure dominates at 50%**.
-Stretching T_meas is now the biggest single lever — 15 → 30 min saves
-0.160 mAh/day, while halving the TX rate (2 h → 4 h) saves only 0.105.
+⚠️ **Flipped back on 2026-09-13.** The BLE scan more than doubles Q_tx
+(63 → 139 mC), so **TX dominates again at 52 %**. The TX interval is once more
+the biggest single lever: halving the TX rate (2 h → 4 h) saves 0.232 mAh/day,
+stretching T_meas 15 → 30 min saves 0.160. Without BLE sensors the 2026-07-25
+picture still holds — Measure 50 %, TX 33 %, Sleep 17 %, and T_meas is the lever.
 
 ---
 
-## 5. Battery life @ 0.638 mAh/day (15 min / 2 h)
+## 5. Battery life @ 0.891 mAh/day (15 min / 2 h, Extended Mode)
 
 | Battery | V_nom | Cap | Usable (90 %) | Energy life | SD-cap |
 |---|---|---|---|---|---|
-| **3× AAA Li/FeS₂ series** | **4.5 V** (5.2 V fresh) | **1200 mAh** | **1080** | **4.6 y** | **~20 y** ⭐ deployed |
-| ER14505 AA Li-SOCl₂ | 3.6 V | 2400 mAh | 2160 | 9.3 y | ~10 y (previous choice, §5.1) |
-| Tadiran TLP-93111 (HLC AA) | 3.6 V | 2100 mAh | 1890 | 8.1 y | ~10 y, no passivation |
-| ER17505 A Li-SOCl₂ | 3.6 V | 3600 mAh | 3240 | 13.9 y | ~10–15 y |
-| ER26500 C Li-SOCl₂ | 3.6 V | 8500 mAh | 7650 | 32.8 y | ~15 y |
-| ER34615 D Li-SOCl₂ | 3.6 V | 19000 mAh | 17100 | 73.4 y | ~20 y |
-| 18650 Li-ion | 3.7 V | 2500 mAh | 2250 | 9.7 y | ~5 y (cycle) |
-| LiPo 1S 1000 mAh | 3.7 V | 1000 mAh | 900 | 3.9 y | ~3 y (cycle) |
+| **3× AAA Li/FeS₂ series** | **4.5 V** (5.2 V fresh) | **1200 mAh** | **1080** | **3.3 y** (4.6 y) | **~20 y** ⭐ deployed |
+| ER14505 AA Li-SOCl₂ | 3.6 V | 2400 mAh | 2160 | 6.6 y (9.3 y) | ~10 y (previous choice, §5.1) |
+| Tadiran TLP-93111 (HLC AA) | 3.6 V | 2100 mAh | 1890 | 5.8 y (8.1 y) | ~10 y, no passivation |
+| ER17505 A Li-SOCl₂ | 3.6 V | 3600 mAh | 3240 | 10.0 y (13.9 y) | ~10–15 y |
+| ER26500 C Li-SOCl₂ | 3.6 V | 8500 mAh | 7650 | 23.5 y (32.8 y) | ~15 y |
+| ER34615 D Li-SOCl₂ | 3.6 V | 19000 mAh | 17100 | 52.6 y (73.4 y) | ~20 y |
+| 18650 Li-ion | 3.7 V | 2500 mAh | 2250 | 6.9 y (9.7 y) | ~5 y (cycle) |
+| LiPo 1S 1000 mAh | 3.7 V | 1000 mAh | 900 | 2.8 y (3.9 y) | ~3 y (cycle) |
+
+> Energy life with Extended Mode; brackets = without BLE sensors (0.638 mAh/day).
 
 > SD = self-discharge. Real life is `min(energy life, SD-cap)`.
 > Li-SOCl₂ self-discharge ~1 %/year; Li/FeS₂ likewise <1 %/year, ~20 y shelf.
 
-The deployed AAA pack is the one row that is **energy-capped, not SD-capped**:
-4.6 y of charge against a ~20 y shelf life. Capacity is now the binding
-constraint, which it never was with the Li-SOCl₂ options — every one of those
-outlived its own ~10 y self-discharge limit.
+The deployed AAA pack is **energy-capped, not SD-capped**: 3.3 y of charge with
+Extended Mode (4.6 y without BLE sensors) against a ~20 y shelf life. At the
+Extended Mode figure capacity also binds for the AA Li-SOCl₂ cells — the
+ER14505 now lands at 6.6 y, inside its ~10 y self-discharge limit — while the
+C/D cells and Li-ion still hit their shelf or cycle limit first.
 
-Life by schedule, deployed pack (1080 mAh usable, §3 daily figures):
+Life by schedule, deployed pack (1080 mAh usable, §3 daily figures — Extended
+Mode; without BLE sensors in brackets):
 
 | T_meas / T_tx | mAh/day | Life |
 |---|---|---|
-| 15 min / 1 h | 0.848 | 3.5 y |
-| **15 min / 2 h** | **0.638** | **4.6 y** ← baseline |
-| 15 min / 4 h | 0.533 | 5.5 y |
-| 30 min / 2 h | 0.478 | 6.2 y |
-| 30 min / 4 h | 0.373 | 7.9 y |
-| 60 min / 4 h | 0.293 | 10.1 y |
-| 60 min / 6 h | 0.258 | 11.5 y |
+| 15 min / 1 h | 1.355 (0.848) | 2.2 y (3.5 y) |
+| **15 min / 2 h** | **0.891** (0.638) | **3.3 y** (4.6 y) ← baseline |
+| 15 min / 4 h | 0.660 (0.533) | 4.5 y (5.5 y) |
+| 30 min / 2 h | 0.731 (0.478) | 4.0 y (6.2 y) |
+| 30 min / 4 h | 0.500 (0.373) | 5.9 y (7.9 y) |
+| 60 min / 4 h | 0.420 (0.293) | 7.1 y (10.1 y) |
+| 60 min / 6 h | 0.342 (0.258) | 8.6 y (11.5 y) |
 
 > These are **conservative**: they carry the 3.6 V charge figures straight over.
 > If the nPM1300 buck scales active current as `I_bat ∝ 1/V_in` (§7), the same
-> schedules land ~20 % better — 5.6 y at the baseline. Unverified on this pack;
+> schedules land ~20 % better — 4.0 y at the baseline (5.6 y without BLE
+> sensors). Unverified on this pack;
 > do not quote the higher number until a PPK2 run at 4.5 V confirms it.
 
 ### 5.1 Why AA Li-SOCl₂ and not 1.5 V lithium (decision, 2026-07-25 — superseded by §5.2)
@@ -243,8 +266,9 @@ What the change buys, against the ER14505 it replaces:
 - **Availability**: it is what the deployed units are actually built with, off
   the shelf.
 
-What it costs: life drops **9.3 y → 4.6 y** at the baseline schedule (1200 mAh
-against 2400 mAh, §5), and the input-voltage deviation above.
+What it costs: life drops **9.3 y → 4.6 y** at the baseline schedule without BLE
+sensors (6.6 y → 3.3 y with Extended Mode; 1200 mAh against 2400 mAh, §5), and
+the input-voltage deviation above.
 
 ---
 
@@ -299,8 +323,9 @@ Vf at load current:
 If load is **buck-regulated**: I_bat ∝ 1/V_in.
 - sleep × 1.03, measure × 1.16, TX × 1.16
 - Reverse leak: 2× ~0.5 µA = 1 µA → +0.024 mAh/day
-- **Net: +18 % daily** → 0.638 → 0.753 mAh/day
-- ER14505: 9.3 y → 7.9 y
+- **Net: +17 % daily** → 0.891 → 1.044 mAh/day (Extended Mode baseline;
+  +18 %, 0.638 → 0.753 mAh/day, without BLE sensors)
+- ER14505: 6.6 y → 5.7 y (9.3 y → 7.9 y without BLE sensors)
 
 > ⚠️ Note the sleep row assumes buck scaling, which §1 † shows does **not** hold
 > on this board at µA loads. In sleep a series dropper costs the full leak with
@@ -315,9 +340,10 @@ deployed pack therefore runs **direct to BAT with no series elements** and
 carries the over-voltage instead (§5.2). A real buck (TPS62840-class) is still
 the only clean fix; it adds an IC, which the design constraint excludes.
 
-Daily energy = 0.638 mAh × 4.5 V ≈ **2.87 mWh/day** on the deployed pack
-(0.638 mAh × 3.6 V ≈ 2.30 mWh/day on the §5.1 cell). Same charge, more
-energy: §1 † is the reason a higher-voltage pack buys nothing in sleep.
+Daily energy = 0.891 mAh × 4.5 V ≈ **4.01 mWh/day** on the deployed pack with
+Extended Mode (0.638 mAh × 4.5 V ≈ 2.87 mWh/day without BLE sensors; × 3.6 V on
+the §5.1 cell: 3.21 / 2.30 mWh/day). Same charge, more energy: §1 † is the
+reason a higher-voltage pack buys nothing in sleep.
 
 > The pre-2026-07-25 revision quoted 2.35 mWh/day against 1.22 mAh/day, which
 > does not reconcile (1.22 mAh × 3.6 V = 4.4 mWh). Recomputed here as
@@ -360,6 +386,10 @@ module schematic before any BAT-side change.
   Then: floating GPIO, peripheral left on, missing `weight_sleep()`.
 - If measure event > **15 mC** or > **1.9 s** → ADC settle / cal regression.
 - If TX event > **85 mC** or > **9 s** → join attempt, SF12 fallback, or RX2 timeout. See `[[feedback-ppk-lora-debug]]`.
+- With Extended Mode the nominal TX event is **139 mC / 11.1 s**. Above
+  **165 mC** or **14 s**, first suspect the BLE scan running to its 8 s timeout
+  (a configured sensor not heard — check the uplink's `ext_missing` flag), then
+  the LoRa causes above.
 
 **For circuit changes**:
 - Anything on the BAT rail → check §8 window first, at fresh OCV *and* EOL.
@@ -371,6 +401,11 @@ module schematic before any BAT-side change.
 
 ## 10. Open questions
 
+- **Extended Mode TX (139 mC, 2026-09-13):** record the capture conditions (Vbat,
+  sensors enabled, restored session vs join), and capture the full-timeout case
+  (a configured sensor out of range — the scan runs the whole 8 s). Passive
+  scanning could shorten the scan if both SwitchBot AD types arrive without scan
+  requests.
 - Re-measure TX/measure **peak** currents — §6 and the bulk-cap sizing still rest
   on the 2026-06-09 numbers, and the chosen ER14505 is the marginal row.
 - Confirm on the XIAO nRF54LM20A schematic that the 3V3 pin is the nPM1300 buck
@@ -400,6 +435,12 @@ module schematic before any BAT-side change.
 
 ## Changelog
 
+- **2026-09-13** — **TX with Extended Mode measured: 139 mC / 11.13 s / 12.49 mA
+  avg / 77.78 mA peak** (PPK2) — the BLE scan adds +76 mC / +4.3 s to the 63 mC
+  uplink. §2–§5 now use 139 mC: 15 min / 2 h drops **4.6 y → 3.3 y** on the AAA
+  pack (0.638 → 0.891 mAh/day), 60 min / 4 h 10.1 → 7.1 y. Energy share flips
+  back to TX-dominated (52 %). The 63 mC figures stay valid for nodes without
+  BLE sensors and are kept in brackets.
 - **2026-09-10 (b)** — Cell identified as **BEVIGOR AAA Li/FeS₂**; Energizer's
   LiFeS₂ handbook (LA522) pulled in as the chemistry reference. Three corrections
   to the (a) entry: the §5.1 "OCV is highest when cold" note was **backwards**

@@ -29,6 +29,26 @@ config TANENBASE_BLE_CONFIG
 	bool "BLE GATT configuration service"
 	default y
 
+config TANENBASE_EXT_SENSORS
+	bool "Extended Mode: SwitchBot BLE temperature/humidity sensors"
+	default y
+	depends on BT
+	select BT_OBSERVER
+	help
+	  Up to 3 SwitchBot Outdoor Meters (max 2 in-hive, max 1 outside),
+	  configured from the web setup page. Scanned only on wakes that
+	  transmit; each sensor heard adds a 5-byte block to the uplink
+	  (see transmit.h).
+
+config TANENBASE_EXT_SCAN_TIMEOUT_MS
+	int "Extended Mode scan timeout (milliseconds)"
+	default 8000
+	depends on TANENBASE_EXT_SENSORS
+	help
+	  Upper bound on the BLE scan of a transmitting wake. The scan ends
+	  earlier as soon as every enabled sensor has sent temperature and
+	  battery; a dead sensor costs the full timeout of radio RX.
+
 config TANENBASE_ANOMALY
 	bool "Anomaly detection (delta reporting)"
 	default y

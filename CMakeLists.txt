@@ -44,3 +44,10 @@ target_sources_ifdef(CONFIG_TANENBASE_TEMPCOMP app PRIVATE
 target_sources_ifdef(CONFIG_TANENBASE_BLE_CONFIG app PRIVATE
     src/features/ble_config/ble_svc.c
 )
+
+# Extended Mode BLE sensors: fsm.c and ble_svc.c guard every call site with
+# IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS); the types in ext_sensors.h stay
+# available to transmit.c either way.
+target_sources_ifdef(CONFIG_TANENBASE_EXT_SENSORS app PRIVATE
+    src/features/ext_sensors/ext_sensors.c
+)

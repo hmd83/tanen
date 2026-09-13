@@ -6,7 +6,8 @@
 
 A LoRaWAN beehive monitor that runs for years on three AAA primary lithium cells.
 
-It weighs the hive, reads its temperature, and reports over LoRaWAN to The Things
+It weighs the hive, reads its temperature — and, with optional Bluetooth sensors,
+temperature and humidity inside the hive — and reports over LoRaWAN to The Things
 Network — then sleeps at about **4 µA**. Configuration and calibration happen
 over Bluetooth from a web page, so there is no mobile app to install and nothing
 to plug in once the lid is closed.
@@ -15,11 +16,11 @@ to plug in once the lid is closed.
 |---|---|
 | **MCU** | Seeed Studio XIAO nRF54LM20A (Standard, non-Sense) |
 | **Radio** | Wio-SX1262 LoRa kit — LoRaWAN Class A, OTAA, EU868 |
-| **Sensors** | NAU7802 24-bit load-cell ADC · DS18B20 temperature · nPM1300 battery gauge |
+| **Sensors** | NAU7802 24-bit load-cell ADC · DS18B20 temperature · nPM1300 battery gauge · optional: up to 3 SwitchBot Outdoor Meter BLE temperature/humidity sensors (Extended Mode) |
 | **RTOS / SDK** | Zephyr 4.4 via nRF Connect SDK v3.4.0 |
 | **Sleep current** | ~4 µA (System OFF + GRTC wake) |
-| **Battery life** | ~4.6 years on 3× AAA Li/FeS₂ (1200 mAh) at 15 min / 2 h reporting — ~10 y at 60 min / 4 h |
-| **Uplink** | 8 bytes — weight (999 kg range), temperature, battery, flags |
+| **Battery life** | ~4.6 years on 3× AAA Li/FeS₂ (1200 mAh) at 15 min / 2 h reporting — ~10 y at 60 min / 4 h. With Extended Mode BLE sensors each uplink costs 139 mC instead of 63 mC: ~3.3 y / ~7 y |
+| **Uplink** | 8 bytes — weight (999 kg range), temperature, battery, flags · +5 bytes per BLE sensor heard (max 23) |
 
 ![The scale platform in the field](media/platform.jpeg)
 
@@ -49,7 +50,7 @@ boot from System OFF: it checks why it woke, does one pass, and powers off again
     └───────┬────────┘
             │ delta exceeded, or heartbeat due?
     ┌───────▼────────┐  yes
-    │  TRANSMISSION  │  power up SX1262, join if needed, uplink, sleep radio
+    │  TRANSMISSION  │  BLE sensor scan (Extended Mode), SX1262 up, join if needed, uplink
     └───────┬────────┘
             │
     ┌───────▼────────┐
@@ -108,6 +109,43 @@ re-characterise after any mechanical change, override with
 `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K`, or set it to `0` to disable. Method,
 data, hold-out validation and the (unflattering) hardware conclusions:
 [`docs/load_cells/H40A-C3-0150/`](docs/load_cells/H40A-C3-0150/).
+
+### Extended Mode — a look inside the hive
+
+The scale tells you *that* a colony gained or lost weight. It cannot tell you
+whether the colony is raising brood, holding its winter cluster, or sitting in
+damp air. **Extended Mode** adds up to three off-the-shelf **SwitchBot Outdoor
+Meter** Bluetooth sensors — at most two inside the hive and one outside — and
+sends their temperature and humidity in the same uplink as the weight. No cable
+through the hive wall and no extra gateway: the node's own nRF54LM20A radio
+listens for them.
+
+<p align="center">
+  <img src="media/BLE_Thermometer_Hygrometer_sensor.jpeg" alt="SwitchBot sensor in a hand, with a Tanen label showing its Bluetooth address and a QR code" width="280">
+  &nbsp;&nbsp;
+  <img src="media/screen_shots/BLE_Thermometer_Hygrometer_screen.jpeg" alt="Setup page on a phone showing three Bluetooth sensors: two inside the hive, one outside" width="280">
+</p>
+
+*Left: a sensor with its Tanen label — the Bluetooth address as text and as a QR
+code. Right: sensors live on the setup page, two in the hive and one outside.*
+
+- **Set up from the phone.** In the web page's *Erweitert* tab, scan the label's
+  QR code (or type the address), choose *inside the hive* or *outside*, save.
+  Readings appear within seconds, on that tab and on the overview.
+- **Straight into BEEP and beelogger.** The outside sensor becomes `t` / `TempOut`
+  (the DS18B20 moves to BEEP's `t_0`); the in-hive sensors map to `t_i`/`h_i`,
+  `TempIn`/`FeuchteIn` and `TempIn2`/`FeuchteIn2`. Nothing to change on either
+  platform.
+- **Only when it counts.** The node scans for the sensors only on wakes that
+  transmit and stops as soon as every sensor has been heard. Each sensor adds
+  5 bytes to the uplink; one that is not heard costs no airtime and sets a flag
+  instead.
+- **What it costs.** A transmit wake with the scan measures **139 mC** instead of
+  63 mC, so the pack lasts about **3.3 years** instead of 4.6 at 15 min / 2 h
+  ([`docs/POWER_BUDGET.md`](docs/POWER_BUDGET.md)).
+
+Wire format and GATT details:
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#extended-mode-blocks).
 
 ---
 
@@ -201,14 +239,25 @@ Register the device as **LoRaWAN MAC v1.0.3**, OTAA, EU868, then install
 [`ttndecoder/tanen-decoder.js`](ttndecoder/tanen-decoder.js) as the uplink
 payload formatter (Payload formatters → Uplink → Custom Javascript formatter).
 
-One formatter serves both supported platforms: it parses the 8-byte frame once
-and emits both key sets into the same `decoded_payload`.
+One formatter serves both supported platforms: it parses the frame once (8 bytes,
+plus 5 per Bluetooth sensor in Extended Mode) and emits both key sets into the
+same `decoded_payload`.
 
 | Reading | BEEP key | beelogger key | Unit |
 |---|---|---|---|
 | Weight | `weight_kg` | `Gewicht` | kg |
 | Temperature | `t` | `TempOut` | °C |
 | Battery | `bv` | `VBatt` | V |
+| Outside temp / humidity (BLE) | `t` / `h` | `TempOut` / `FeuchteOut` | °C / %RH |
+| Inside #1 temp / humidity (BLE) | `t_i` / `h_i` | `TempIn` / `FeuchteIn` | °C / %RH |
+| Inside #2 temp / humidity (BLE) | `t_1` / — | `TempIn2` / `FeuchteIn2` | °C / %RH |
+
+**Extended Mode** adds up to three SwitchBot Outdoor Meters (at most two inside
+the hive, one outside), set up in the web page's *Erweitert* tab by typing the
+sensor's MAC or scanning a QR label. The node scans for them only on wakes that
+transmit. An outside sensor takes over `t` / `TempOut` and the DS18B20 moves to
+BEEP's `t_0`; without one, `t` / `TempOut` stay the DS18B20. Wire format in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#extended-mode-blocks).
 
 Each platform stores the keys it knows and ignores the rest, so no per-platform
 formatter juggling is needed. A failed sensor decodes to `null` on both sides,
@@ -275,6 +324,11 @@ reading. Enclosure sits on the top deck, cable runs down to the cell.*
 down. E<sub>max</sub> = 150 kg, which is oversized for a hive: a 100 kg cell
 would give ~1.5× better signal-to-noise at the same absolute drift.*
 
+**Optional Extended Mode sensors:** up to three SwitchBot Outdoor Meters (model
+WoIOSensorTH), each on its own battery. Nothing to wire — print a label with the
+sensor's Bluetooth address as plain text and as a QR code (for example
+`EB:6B:01:C6:49:95`) and stick it on; the setup page reads either.
+
 > The KiCad project files are still named **XIAO_nRF54L15 V1**, while the board
 > itself is silkscreened *Tanen Base v0.1*. That is deliberate: all XIAO modules
 > share one 21 × 17.5 mm footprint and pinout, so the nRF54L15 and nRF54LM20A are
@@ -310,7 +364,9 @@ out of direct sun.
 
 Running in the field. The core loop — measure, delta-detect, uplink, sleep — is
 verified end to end on hardware, including ingestion by both BEEP and the
-beelogger community server from the same uplink.
+beelogger community server from the same uplink. Extended Mode is verified on
+hardware too (2026-09-13): three sensors live in the setup page, their blocks in
+the uplink, and the transmit wake measured on the PPK2.
 
 Not yet done: MCUboot/OTA is wired up (`sysbuild.conf`, `pm_static.yml`) but
 **unverified on this module**, and no production signing key is provisioned.

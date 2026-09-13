@@ -32,6 +32,13 @@ third_party/seeed-xiao-nrf54lm20a/
     Source: https://github.com/Seeed-Studio/platform-seeedboards
     Vendored subset; unmodified. See that directory's README.md and LICENSE.
 
+web/jsqr.js
+    jsQR 1.4.0 — QR code reader used by the web setup page.
+    Copyright jsQR contributors (Cosmo Wolfe et al.).
+    Licensed under the Apache License, Version 2.0.
+    Source: https://github.com/cozmo/jsQR (npm jsqr@1.4.0, dist/jsQR.js)
+    Unmodified upstream build.
+
 This project builds against, but does not redistribute:
 
     Zephyr RTOS                 Apache-2.0    https://zephyrproject.org

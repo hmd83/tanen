@@ -163,7 +163,9 @@ ein Volk plötzlich leichter wird — ohne den Stock zu öffnen.</p>
 hält deshalb <strong>rund viereinhalb Jahre</strong> — bei einer Messung alle 15 Minuten und
 einer Meldung alle zwei Stunden. Wer seltener messen und melden lässt, kommt auf
 deutlich mehr: bei stündlicher Messung und Meldung alle vier Stunden sind es
-rechnerisch etwa zehn Jahre.</p>
+rechnerisch etwa zehn Jahre. Mit Bluetooth-Sensoren (Abschnitt 3.7) sucht die
+Station bei jedem Senden kurz nach ihnen; dann sind es rund drei Jahre
+beziehungsweise rund sieben Jahre.</p>
 <blockquote>
 <p><strong>Wichtig:</strong> Die Station braucht <strong>keinen Netzstrom</strong> und <strong>kein WLAN</strong>. Nur
 die eingelegten Batterien und Funkempfang am Standort.</p>
@@ -515,13 +517,18 @@ Drücken Sie den roten Knopf einfach noch einmal und tippen Sie erneut auf
 <td><strong>„Funk-Test senden&quot;</strong></td>
 <td>Schickt einmalig ein Testsignal ins Funknetz. Damit prüfen Sie, ob am Standort Empfang ist.</td>
 </tr>
+<tr>
+<td><strong>Bluetooth-Sensoren</strong> (nur wenn eingerichtet)</td>
+<td>Temperatur und Feuchte der Funk-Sensoren — siehe Abschnitt 3.7.</td>
+</tr>
 </tbody>
 </table>
-<p>Ganz unten sind die <strong>vier Reiter</strong>:</p>
+<p>Ganz unten sind die <strong>fünf Reiter</strong>:</p>
 <ul>
 <li><strong>Übersicht</strong> — die Live-Werte (diese Seite)</li>
 <li><strong>Waage</strong> — hier kalibrieren Sie (Kapitel 4)</li>
 <li><strong>Einstellungen</strong> — Zeiten und Alarm-Grenzen</li>
+<li><strong>Erweitert</strong> — Bluetooth-Sensoren für Temperatur und Feuchte (optional, Abschnitt 3.7)</li>
 <li><strong>Netzwerk</strong> — ⚠️ <strong>nur für Fachleute.</strong> Hier ändern Sie nichts.</li>
 </ul>
 <h3>3.6 Zeiten und Alarm-Grenzen einstellen</h3>
@@ -567,7 +574,57 @@ erscheint kurz die Meldung <strong>„Gespeichert&quot;</strong>.</p>
 <blockquote>
 <p><strong>[Bild 11: Alarm-Grenzen und „Einrichtung beenden&quot;]</strong></p>
 </blockquote>
-<h3>3.7 Einrichtung beenden</h3>
+<h3>3.7 Bluetooth-Sensoren einrichten (optional)</h3>
+<p>Mit bis zu <strong>drei kleinen Funk-Sensoren</strong> (SwitchBot Outdoor Meter) misst die
+Station zusätzlich Temperatur und Luftfeuchte <strong>im Bienenstock</strong> und
+<strong>draußen</strong>. Sie brauchen diese Sensoren nicht — die Waage arbeitet auch ohne sie
+ganz normal.</p>
+<p>Gehen Sie auf den Reiter <strong>„Erweitert&quot;</strong>.</p>
+<ol>
+<li>Stellen Sie <strong>„Bluetooth-Sensoren benutzen&quot;</strong> auf <strong>An</strong>.</li>
+<li>Bei <strong>Sensor 1</strong> den Schalter auf <strong>An</strong> stellen.</li>
+<li>Die <strong>Bluetooth-Adresse</strong> eintragen — sie steht auf dem Aufkleber des
+Sensors, zum Beispiel <code>D4:9B:5C:11:22:33</code>. Oder auf <strong>„QR scannen&quot;</strong> tippen
+und den QR-Code auf dem Aufkleber vor die Kamera halten.</li>
+<li>Wählen Sie, <strong>wo der Sensor hängt</strong>: <strong>„Im Bienenstock&quot;</strong> oder <strong>„Außen&quot;</strong>.</li>
+<li>Für weitere Sensoren die Schritte 2 bis 4 wiederholen.</li>
+<li>Auf den grünen Knopf <strong>„Sensoren speichern&quot;</strong> tippen.</li>
+</ol>
+<p>Wenige Sekunden nach dem Speichern stehen unter jedem Sensor <strong>Temperatur,
+Feuchte und Batterie</strong> und darunter <strong>„Empfangen&quot;</strong>. Die Werte sehen Sie dann
+auch auf der <strong>Übersicht</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Was Sie sehen</th>
+<th>Was es bedeutet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ein Knopf ist grau und lässt sich nicht drücken</strong></td>
+<td>Der Platz ist schon belegt: höchstens <strong>2 Sensoren im Bienenstock</strong> und <strong>1 Sensor außen</strong>. Darunter steht, welcher.</td>
+</tr>
+<tr>
+<td><strong>„Nicht gefunden&quot;</strong></td>
+<td>Sensor zu weit von der Station entfernt, Batterie des Sensors leer oder Adresse falsch abgetippt. Die Station sendet Gewicht und Temperatur trotzdem.</td>
+</tr>
+<tr>
+<td><strong>„Bitte speichern&quot;</strong></td>
+<td>Sie haben eine neue Adresse eingetragen. Die Station sucht erst nach dem Speichern danach.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>ℹ️ Der <strong>Außen-Sensor ersetzt die Außen-Temperatur</strong> der Station — auf BEEP
+und beelogger erscheint dann seine Temperatur. Die Station fragt die Sensoren
+<strong>nur beim Senden</strong> ab; das spart Batterie. Neue Werte kommen also so oft an,
+wie die Station sendet. Jedes Senden dauert dadurch einige Sekunden länger und
+braucht gut doppelt so viel Strom: Die Batterien halten mit Bluetooth-Sensoren
+rechnerisch <strong>rund drei Jahre</strong> statt viereinhalb (Messung alle 15 Minuten,
+Meldung alle zwei Stunden).</p>
+</blockquote>
+<h3>3.8 Einrichtung beenden</h3>
 <p><strong>Erst kalibrieren (Kapitel 4), dann beenden!</strong></p>
 <p>Wenn alles erledigt ist:</p>
 <ol>
@@ -1004,7 +1061,10 @@ der Weiterleitung, nicht an der Waage → Betreuer fragen.</li>
 <code>ttndecoder/tanen-decoder.js</code> eingetragen. Er entschlüsselt den 8-Byte-Rahmen
 einmal und gibt beide Namenssätze zugleich aus — <code>weight_kg</code>/<code>t</code>/<code>bv</code> für BEEP,
 <code>Gewicht</code>/<code>TempOut</code>/<code>VBatt</code> für beelogger; jede Plattform speichert, was sie
-kennt. Der BEEP-Webhook muss die Gerätenummer zusätzlich explizit in der URL
+kennt. Mit Bluetooth-Sensoren wird der Rahmen je gehörtem Sensor 5 Byte länger;
+dann kommen <code>h</code>/<code>t_i</code>/<code>h_i</code>/<code>t_1</code> (BEEP) und
+<code>FeuchteOut</code>/<code>TempIn</code>/<code>FeuchteIn</code>/<code>TempIn2</code>/<code>FeuchteIn2</code> (beelogger) hinzu, und
+ein Außen-Sensor übernimmt <code>t</code>/<code>TempOut</code>. Der BEEP-Webhook muss die Gerätenummer zusätzlich explizit in der URL
 mitführen, sonst verwirft BEEP die Daten stillschweigend:
 <code>https://api.beep.nl/api/lora_sensors?key=&lt;DevEUI&gt;</code></p>
 </blockquote>

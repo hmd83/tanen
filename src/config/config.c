@@ -31,6 +31,10 @@ LOG_MODULE_REGISTER(config, LOG_LEVEL_DBG);
 #define ZMS_TX_PENDING_ID             17  /* failed-uplink retry flag */
 #define ZMS_TEMPCOMP_STATE_ID         18  /* load-cell thermal-lag filter state */
 #define ZMS_TARE_TEMP_ID              19  /* temperature at tare = correction T_ref */
+#define ZMS_EXT_CONFIG_ID             20  /* Extended Mode BLE sensor slots */
+
+/* ext_config_t is the ZMS record and the GATT value — no padding allowed */
+BUILD_ASSERT(sizeof(ext_config_t) == 2 + EXT_SLOTS * 8);
 
 static struct zms_fs zms;
 static bool zms_ready;
@@ -49,6 +53,7 @@ static uint32_t last_tx_weight;
 static int16_t last_tx_temp;
 static uint32_t measurement_count;
 static int32_t tare_temp_mdeg;
+static ext_config_t ext_cfg;
 
 static int hexstr_to_bytes(const char *hex, uint8_t *out, size_t len)
 {
@@ -210,6 +215,13 @@ int config_init(void)
 	if (!zms_load(ZMS_MEASUREMENT_COUNT_ID, &measurement_count,
 		      sizeof(measurement_count))) {
 		measurement_count = 0;
+	}
+
+	/* Extended Mode: absent, wrong size or rule-breaking record = disabled */
+	if (!zms_load(ZMS_EXT_CONFIG_ID, &ext_cfg, sizeof(ext_cfg)) ||
+	    config_ext_validate(&ext_cfg)) {
+		memset(&ext_cfg, 0, sizeof(ext_cfg));
+		ext_cfg.version = EXT_CONFIG_VERSION;
 	}
 
 	LOG_INF("Config loaded (tx_int=%us ms_int=%us wt=%u tt=%u cnt=%u)",
@@ -446,4 +458,65 @@ int config_set_tare_temp(int32_t val)
 {
 	tare_temp_mdeg = val;
 	return zms_store(ZMS_TARE_TEMP_ID, &tare_temp_mdeg, sizeof(tare_temp_mdeg));
+}
+
+/* Extended Mode */
+int config_ext_validate(const ext_config_t *cfg)
+{
+	static const uint8_t zero_mac[6];
+	int n_in = 0;
+	int n_out = 0;
+
+	if (cfg->version != EXT_CONFIG_VERSION || cfg->enabled > 1) {
+		return -EINVAL;
+	}
+	for (int i = 0; i < EXT_SLOTS; i++) {
+		const ext_slot_t *s = &cfg->slot[i];
+
+		if (s->en > 1 || s->role > EXT_ROLE_OUT) {
+			return -EINVAL;
+		}
+		if (!s->en) {
+			continue;
+		}
+		if (!memcmp(s->mac, zero_mac, sizeof(zero_mac))) {
+			return -EINVAL;
+		}
+		for (int j = 0; j < i; j++) {
+			if (cfg->slot[j].en && !memcmp(cfg->slot[j].mac, s->mac, sizeof(s->mac))) {
+				return -EINVAL;
+			}
+		}
+		if (s->role == EXT_ROLE_OUT) {
+			n_out++;
+		} else {
+			n_in++;
+		}
+	}
+	return (n_in > EXT_MAX_IN || n_out > EXT_MAX_OUT) ? -EINVAL : 0;
+}
+
+int config_get_ext(ext_config_t *cfg) { *cfg = ext_cfg; return 0; }
+int config_set_ext(const ext_config_t *cfg)
+{
+	int rc = config_ext_validate(cfg);
+
+	if (rc) {
+		return rc;
+	}
+	ext_cfg = *cfg;
+	return zms_store(ZMS_EXT_CONFIG_ID, &ext_cfg, sizeof(ext_cfg));
+}
+
+bool config_ext_active(void)
+{
+	if (!ext_cfg.enabled) {
+		return false;
+	}
+	for (int i = 0; i < EXT_SLOTS; i++) {
+		if (ext_cfg.slot[i].en) {
+			return true;
+		}
+	}
+	return false;
 }

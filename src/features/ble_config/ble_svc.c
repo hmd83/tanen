@@ -13,6 +13,7 @@
 #include "../../drivers/lora.h"
 #include "../measurement/measure.h"
 #include "../transmission/transmit.h"
+#include "../ext_sensors/ext_sensors.h"
 #if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
 #include "../measurement/tempcomp.h"
 #endif
@@ -69,6 +70,20 @@ static atomic_t pending_cmd = ATOMIC_INIT(0);
  * not hog the sysWQ then (LoRaMAC RX-window timers run there; a 2-3 s
  * blocking measure_run makes the JoinAccept window get missed). */
 static atomic_t lora_test_running = ATOMIC_INIT(0);
+
+/* Sensor I/O triggered over BLE (live readings, tare, calibrate) runs on its
+ * own PREEMPTIBLE queue, never the system workqueue. The sysWQ is cooperative
+ * (prio -1): no other thread runs until a work item blocks. gpio-I2C does not
+ * block — i2c_bitbang's i2c_delay() is a spin loop — and with the NAU7802
+ * absent or unpowered every SCL edge spins out the 100 ms clock-stretch
+ * timeout: ~3.5 s of pure spin per measure_run(), re-queued every 2 s. On the
+ * sysWQ that starved the BT RX thread (GATT stalled, the web app dropped after
+ * ~5 s) and main (watchdog reset 60 s later, then no SETUP on the reset wake).
+ * Below main's priority the watchdog feed and the BT host preempt the spin. */
+#define SENSOR_WQ_STACK_SIZE 4096
+#define SENSOR_WQ_PRIO       K_PRIO_PREEMPT(10)
+static K_THREAD_STACK_DEFINE(sensor_wq_stack, SENSOR_WQ_STACK_SIZE);
+static struct k_work_q sensor_wq;
 
 /* CmdStatus notify — sends [cmd, result] after async commands complete */
 static const struct bt_gatt_attr *cmd_status_attr;
@@ -293,6 +308,40 @@ static ssize_t write_calib_ref(struct bt_conn *conn, const struct bt_gatt_attr *
     return len;
 }
 
+/* ExtConfig — Extended Mode sensor slots (R/W, 26 bytes = ext_config_t).
+ * The role limits are enforced here too, not only in the web page: a raw
+ * GATT write must not be able to store two outside sensors. */
+static ssize_t read_ext_config(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                               void *buf, uint16_t len, uint16_t offset)
+{
+    ext_config_t cfg;
+    config_get_ext(&cfg);
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, &cfg, sizeof(cfg));
+}
+
+static ssize_t write_ext_config(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                                const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    ext_config_t cfg;
+
+    if (offset != 0 || len != sizeof(cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    memcpy(&cfg, buf, sizeof(cfg));
+    if (config_ext_validate(&cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_VALUE_NOT_ALLOWED);
+    }
+    if (config_set_ext(&cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+    }
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+    /* Live scan matches against the new MACs from the next packet on */
+    ext_sensors_reload();
+#endif
+    LOG_INF("ExtConfig written via BLE (master %s)", cfg.enabled ? "on" : "off");
+    return len;
+}
+
 /* ConfigCmd (W only, 1 byte) — commands that need sensor I/O are deferred to work queue */
 static ssize_t write_config_cmd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                 const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
@@ -317,7 +366,7 @@ static ssize_t write_config_cmd(struct bt_conn *conn, const struct bt_gatt_attr 
         }
         LOG_INF("BLE cmd: 0x%02x (deferred)", cmd);
         extern struct k_work cmd_work;
-        k_work_submit(&cmd_work);
+        k_work_submit_to_queue(&sensor_wq, &cmd_work);
         break;
     case CMD_CLEAR_SESSION:
         LOG_INF("BLE cmd: CLEAR SESSION");
@@ -334,15 +383,34 @@ static ssize_t write_config_cmd(struct bt_conn *conn, const struct bt_gatt_attr 
 static void live_timer_expiry(struct k_timer *timer);
 static K_TIMER_DEFINE(live_timer, live_timer_expiry, NULL);
 
-/* LiveSensors (Notify, 8 bytes: uint32 weight_g + int16 temp_cc + uint16 batt_mv) */
-static void live_sensor_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value)
+/* One 2 s timer drives both live notifies; each work item checks its own
+ * subscription, so ExtLive alone never triggers a 2-3 s measure_run. */
+static atomic_t live_sensor_on = ATOMIC_INIT(0);
+static atomic_t ext_live_on = ATOMIC_INIT(0);
+
+static void live_timer_update(void)
 {
-    LOG_INF("LiveSensors notify %s", value ? "enabled" : "disabled");
-    if (value) {
+    if (atomic_get(&live_sensor_on) || atomic_get(&ext_live_on)) {
         k_timer_start(&live_timer, K_SECONDS(2), K_SECONDS(2));
     } else {
         k_timer_stop(&live_timer);
     }
+}
+
+/* LiveSensors (Notify, 8 bytes: uint32 weight_g + int16 temp_cc + uint16 batt_mv) */
+static void live_sensor_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value)
+{
+    LOG_INF("LiveSensors notify %s", value ? "enabled" : "disabled");
+    atomic_set(&live_sensor_on, value ? 1 : 0);
+    live_timer_update();
+}
+
+/* ExtLive (Notify, 18 bytes: 3 x {status, int16 temp_cc, hum, batt, int8 rssi}) */
+static void ext_live_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value)
+{
+    LOG_INF("ExtLive notify %s", value ? "enabled" : "disabled");
+    atomic_set(&ext_live_on, value ? 1 : 0);
+    live_timer_update();
 }
 
 /* ---- GATT Service Definition ---- */
@@ -434,6 +502,19 @@ BT_GATT_SERVICE_DEFINE(tanen_svc,
         BT_GATT_PERM_NONE,
         NULL, NULL, NULL),
     BT_GATT_CCC(live_sensor_ccc_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+
+    /* ExtConfig — Extended Mode sensor slots (R/W) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x000E),
+        BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+        read_ext_config, write_ext_config, NULL),
+
+    /* ExtLive — BLE sensor readings (Notify) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x000F),
+        BT_GATT_CHRC_NOTIFY,
+        BT_GATT_PERM_NONE,
+        NULL, NULL, NULL),
+    BT_GATT_CCC(ext_live_ccc_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 );
 
 /* ---- Advertising ---- */
@@ -508,10 +589,9 @@ static const struct bt_gatt_attr *live_sensor_attr;
 
 static void live_sensor_work_handler(struct k_work *work)
 {
-    /* Never stall the sysWQ while the LoRa test owns the radio — LoRaMAC
-     * RX-window timers run on this queue and a 2-3 s measure_run would
-     * make the node miss its JoinAccept/ACK windows. */
-    if (atomic_get(&lora_test_running) || !live_sensor_attr) {
+    /* Stay off the sensors while the LoRa test thread runs its own
+     * measure_run() — two NAU7802 sequences would interleave on the bus. */
+    if (atomic_get(&lora_test_running) || !atomic_get(&live_sensor_on) || !live_sensor_attr) {
         return;
     }
 
@@ -538,6 +618,48 @@ static void live_sensor_work_handler(struct k_work *work)
 }
 
 static K_WORK_DEFINE(live_sensor_work, live_sensor_work_handler);
+
+/* ExtLive — cached scan results only, no sensor I/O, so it never stalls the
+ * sysWQ. 6 bytes LE per slot: status (EXT_SEEN_*), temp_cc, hum, batt, rssi.
+ * 18 bytes fit the 20-byte notify of the default 23-byte ATT MTU. */
+static const struct bt_gatt_attr *ext_live_attr;
+
+static void ext_live_work_handler(struct k_work *work)
+{
+    if (!atomic_get(&ext_live_on) || !ext_live_attr) {
+        return;
+    }
+
+    struct bt_conn *conn = conn_acquire();
+    if (!conn) {
+        return;
+    }
+
+    ext_data_t ext = {0};
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+    ext_get_cached(&ext);
+#endif
+    uint8_t buf[EXT_SLOTS * 6];
+
+    for (int i = 0; i < EXT_SLOTS; i++) {
+        const ext_reading_t *r = &ext.r[i];
+        uint8_t *p = &buf[i * 6];
+
+        p[0] = r->seen;
+        sys_put_le16((uint16_t)r->temp_cc, &p[1]);
+        p[3] = r->hum;
+        p[4] = r->batt;
+        p[5] = (uint8_t)r->rssi;
+    }
+
+    int err = bt_gatt_notify(conn, ext_live_attr, buf, sizeof(buf));
+    if (err && err != -ENOTCONN) {
+        LOG_WRN("ext live notify failed: %d", err);
+    }
+    bt_conn_unref(conn);
+}
+
+static K_WORK_DEFINE(ext_live_work, ext_live_work_handler);
 
 /* ---- Deferred command handler (sensor/LoRa I/O — can't run in BLE ATT context) ---- */
 
@@ -654,10 +776,21 @@ static void lora_test_entry(void *p1, void *p2, void *p3)
         goto out;
     }
 
-    /* Same 8-byte frame as a normal uplink (flags=0 -> unconfirmed).
+    /* Same frame as a normal uplink (flags=0 -> unconfirmed).
      * A short test frame gets rejected by the TTN decoder and shows up
-     * as a bogus 255 on the platform. */
-    err = transmit_run(&data, 0);
+     * as a bogus 255 on the platform. With Extended Mode on, the live
+     * scan's latest readings ride along, so the test also exercises the
+     * decoder's BLE blocks. */
+    const ext_data_t *ext_p = NULL;
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+    ext_data_t ext;
+
+    if (config_ext_active()) {
+        ext_get_cached(&ext);
+        ext_p = &ext;
+    }
+#endif
+    err = transmit_run(&data, ext_p, 0);
     if (err) {
         LOG_ERR("LoRa test send failed: %d", err);
     } else {
@@ -688,7 +821,13 @@ void lora_test_thread_start(void)
 
 static void live_timer_expiry(struct k_timer *timer)
 {
-    k_work_submit(&live_sensor_work);
+    /* Skip a tick while the last read is still queued or running — with a
+     * dead sensor one read outlasts the 2 s period and would chain
+     * back-to-back. */
+    if (!k_work_is_pending(&live_sensor_work)) {
+        k_work_submit_to_queue(&sensor_wq, &live_sensor_work);
+    }
+    k_work_submit(&ext_live_work);
 }
 
 /* ---- Public API ---- */
@@ -702,6 +841,15 @@ int ble_config_run(uint32_t timeout_s)
     lora_test_started = false;
     atomic_clear(&pending_cmd);
     atomic_clear(&lora_test_running);
+
+    static bool sensor_wq_started;
+    if (!sensor_wq_started) {
+        static const struct k_work_queue_config sensor_wq_cfg = { .name = "sensor_wq" };
+
+        k_work_queue_start(&sensor_wq, sensor_wq_stack, K_THREAD_STACK_SIZEOF(sensor_wq_stack),
+                           SENSOR_WQ_PRIO, &sensor_wq_cfg);
+        sensor_wq_started = true;
+    }
 
     err = bt_enable(NULL);
     if (err) {
@@ -717,6 +865,8 @@ int ble_config_run(uint32_t timeout_s)
                                             TANEN_CHAR_UUID(0x000D));
     cmd_status_attr = bt_gatt_find_by_uuid(tanen_svc.attrs, tanen_svc.attr_count,
                                            TANEN_CHAR_UUID(0x000B));
+    ext_live_attr = bt_gatt_find_by_uuid(tanen_svc.attrs, tanen_svc.attr_count,
+                                         TANEN_CHAR_UUID(0x000F));
 
     err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
     if (err) {
@@ -726,6 +876,12 @@ int ble_config_run(uint32_t timeout_s)
     }
 
     LOG_INF("BLE advertising started (timeout %u s)", timeout_s);
+
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+    /* Live BLE sensor values for the web app. Runs regardless of the master
+     * switch so a sensor shows up before the user turns it on. Not fatal. */
+    (void)ext_scan_start();
+#endif
 
     /* Wait for done command or timeout — in ≤10s slices so the 180s SETUP
      * window doesn't starve the 60s watchdog. */
@@ -738,8 +894,12 @@ int ble_config_run(uint32_t timeout_s)
         }
     }
 
-    /* Stop live sensor timer */
+    /* Stop live sensor timer, then let a read already queued finish — it
+     * must not race the MEASUREMENT cycle main starts right after SETUP.
+     * Bounded by one dead-sensor read (~3.5 s), well inside the watchdog. */
     k_timer_stop(&live_timer);
+    k_work_queue_drain(&sensor_wq, false);
+    watchdog_feed();
 
     LOG_INF("BLE config exiting — cleaning up");
     shutting_down = true;
@@ -764,6 +924,9 @@ int ble_config_run(uint32_t timeout_s)
      * 2. Disconnect active connection
      * 3. Wait for disconnect callback to complete
      * 4. Disable BLE stack */
+#if IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS)
+    ext_scan_stop();
+#endif
     bt_le_adv_stop();
 
     struct bt_conn *conn = conn_acquire();

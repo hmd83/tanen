@@ -162,7 +162,7 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
   ┌──────────────┐                       │   │
   │ TRANSMISSION │                       │   │
   │ lora_init (only when needed)         │   │
-  │ transmit_run(data, flags)            │   │
+  │ transmit_run(data, ext, flags)       │   │
   │ update last_tx_weight/temp           │   │
   │ lora_session_save + lora_sleep       │   │
   └──────┬───────┘                       │   │
@@ -183,7 +183,7 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 | TRANSMISSION | OFF | ON | OFF | SLEEP |
 | SLEEP | OFF | OFF | OFF | MEASUREMENT (timer) or SETUP (button/reset) |
 
-**Delta reporting:** measure every `ms_interval`, TX only on weight/temp delta exceeding threshold or heartbeat (`tx_interval / ms_interval` cycles). LoRa radio only powered on when TX needed — saves ~1mA on measure-only wakes.
+**Delta reporting:** measure every `ms_interval`, TX only on weight/temp delta exceeding threshold or heartbeat (`tx_interval / ms_interval` cycles). LoRa radio only powered on when TX needed — saves ~1mA on measure-only wakes. With Extended Mode on, a TX wake first runs one BLE scan for the SwitchBot sensors (`ext_scan_once()`: bt_enable → active scan → bt_disable, ≤`CONFIG_TANENBASE_EXT_SCAN_TIMEOUT_MS`, ends as soon as every enabled sensor has sent T/H + battery) and only then calls `lora_init()`, so the scan can't straddle a join/RX window. Measure-only wakes never start BT, and BLE readings don't feed the anomaly check.
 
 ---
 
@@ -199,12 +199,13 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 
 ### BLE
 - Just-Works pairing only, max 1 connection
-- Custom GATT service: 13 characteristics (creds, calibration, timing, thresholds, commands, live sensors)
+- Custom GATT service: 15 characteristics (creds, calibration, timing, thresholds, commands, live sensors, Extended Mode config + live BLE sensors)
 - UUID base: `544E4253-xxxx-4269-8000-544E42415345`
 - Web Bluetooth API consumed by `web/index.html` — no mobile app required. `web/encoder.html` is a sibling page that builds FPort 10–13 downlinks offline (no Bluetooth, no node)
 - Active only in SETUP state (button/reset wake)
 - No RF-switch handling needed on LM20A — the module drives its own antenna path (the L15 build had to sequence `rfsw_pwr`/`rfsw_ctl` on P2.03/P2.05; on LM20A those pins belong to the on-board NOR flash)
 - Live sensor notify: 2s interval, deferred to CCC subscribe (no reads until client subscribes)
+- Extended Mode (`features/ext_sensors/`): **ExtConfig** `0x000E` (R/W, 26 B = `ext_config_t`, ZMS id 20 — version, master switch, 3 × {MAC MSB-first, role, enable}) and **ExtLive** `0x000F` (notify, 18 B = 3 × {status, temp_cc, hum, batt %, rssi}, same 2 s timer, cached values only — never a sensor read). The role limits (≤2 in-hive, ≤1 outside, unique non-zero MACs) are enforced in firmware too: a violating write gets ATT `0x13`. The 26-byte write needs an ATT MTU above 23 — `BT_SMP`'s default ACL RX size of 69 gives 65, and Web Bluetooth hosts negotiate up. During SETUP a continuous active scan (window = interval = 60 ms) runs next to the web-app link — **never give it a shorter window**: the SDC raises a window < interval scanner that misses full windows to 2nd scheduling priority, above the peripheral link (3rd); window == interval runs at 4th priority and is interleaved around the link (enforced by a `BUILD_ASSERT` in `ext_sensors.c`). The scan runs independent of the master switch, so a sensor shows values before it is switched on; the device scans for the **saved** MACs only
 - LoRa test runs on dedicated thread (lorawan_send deadlocks system work queue)
 - Shutdown: stop adv → disconnect → 500ms wait → 100ms settle → bt_disable → RF switch off
 - `ble_config_run()` blocks caller until CMD_DONE or timeout
@@ -218,7 +219,7 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 - Battery voltage read on demand from the nPM1300's factory-trimmed VBAT ADC — no divider, no external enable GPIO
 - All peripherals shut down before `sys_poweroff()`
 
-- Battery pack: **3× BEVIGOR AAA 1.5 V Li/FeS₂ in series**, 1200 mAh, 4.5 V nominal, 5.2 V measured fresh (21 °C) — primary, non-rechargeable. ~4.6 y at 15 min / 2 h. At µA drain the chemistry holds ~1.79 V/cell, so the pack runs **above the nPM1300's 4.45 V recommended VBAT maximum for essentially its whole life** and a worst-case fresh pack reaches 5.49 V against the 5.5 V absolute maximum: accepted deviation, [POWER_BUDGET.md](POWER_BUDGET.md) §5.2
+- Battery pack: **3× BEVIGOR AAA 1.5 V Li/FeS₂ in series**, 1200 mAh, 4.5 V nominal, 5.2 V measured fresh (21 °C) — primary, non-rechargeable. ~4.6 y at 15 min / 2 h (~3.3 y with Extended Mode BLE sensors — the scan raises a TX wake from 63 to 139 mC). At µA drain the chemistry holds ~1.79 V/cell, so the pack runs **above the nPM1300's 4.45 V recommended VBAT maximum for essentially its whole life** and a worst-case fresh pack reaches 5.49 V against the 5.5 V absolute maximum: accepted deviation, [POWER_BUDGET.md](POWER_BUDGET.md) §5.2
 
 See [POWER_BUDGET.md](POWER_BUDGET.md) for the full PPK2 baseline, daily-charge
 formula, and battery ETA tables.
@@ -239,6 +240,7 @@ formula, and battery ETA tables.
 | Sleep (System OFF) | continuous | 0.27 mC/min | 4.5 µA | — |
 | Measurement | 1.5 s | 12 mC | 8.0 mA | 57.6 mA |
 | TX (SF9, unconfirmed) | 6.8 s | 63 mC | 9.3 mA | 91.7 mA |
+| TX + Extended Mode (BLE scan + uplink, 2026-09-13) | 11.1 s | 139 mC | 12.5 mA | 77.8 mA |
 
 **Platform limitations (nRF54L series + Zephyr 4.4):**
 - No PM idle — the SoC lacks `HAS_PM` and `cpu-power-states` DTS. `CONFIG_PM=y` is not even settable; do not re-add it
@@ -254,7 +256,7 @@ formula, and battery ETA tables.
 - **TX retry (tx_pending):** a failed uplink (join failure, radio init error) sets `tx_pending` in ZMS so the *next* wake retries immediately instead of waiting a full `tx_interval` in silence. Cleared on successful TX.
 - **DevNonce hard-fail:** `lora_init()` aborts the join if the DevNonce can't be persisted to ZMS — burning nonce 0 repeatedly gets every join replay-rejected by TTN, draining the battery in a retry storm. Join is skipped and retried via `tx_pending` next wake.
 - **Downlink cross-validation:** both `tx_interval` and `ms_interval` downlinks (FPort 10/11) and the BLE `MsInterval`/`TxInterval` writes enforce `T_TX ≥ T_MEAS` (TRD 7.1) against the *other* live value, not just a static floor.
-- **BLE concurrency:** `active_conn` is mutex-guarded (`conn_acquire()` ref-snapshot pattern) — previously racy across BT RX / sysWQ / main thread (use-after-free / double-unref risk on shutdown). `pending_cmd` uses an atomic CAS gate so a second BLE command can't silently overwrite one still in flight. Live-sensor notify work is skipped while `lora_test_running` — a blocking `measure_run()` on the sysWQ during the LoRa test would make the node miss LoRaMAC's RX-window timers. AppKey/DevEUI/JoinEUI GATT writes are **plain** read/write (TRD 12.1's "encrypted pairing required" was tried and reverted 2026-07-07 — Web Bluetooth has no `pair()` API and can't reliably complete an OS-triggered SMP pairing mid-write; it hung the link until supervision timeout (disconnect reason 8) and left `bt_le_adv_start` failing with `-ENOMEM` afterward). See OPEN_QUESTIONS.md item 10.
+- **BLE concurrency:** `active_conn` is mutex-guarded (`conn_acquire()` ref-snapshot pattern) — previously racy across BT RX / sysWQ / main thread (use-after-free / double-unref risk on shutdown). `pending_cmd` uses an atomic CAS gate so a second BLE command can't silently overwrite one still in flight. Sensor I/O triggered over BLE (live readings, tare, calibrate) runs on a dedicated **preemptible** work queue (`sensor_wq`, `K_PRIO_PREEMPT(10)`), never the cooperative sysWQ: gpio-I2C bit-banging busy-spins (`i2c_bitbang.c` `i2c_delay()` is a spin loop), and with the NAU7802 absent every SCL edge spins out the 100 ms clock-stretch timeout — ~3.5 s per `measure_run()`, re-queued every 2 s. On the sysWQ that starved the BT RX thread and `main`: the web app dropped after ~5 s and the watchdog reset the node 60 s later, which then skipped SETUP on the reset wake (2026-09-13, bare board without load cell). A live read is skipped while the previous one is still pending and while `lora_test_running` (the test thread measures itself); the queue is drained before SETUP returns so it can't race the MEASUREMENT cycle. AppKey/DevEUI/JoinEUI GATT writes are **plain** read/write (TRD 12.1's "encrypted pairing required" was tried and reverted 2026-07-07 — Web Bluetooth has no `pair()` API and can't reliably complete an OS-triggered SMP pairing mid-write; it hung the link until supervision timeout (disconnect reason 8) and left `bt_le_adv_start` failing with `-ENOMEM` afterward). See OPEN_QUESTIONS.md item 10.
 - **Sensor validity:** `measurement_data_t.valid` bitmask (`MEAS_VALID_WEIGHT/TEMP/BATTERY`) — a failed sensor is never sent as a real `0` (which would falsely trigger a confirmed weight-anomaly uplink). Invalid fields are sent as sentinels (weight `0xFFFFFF`, battery `0xFFFF`, temp `0x7FFF`) in the payload and excluded from anomaly delta checks and the last-tx baseline.
 
 ### ZMS Storage (RRAM)
@@ -365,6 +367,8 @@ Defined in [`Kconfig`](../Kconfig). Feature toggles:
 |------|---------|---------|
 | `CONFIG_TANENBASE_BLE_CONFIG` | `y` | BLE GATT configuration service (SETUP state) |
 | `CONFIG_TANENBASE_ANOMALY` | `y` | Delta/anomaly detection module |
+| `CONFIG_TANENBASE_EXT_SENSORS` | `y` | Extended Mode: SwitchBot BLE T/H sensors (selects `BT_OBSERVER`) |
+| `CONFIG_TANENBASE_EXT_SCAN_TIMEOUT_MS` | 8000 | Upper bound of the BLE scan on a TX wake |
 
 Runtime defaults (all also settable at runtime over BLE or LoRaWAN downlink,
 and persisted in ZMS — Kconfig only seeds first boot):
@@ -400,6 +404,19 @@ Big-endian encoding. All fields fixed-width for deterministic decoder on TTN.
 
 Total: 8 bytes per uplink (widened from 7 bytes on 2026-07-07 — uint16 grams topped out at 65.535 kg). Failed-sensor sentinels: weight `0xFFFFFF`, battery `0xFFFF`, temp `0x7FFF` — TTN decoder must map these to null, not a literal value. The weight sentinel sits far above the 999 kg clamp so a maxed-out real reading can't be mistaken for a dead sensor.
 
+### Extended Mode blocks
+
+With Extended Mode on, one 5-byte block follows byte 7 for each enabled SwitchBot sensor **heard** in this wake's scan, in slot order — frames are 8, 13, 18 or 23 bytes (EU868 DR0 allows 51). The base 8 bytes are unchanged, so decoders that only read bytes 0–7 keep working.
+
+| Byte | Field | Type | Unit |
+|------|-------|------|------|
+| 0 | Descriptor | uint8 | bits 7–4 type (`1` = SwitchBot T/H) · bit 2 role (`1` = outside) · bits 1–0 slot |
+| 1–2 | Temperature | int16 | 0.01 °C (sensor resolution 0.1 °C) |
+| 3 | Humidity | uint8 | %RH |
+| 4 | Battery | uint8 | %, `0xFF` = not received |
+
+An enabled sensor that was not heard costs no airtime: its block is left out and flags **bit 3** (`ext_missing`) is set. The decoder derives the block count from the length alone (`(len − 8) / 5`); a length that is not 8 + 5n decodes the base frame and warns.
+
 ### Server-Side Decoding
 
 `ttndecoder/tanen-decoder.js` is the formatter to install in TTN (Payload formatters → Uplink). It parses the frame once and emits both supported platforms' key sets into one `decoded_payload`, so a single formatter feeds both integrations:
@@ -409,8 +426,14 @@ Total: 8 bytes per uplink (widened from 7 bytes on 2026-07-07 — uint16 grams t
 | Weight | `weight_kg` | `Gewicht` | kg |
 | Temperature | `t` | `TempOut` | °C |
 | Battery | `bv` | `VBatt` | V |
+| Outside temperature / humidity (BLE, role outside) | `t` / `h` | `TempOut` / `FeuchteOut` | °C / %RH |
+| 1-Wire probe, when an outside BLE sensor is present | `t_0` | — | °C |
+| Inside #1 temperature / humidity (lower slot) | `t_i` / `h_i` | `TempIn` / `FeuchteIn` | °C / %RH |
+| Inside #2 temperature / humidity | `t_1` / — | `TempIn2` / `FeuchteIn2` | °C / %RH |
 
-Each server persists the keys it recognises and ignores the others; `flags`, `anomaly_weight`, `anomaly_temp`, `heartbeat` are diagnostics visible in TTN live data only. The BEEP keys keep the original decoder's quantisation (10 g / 10 mV), the beelogger keys carry full payload precision — same reading, different rounding, by design. The per-platform predecessors (`beepdecoder.js` = `custumdecoder.js`, `tanen-beelogger-decoder.js`) remain in the folder for reference and are no longer the ones to deploy.
+An outside BLE sensor takes over `t`/`TempOut`; without one, those stay the 1-Wire probe, exactly as before. BEEP has no second inside-humidity key, so inside #2's humidity reaches beelogger only.
+
+Each server persists the keys it recognises and ignores the others; `flags`, `anomaly_weight`, `anomaly_temp`, `heartbeat`, `ext_missing`, `ext_count`, `t_1wire`, `h_i2` and the BLE battery levels `bat_out`/`bat_in1`/`bat_in2` (%) are diagnostics visible in TTN live data only. The BEEP keys keep the original decoder's quantisation (10 g / 10 mV), the beelogger keys carry full payload precision — same reading, different rounding, by design. The per-platform predecessors (`beepdecoder.js` = `custumdecoder.js`, `tanen-beelogger-decoder.js`) remain in the folder for reference and are no longer the ones to deploy.
 
 Integration wiring differs per platform. BEEP needs `?key=<DevEUI>` on the webhook base URL (see the note below). beelogger's community server takes `https://community.beelogger.de/<username>/{/devID}/beelogger_log.php?Passwort=<password>&LORA=1` — `{/devID}` is substituted by TTN per uplink, so TTN device IDs are named `beelogger1`, `beelogger2`, … to match the registered stations, and because the password is shared across stations one webhook covers the whole application. Both paths are confirmed receiving from the same uplink.
 
