@@ -83,6 +83,22 @@ a{color:var(--blue)}
   font-size:.95rem;font-weight:700;color:var(--text);
 }
 
+/* Weg zurueck auf die Startseite. Auf dem Handy eine eigene Zeile unter
+   Name und Sprachwahl (order hinter der Status-Anzeige), auf breiten
+   Schirmen vorne links. Gleiche Form wie der Zurueck-Knopf der
+   Befehls-Seite, damit beide Seiten sich gleich bedienen. */
+.home-link{
+  order:4;flex:1 1 100%;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-block-size:56px;padding:10px 18px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  color:var(--text);font-size:1rem;font-weight:800;text-decoration:none;
+}
+.home-link svg{inline-size:24px;block-size:24px;flex:none}
+/* Der Pfeil zeigt im arabischen Satz in die andere Richtung. */
+html[dir="rtl"] .home-link svg{transform:scaleX(-1)}
+@media (min-width:680px){.home-link{order:0;flex:0 0 auto}}
+
 /* ================= Rest-Zeit des Einrichtungs-Modus =================
    Die Station beendet den Einrichtungs-Modus nach 180 s von sich aus
    (CONFIG_TANENBASE_SETUP_TIMEOUT). Nichts, was der Nutzer tut, verlaengert
@@ -252,6 +268,54 @@ html[dir="rtl"] .steps{direction:rtl}
 .result-box b{direction:ltr;display:block;font-family:ui-monospace,Consolas,monospace;font-size:1.25rem;font-weight:800}
 .result-box span{font-size:.9rem;font-weight:700;color:var(--dim)}
 
+/* ============================ Erweiterter Modus ============================
+   Schalter tragen "An/Aus" als Text neben der Farbe; die Rolle sind zwei
+   grosse Knoepfe. Ein Knopf, der eine Grenze verletzen wuerde, ist gesperrt
+   und darunter steht in Worten, warum.                                     */
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.switch-row h3,.switch-row .lbl{margin:0;font-size:1.2rem;font-weight:800;line-height:1.25}
+.switch{
+  flex:none;display:inline-flex;align-items:center;gap:10px;
+  min-block-size:60px;padding-block:8px;padding-inline:8px 16px;border-radius:999px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  font-size:1rem;font-weight:800;color:var(--text);
+}
+.switch .knob{position:relative;flex:none;inline-size:62px;block-size:38px;border-radius:999px;background:var(--border-strong)}
+.switch .knob::after{
+  content:"";position:absolute;inset-block-start:4px;inset-inline-start:4px;
+  inline-size:30px;block-size:30px;border-radius:50%;background:#fff;transition:inset-inline-start .2s;
+}
+.switch[aria-checked="true"]{background:var(--green-soft);border-color:var(--green);color:#06381b}
+.switch[aria-checked="true"] .knob{background:var(--green)}
+.switch[aria-checked="true"] .knob::after{inset-inline-start:28px}
+.field .lbl-plain{display:block;font-size:1.05rem;font-weight:700;margin-block-end:7px}
+.mac-row{display:flex;flex-wrap:wrap;gap:10px}
+.mac-row input{flex:1 1 230px;min-inline-size:0}
+.mac-row .btn{flex:1 0 auto}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{
+  min-block-size:60px;padding:8px 10px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface);
+  font-size:1rem;font-weight:800;line-height:1.2;
+}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.seg button:disabled{opacity:.45;cursor:default}
+.ble-live{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ble-live div{background:var(--surface-2);border:2px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center}
+.ble-live b{direction:ltr;display:block;font-family:ui-monospace,Consolas,monospace;font-size:1.3rem;font-weight:800;font-variant-numeric:tabular-nums}
+.ble-live span{font-size:.9rem;font-weight:700;color:var(--dim)}
+.ble-state{margin-block-start:10px;font-size:1rem;font-weight:700;color:var(--dim)}
+.ble-state.ok{color:var(--green)}
+.home-ble-title{font-size:1.1rem;font-weight:800;color:var(--dim);margin-block:18px 10px}
+.stat .ble-line{display:block}
+
+/* QR-Leser: Ebene ueber der Seite (Meldungen bleiben darueber sichtbar) */
+.qr-modal{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:16px;background:rgba(12,16,23,.75)}
+.qr-modal[hidden]{display:none}
+.qr-box{inline-size:min(100%,460px);background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:20px}
+.qr-box h3{font-size:1.25rem;font-weight:800;margin-block-end:6px}
+.qr-box video{display:block;inline-size:100%;max-width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:#000;margin-block:12px 16px}
+
 /* ================================ Hinweise ================================ */
 .note{
   display:flex;gap:12px;align-items:flex-start;
@@ -280,6 +344,9 @@ html[dir="rtl"] .steps{direction:rtl}
   color:var(--dim);font-size:.82rem;font-weight:800;position:relative;
 }
 .tabbar button svg{inline-size:28px;block-size:28px}
+/* Fuenf Reiter auf 360px: lange Woerter brechen an den weichen Trennstellen
+   (­ in den Texten) um, statt aus dem Reiter zu laufen. */
+.tabbar button span{max-inline-size:100%;padding-inline:3px;text-align:center;line-height:1.15;overflow-wrap:break-word}
 .tabbar button[aria-current="page"]{color:var(--text);background:var(--accent-soft)}
 .tabbar button[aria-current="page"]::before{
   content:"";position:absolute;top:0;inline-size:100%;block-size:5px;background:var(--accent-edge);
@@ -334,9 +401,23 @@ html[dir="rtl"] .steps{direction:rtl}
     <option value="en" lang="en">English</option>
     <option value="ar" lang="ar">&#1593;&#1585;&#1576;&#1610;</option>
   </select>
+  <a class="home-link" href="../">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    <span data-i18n="home">Zur Startseite</span>
+  </a>
 </header>
 
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- QR-Leser fuer die Aufkleber der Bluetooth-Fuehler -->
+<div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
+  <div class="qr-box">
+    <h3 id="qrTitle" data-i18n="qrTitle">QR-Code scannen</h3>
+    <p class="card-sub" data-i18n="qrHint">Halten Sie den Aufkleber des Sensors vor die Kamera.</p>
+    <video id="qrVideo" playsinline muted></video>
+    <button class="btn btn-outline btn-block" id="qrClose" data-i18n="cancel">Abbrechen</button>
+  </div>
+</div>
 
 <main>
 
@@ -499,6 +580,12 @@ html[dir="rtl"] .steps{direction:rtl}
       </div>
     </div>
 
+    <!-- Bluetooth-Fuehler (Erweiterter Modus), nur wenn eingeschaltet -->
+    <div id="homeBle" hidden>
+      <h3 class="home-ble-title" data-i18n="bleSensors">Bluetooth-Sensoren</h3>
+      <div class="stat-row" id="homeBleList"></div>
+    </div>
+
     <div class="quick-row">
       <button class="btn btn-outline btn-compact" id="refreshBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
@@ -629,6 +716,30 @@ html[dir="rtl"] .steps{direction:rtl}
     </div>
   </section>
 
+  <!-- ============================ ERWEITERT ============================ -->
+  <section class="view" id="viewExt">
+    <h2 class="view-title" data-i18n="extTitle">Erweiterter Modus</h2>
+    <p class="view-sub" data-i18n="extSub">Bis zu 3 Bluetooth-Sensoren für Temperatur und Luftfeuchte</p>
+
+    <div class="card">
+      <div class="switch-row">
+        <span class="lbl" id="extMasterLbl" data-i18n="extMaster">Bluetooth-Sensoren benutzen</span>
+        <button class="switch" id="extMaster" type="button" role="switch" aria-checked="false" aria-labelledby="extMasterLbl">
+          <span class="knob" aria-hidden="true"></span><span class="sw-txt"></span>
+        </button>
+      </div>
+      <p class="hint" data-i18n="extRules">Höchstens 2 Sensoren im Bienenstock und 1 Sensor außen.</p>
+    </div>
+
+    <!-- Karten fuer Fuehler 1-3 baut buildExtSlots() -->
+    <div id="extSlots"></div>
+
+    <button class="btn btn-save btn-block" id="saveExtBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+      <span data-i18n="saveExt">Sensoren speichern</span>
+    </button>
+  </section>
+
   <!-- ============================== NETZWERK (Fachleute) ============================== -->
   <section class="view" id="viewNet">
     <h2 class="view-title" data-i18n="navNet">Netzwerk</h2>
@@ -672,6 +783,9 @@ html[dir="rtl"] .steps{direction:rtl}
     <li><button data-view="viewSet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.07-.4.1-.8.1-1.2z"/></svg>
       <span data-i18n="navSet">Einstellungen</span></button></li>
+    <li id="tabExt" hidden><button data-view="viewExt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14.76V5a2 2 0 0 1 4 0v9.76a4 4 0 1 1-4 0z"/><path d="M16.5 7.5a3.5 3.5 0 0 1 0 5"/><path d="M19 5a7 7 0 0 1 0 10"/></svg>
+      <span data-i18n="navExt">Erweitert</span></button></li>
     <li class="tab-adv"><button data-view="viewNet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9a7 7 0 0 1 14 0"/><path d="M8 9a4 4 0 0 1 8 0"/><circle cx="12" cy="11" r="1.6"/><path d="M12 13v8"/></svg>
       <span data-i18n="navNet">Netzwerk</span><small class="adv-tag" data-i18n="advTag">Fachleute</small></button></li>
@@ -688,6 +802,7 @@ const I18N = {
   de: {
     _dir: 'ltr', _locale: 'de-DE',
     brand: 'TanenBase',
+    home: 'Zur Startseite',
     langGroup: 'Sprache', navLabel: 'Hauptbereiche',
     pillOff: 'Nicht verbunden', pillOn: 'Verbunden',
     heroTitle: 'Gerät verbinden',
@@ -696,7 +811,7 @@ const I18N = {
     step2: 'Tippen Sie auf „Verbinden“. Wählen Sie dann „TanenBase“ aus der Liste des Browsers.',
     heroNote: 'Funktioniert mit Chrome oder Edge',
     connect: 'Verbinden', disconnect: 'Verbindung trennen',
-    navHome: 'Übersicht', navCal: 'Waage', navSet: 'Einstellungen', navNet: 'Netzwerk',
+    navHome: 'Über­sicht', navCal: 'Waage', navSet: 'Einstel­lungen', navExt: 'Erwei­tert', navNet: 'Netzwerk',
     advTag: 'Fachleute', advTitle: 'Nur für Fachleute',
     weight: 'Gewicht', unitKg: 'kg',
     temperature: 'Temperatur (°C)', battery: 'Batterie (Volt)',
@@ -764,10 +879,33 @@ const I18N = {
     stTxLtMs: '„Senden alle“ darf nicht kleiner sein als „Messen alle“.',
     cmd1: 'Einrichtung beenden', cmd2: 'Auf Null setzen', cmd3: 'Sitzung löschen',
     cmd4: 'Funk-Test', cmd5: 'Waage einstellen', cmdX: 'Befehl 0x{hex}',
+    /* Erweiterter Modus */
+    extTitle: 'Erweiterter Modus', extSub: 'Bis zu 3 Bluetooth-Sensoren für Temperatur und Luftfeuchte',
+    extMaster: 'Bluetooth-Sensoren benutzen',
+    extRules: 'Höchstens 2 Sensoren im Bienenstock und 1 Sensor außen. Der Außen-Sensor ersetzt die Außen-Temperatur der Station. Die Werte werden bei jedem Senden mitgeschickt.',
+    on: 'An', off: 'Aus',
+    sensor: 'Sensor', macLabel: 'Bluetooth-Adresse (steht auf dem Aufkleber)', scanQr: 'QR scannen',
+    placement: 'Wo hängt der Sensor?', roleIn: 'Im Bienenstock', roleOut: 'Außen',
+    roleOutTaken: 'Es gibt schon einen Sensor außen.', roleInFull: 'Es gibt schon 2 Sensoren im Bienenstock.',
+    bleTemp: '°C', bleHum: '% Feuchte', bleBatt: '% Batterie',
+    bleFound: 'Empfangen · Signal {rssi}',
+    bleNotFound: 'Nicht gefunden. Ist der Sensor in der Nähe und die Adresse richtig?',
+    bleNoMac: 'Noch keine Adresse eingetragen.', phMac: 'z. B. AA:BB:CC:DD:EE:FF',
+    bleSaveFirst: 'Bitte speichern — dann erscheinen hier die Werte.',
+    saveExt: 'Sensoren speichern', bleSensors: 'Bluetooth-Sensoren',
+    qrTitle: 'QR-Code scannen', qrHint: 'Halten Sie den Aufkleber des Sensors vor die Kamera.', cancel: 'Abbrechen',
+    stMacBad: 'Sensor {n}: Die Adresse braucht 12 Zeichen (0–9, A–F).',
+    stMacMissing: 'Sensor {n} ist eingeschaltet, hat aber keine Adresse.',
+    stMacDup: 'Sensor {n}: Diese Adresse ist schon eingetragen.',
+    stQrNoCam: 'Kamera nicht verfügbar: {msg}',
+    stQrNoReader: 'Der QR-Leser konnte nicht geladen werden.',
+    stQrNoMac: 'In diesem QR-Code steht keine Bluetooth-Adresse.',
+    stQrOk: 'Adresse übernommen: {mac}',
   },
   en: {
     _dir: 'ltr', _locale: 'en-US',
     brand: 'TanenBase',
+    home: 'Back to the home page',
     langGroup: 'Language', navLabel: 'Main sections',
     pillOff: 'Not connected', pillOn: 'Connected',
     heroTitle: 'Connect your device',
@@ -776,7 +914,7 @@ const I18N = {
     step2: 'Tap “Connect”. Then pick “TanenBase” from the browser list.',
     heroNote: 'Works with Chrome or Edge',
     connect: 'Connect', disconnect: 'Disconnect',
-    navHome: 'Overview', navCal: 'Scale', navSet: 'Settings', navNet: 'Network',
+    navHome: 'Overview', navCal: 'Scale', navSet: 'Settings', navExt: 'Extended', navNet: 'Network',
     advTag: 'Experts', advTitle: 'For experts only',
     weight: 'Weight', unitKg: 'kg',
     temperature: 'Temperature (°C)', battery: 'Battery (volts)',
@@ -843,10 +981,32 @@ const I18N = {
     stTxLtMs: '“Send every” must not be smaller than “Measure every”.',
     cmd1: 'Finish setup', cmd2: 'Set to zero', cmd3: 'Clear session',
     cmd4: 'Radio test', cmd5: 'Set up scale', cmdX: 'Command 0x{hex}',
+    extTitle: 'Extended mode', extSub: 'Up to 3 Bluetooth sensors for temperature and humidity',
+    extMaster: 'Use Bluetooth sensors',
+    extRules: 'At most 2 sensors inside the hive and 1 outside. The outside sensor replaces the station’s outside temperature. The values are sent with every transmission.',
+    on: 'On', off: 'Off',
+    sensor: 'Sensor', macLabel: 'Bluetooth address (printed on the sticker)', scanQr: 'Scan QR',
+    placement: 'Where is the sensor?', roleIn: 'Inside the hive', roleOut: 'Outside',
+    roleOutTaken: 'There is already an outside sensor.', roleInFull: 'There are already 2 sensors inside the hive.',
+    bleTemp: '°C', bleHum: '% humidity', bleBatt: '% battery',
+    bleFound: 'Received · signal {rssi}',
+    bleNotFound: 'Not found. Is the sensor nearby and the address right?',
+    bleNoMac: 'No address entered yet.', phMac: 'e.g. AA:BB:CC:DD:EE:FF',
+    bleSaveFirst: 'Please save — then the values appear here.',
+    saveExt: 'Save sensors', bleSensors: 'Bluetooth sensors',
+    qrTitle: 'Scan QR code', qrHint: 'Hold the sensor’s sticker in front of the camera.', cancel: 'Cancel',
+    stMacBad: 'Sensor {n}: the address needs 12 characters (0–9, A–F).',
+    stMacMissing: 'Sensor {n} is switched on but has no address.',
+    stMacDup: 'Sensor {n}: this address is already in use.',
+    stQrNoCam: 'Camera not available: {msg}',
+    stQrNoReader: 'The QR reader could not be loaded.',
+    stQrNoMac: 'This QR code holds no Bluetooth address.',
+    stQrOk: 'Address taken: {mac}',
   },
   ar: {
     _dir: 'rtl', _locale: 'ar-EG-u-nu-latn',
     brand: 'قاعدة طنين',
+    home: 'العودة إلى الصفحة الرئيسية',
     langGroup: 'اللغة', navLabel: 'الأقسام الرئيسية',
     pillOff: 'غير متصل', pillOn: 'متصل',
     heroTitle: 'اربط الجهاز',
@@ -855,7 +1015,7 @@ const I18N = {
     step2: 'اضغط «اتصال»، ثم اختر «TanenBase» من قائمة المتصفح.',
     heroNote: 'يعمل مع Chrome أو Edge',
     connect: 'اتصال', disconnect: 'قطع الاتصال',
-    navHome: 'الرئيسية', navCal: 'الميزان', navSet: 'الإعدادات', navNet: 'الشبكة',
+    navHome: 'الرئيسية', navCal: 'الميزان', navSet: 'الإعدادات', navExt: 'متقدم', navNet: 'الشبكة',
     advTag: 'للفنيين', advTitle: 'للفنيين فقط',
     weight: 'الوزن', unitKg: 'كجم',
     temperature: 'الحرارة (°م)', battery: 'البطارية (فولت)',
@@ -922,6 +1082,27 @@ const I18N = {
     stTxLtMs: '«الإرسال كل» يجب ألا يقل عن «القياس كل».',
     cmd1: 'إنهاء الإعداد', cmd2: 'ضبط على الصفر', cmd3: 'مسح الجلسة',
     cmd4: 'اختبار الإرسال', cmd5: 'ضبط الميزان', cmdX: 'أمر 0x{hex}',
+    extTitle: 'الوضع المتقدم', extSub: 'حتى 3 حساسات بلوتوث للحرارة والرطوبة',
+    extMaster: 'استخدام حساسات البلوتوث',
+    extRules: 'حساسان كحد أقصى داخل الخلية وحساس واحد خارجها. يحل الحساس الخارجي محل الحرارة الخارجية للمحطة. تُرسل القيم مع كل إرسال.',
+    on: 'تشغيل', off: 'إيقاف',
+    sensor: 'حساس', macLabel: 'عنوان البلوتوث (مطبوع على الملصق)', scanQr: 'مسح QR',
+    placement: 'أين يوجد الحساس؟', roleIn: 'داخل الخلية', roleOut: 'خارج الخلية',
+    roleOutTaken: 'يوجد حساس خارجي بالفعل.', roleInFull: 'يوجد حساسان داخل الخلية بالفعل.',
+    bleTemp: '°م', bleHum: '% رطوبة', bleBatt: '% بطارية',
+    bleFound: 'تم الاستقبال · الإشارة {rssi}',
+    bleNotFound: 'غير موجود. هل الحساس قريب والعنوان صحيح؟',
+    bleNoMac: 'لم يُدخل عنوان بعد.', phMac: 'مثال: AA:BB:CC:DD:EE:FF',
+    bleSaveFirst: 'احفظ أولًا — ثم تظهر القيم هنا.',
+    saveExt: 'حفظ الحساسات', bleSensors: 'حساسات البلوتوث',
+    qrTitle: 'مسح رمز QR', qrHint: 'ضع ملصق الحساس أمام الكاميرا.', cancel: 'إلغاء',
+    stMacBad: 'الحساس {n}: العنوان يحتاج 12 خانة (0–9، A–F).',
+    stMacMissing: 'الحساس {n} مُشغَّل لكن بلا عنوان.',
+    stMacDup: 'الحساس {n}: هذا العنوان مستخدم بالفعل.',
+    stQrNoCam: 'الكاميرا غير متاحة: {msg}',
+    stQrNoReader: 'تعذّر تحميل قارئ QR.',
+    stQrNoMac: 'لا يحتوي رمز QR هذا على عنوان بلوتوث.',
+    stQrOk: 'تم أخذ العنوان: {mac}',
   },
 };
 
@@ -951,6 +1132,7 @@ function applyLang(next) {
   document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
   document.getElementById("langSel").value = lang;
   updatePill(connected);
+  renderExt();
 }
 
 /* =============================== Meldung =============================== */
@@ -964,7 +1146,7 @@ function toast(key, cls, params) {
 }
 
 /* ============================== Navigation ============================== */
-const VIEWS = ['viewConnect', 'viewHome', 'viewCal', 'viewSet', 'viewNet'];
+const VIEWS = ['viewConnect', 'viewHome', 'viewCal', 'viewSet', 'viewExt', 'viewNet'];
 function showView(id) {
   VIEWS.forEach(v => document.getElementById(v).classList.toggle('active', v === id));
   document.querySelectorAll('.tabbar button[data-view]').forEach(b => {
@@ -994,6 +1176,10 @@ function setConnected(on) {
     document.getElementById('waitChip').style.display = '';
     document.getElementById('liveW').textContent = '--,--';
     ['liveT', 'liveB'].forEach(id => document.getElementById(id).textContent = '--');
+    extLive = [null, null, null];
+    extSupported = false;
+    document.getElementById('tabExt').hidden = true;
+    renderExt();
   }
 }
 
@@ -1081,6 +1267,8 @@ const CHARS = {
   cmdStatus:   { uuid: chr(0xB), len: 2,  type: 'notify' },
   configCmd:   { uuid: chr(0xC), len: 1,  type: 'cmd' },
   liveSensors: { uuid: chr(0xD), len: 8,  type: 'notify' },
+  extConfig:   { uuid: chr(0xE), len: 26, type: 'ext' },
+  extLive:     { uuid: chr(0xF), len: 18, type: 'notify' },
 };
 
 const SEC_PER_MIN = 60;
@@ -1108,11 +1296,13 @@ function bytesToHex(buf) {
 function cleanupChars() {
   if (charMap.cmdStatus) charMap.cmdStatus.removeEventListener('characteristicvaluechanged', onCmdStatus);
   if (charMap.liveSensors) charMap.liveSensors.removeEventListener('characteristicvaluechanged', onLiveSensor);
+  if (charMap.extLive) charMap.extLive.removeEventListener('characteristicvaluechanged', onExtLive);
   charMap = {};
 }
 
 function onDisconnected() {
   clearTimers();
+  closeQr();
   cleanupChars();
   setConnected(false);
   toast(idleQuit ? 'stSetupEnd' : 'stDisconnected', 'err');
@@ -1152,9 +1342,18 @@ async function doConnect() {
       await charMap.liveSensors.startNotifications();
     }
 
+    if (charMap.extLive) {
+      charMap.extLive.addEventListener('characteristicvaluechanged', onExtLive);
+      await charMap.extLive.startNotifications();
+    }
+    /* Aeltere Firmware ohne Erweiterten Modus: der Reiter bleibt versteckt */
+    extSupported = !!charMap.extConfig;
+    document.getElementById('tabExt').hidden = !extSupported;
+
     setConnected(true);
     toast('stConnected', 'ok', { name: device.name || 'TanenBase' });
     await readAll(true);
+    await readExt();
   } catch (e) {
     btn.disabled = false;
     toast('stError', 'err', { msg: e.message });
@@ -1198,7 +1397,7 @@ function onLiveSensor(event) {
 async function readAll(silent) {
   try {
     for (const [key, def] of Object.entries(CHARS)) {
-      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || !charMap[key]) continue;
+      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || def.type === 'ext' || !charMap[key]) continue;
       const val = await charMap[key].readValue();
       const el = document.getElementById(def.el || key);
       if (!el) continue;
@@ -1317,6 +1516,353 @@ async function sendCmd(cmd) {
   }
 }
 
+/* ============================ Erweiterter Modus ============================
+   Bis zu 3 SwitchBot-Fuehler. ExtConfig (26 Bytes) ist ext_config_t der
+   Firmware: [Version][Haupt-Schalter] + 3x [MAC 6 Bytes, Rolle, An].
+   ExtLive (18 Bytes) kommt alle 2 s: 3x [Status, Temp i16 LE in 1/100 °C,
+   Feuchte, Batterie, Signal]. Die Grenzen (2 innen, 1 aussen) prueft auch
+   die Firmware - die Oberflaeche verhindert nur, dass man sie trifft.
+   Das Geraet sucht nach den GESPEICHERTEN Adressen; eine neu getippte
+   Adresse zeigt erst nach dem Speichern Werte.                             */
+const EXT_SLOTS = 3, EXT_CFG_LEN = 2 + EXT_SLOTS * 8, EXT_LIVE_LEN = EXT_SLOTS * 6;
+const EXT_MAX_IN = 2, EXT_MAX_OUT = 1;
+const ROLE_IN = 0, ROLE_OUT = 1;
+const SEEN_TH = 1, SEEN_BATT = 2;
+
+let ext, extLive, savedMacs;
+let extSupported = false;
+function resetExt() {
+  ext = { enabled: false, slots: [0, 1, 2].map(() => ({ mac: '', role: ROLE_IN, en: false })) };
+  extLive = [null, null, null];
+  savedMacs = ['', '', ''];
+}
+resetExt();
+
+const MAC_RE = /([0-9A-F]{2})[:-]?([0-9A-F]{2})[:-]?([0-9A-F]{2})[:-]?([0-9A-F]{2})[:-]?([0-9A-F]{2})[:-]?([0-9A-F]{2})/i;
+/* Tippfeld: die ganze Eingabe muss eine MAC sein */
+function parseMac(s) {
+  const m = String(s).trim().match(new RegExp('^' + MAC_RE.source + '$', 'i'));
+  return m ? m.slice(1).join(':').toUpperCase() : null;
+}
+/* QR-Aufkleber: erste MAC irgendwo im Text */
+function findMac(s) {
+  const m = String(s).match(MAC_RE);
+  return m ? m.slice(1).join(':').toUpperCase() : null;
+}
+
+const QR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h7v-4"/></svg>';
+const THERMO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg>';
+
+function buildExtSlots() {
+  document.getElementById('extSlots').innerHTML = [0, 1, 2].map(i => `
+    <div class="card">
+      <div class="switch-row">
+        <h3 id="slotLbl${i}"><span data-i18n="sensor">Sensor</span> ${i + 1}</h3>
+        <button class="switch" id="slotEn${i}" type="button" role="switch" aria-checked="false" aria-labelledby="slotLbl${i}">
+          <span class="knob" aria-hidden="true"></span><span class="sw-txt"></span>
+        </button>
+      </div>
+      <div class="field">
+        <label for="slotMac${i}" data-i18n="macLabel">Bluetooth-Adresse</label>
+        <div class="mac-row">
+          <input id="slotMac${i}" maxlength="17" autocomplete="off" spellcheck="false" autocapitalize="characters" data-i18n-ph="phMac" placeholder="z. B. AA:BB:CC:DD:EE:FF">
+          <button class="btn btn-outline btn-compact" id="slotQr${i}" type="button">${QR_SVG}<span data-i18n="scanQr">QR scannen</span></button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl-plain" id="roleLbl${i}" data-i18n="placement">Wo hängt der Sensor?</span>
+        <div class="seg" role="group" aria-labelledby="roleLbl${i}">
+          <button type="button" id="slotIn${i}" aria-pressed="false" data-i18n="roleIn">Im Bienenstock</button>
+          <button type="button" id="slotOut${i}" aria-pressed="false" data-i18n="roleOut">Außen</button>
+        </div>
+        <p class="hint" id="slotRoleHint${i}" hidden></p>
+      </div>
+      <div class="ble-live">
+        <div><b id="slotT${i}">--</b><span data-i18n="bleTemp">°C</span></div>
+        <div><b id="slotH${i}">--</b><span data-i18n="bleHum">% Feuchte</span></div>
+        <div><b id="slotB${i}">--</b><span data-i18n="bleBatt">% Batterie</span></div>
+      </div>
+      <p class="ble-state" id="slotState${i}"></p>
+    </div>`).join('');
+}
+
+/* Rolle erlaubt, wenn die ANDEREN eingeschalteten Fuehler die Grenze noch
+   frei lassen. Ein ausgeschalteter Fuehler darf jede Rolle haben. */
+function roleAllowed(i, role) {
+  if (!ext.slots[i].en) return true;
+  let nIn = 0, nOut = 0;
+  ext.slots.forEach((s, j) => { if (j !== i && s.en) { if (s.role === ROLE_OUT) nOut++; else nIn++; } });
+  return role === ROLE_OUT ? nOut < EXT_MAX_OUT : nIn < EXT_MAX_IN;
+}
+
+function renderSwitch(el, on) {
+  el.setAttribute('aria-checked', on ? 'true' : 'false');
+  el.querySelector('.sw-txt').textContent = t(on ? 'on' : 'off');
+}
+
+function renderExt() {
+  renderSwitch(document.getElementById('extMaster'), ext.enabled);
+  ext.slots.forEach((s, i) => {
+    renderSwitch(document.getElementById('slotEn' + i), s.en);
+    const bIn = document.getElementById('slotIn' + i);
+    const bOut = document.getElementById('slotOut' + i);
+    const inOk = s.role === ROLE_IN || roleAllowed(i, ROLE_IN);
+    const outOk = s.role === ROLE_OUT || roleAllowed(i, ROLE_OUT);
+    bIn.setAttribute('aria-pressed', s.role === ROLE_IN ? 'true' : 'false');
+    bOut.setAttribute('aria-pressed', s.role === ROLE_OUT ? 'true' : 'false');
+    bIn.disabled = !inOk;
+    bOut.disabled = !outOk;
+    const hint = document.getElementById('slotRoleHint' + i);
+    hint.textContent = !outOk ? t('roleOutTaken') : !inOk ? t('roleInFull') : '';
+    hint.hidden = inOk && outOk;
+  });
+  renderExtLive();
+}
+
+function renderExtLive() {
+  for (let i = 0; i < EXT_SLOTS; i++) {
+    const live = extLive[i];
+    const th = !!live && (live.seen & SEEN_TH) !== 0;
+    const bt = !!live && (live.seen & SEEN_BATT) !== 0;
+    document.getElementById('slotT' + i).textContent = th ? fmtNum(live.temp, 1) : '--';
+    document.getElementById('slotH' + i).textContent = th ? live.hum : '--';
+    document.getElementById('slotB' + i).textContent = bt ? live.batt : '--';
+
+    const typed = parseMac(document.getElementById('slotMac' + i).value);
+    let key = 'bleNotFound';
+    if (!typed) key = 'bleNoMac';
+    else if (typed !== savedMacs[i]) key = 'bleSaveFirst';
+    else if (th) key = 'bleFound';
+    const st = document.getElementById('slotState' + i);
+    /* Zahl + Einheit als LTR-Insel: sonst wird "-71 dBm" im arabischen
+       Satz zu "dBm 71-" umsortiert. */
+    st.textContent = t(key, { rssi: live ? '⁦' + live.rssi + ' dBm⁩' : '' });
+    st.classList.toggle('ok', key === 'bleFound');
+  }
+  renderHomeBle();
+}
+
+function renderHomeBle() {
+  const box = document.getElementById('homeBle');
+  const list = document.getElementById('homeBleList');
+  const show = extSupported && ext.enabled && ext.slots.some(s => s.en);
+  box.hidden = !show;
+  list.textContent = '';
+  if (!show) return;
+  ext.slots.forEach((s, i) => {
+    if (!s.en) return;
+    const live = extLive[i];
+    const stat = document.createElement('div');
+    stat.className = 'stat';
+    stat.innerHTML = '<span class="stat-ico temp" aria-hidden="true">' + THERMO_SVG + '</span>' +
+      '<div><b></b><span class="ble-line"></span><span class="ble-line"></span></div>';
+    const th = !!live && (live.seen & SEEN_TH) !== 0;
+    const lines = stat.querySelectorAll('.ble-line');
+    stat.querySelector('b').textContent = th ? fmtNum(live.temp, 1) + ' °C' : '--';
+    lines[0].textContent = th ? live.hum + ' ' + t('bleHum') : '';
+    lines[1].textContent = t('sensor') + ' ' + (i + 1) + ' · ' + t(s.role === ROLE_OUT ? 'roleOut' : 'roleIn');
+    list.appendChild(stat);
+  });
+}
+
+function onExtLive(event) {
+  const dv = event.target.value;
+  if (!dv || dv.byteLength < EXT_LIVE_LEN) return;
+  for (let i = 0; i < EXT_SLOTS; i++) {
+    const o = i * 6;
+    extLive[i] = {
+      seen: dv.getUint8(o), temp: dv.getInt16(o + 1, true) / 100,
+      hum: dv.getUint8(o + 3), batt: dv.getUint8(o + 4), rssi: dv.getInt8(o + 5),
+    };
+  }
+  renderExtLive();
+}
+
+/* Nur beim Verbinden gelesen - "Werte neu laden" soll keine getippte,
+   noch nicht gespeicherte Adresse ueberschreiben. */
+async function readExt() {
+  if (!charMap.extConfig) return;
+  try {
+    const dv = await charMap.extConfig.readValue();
+    if (dv.byteLength < EXT_CFG_LEN) return;
+    ext.enabled = dv.getUint8(1) === 1;
+    for (let i = 0; i < EXT_SLOTS; i++) {
+      const o = 2 + i * 8;
+      const bytes = [];
+      for (let k = 0; k < 6; k++) bytes.push(dv.getUint8(o + k));
+      const mac = bytes.some(b => b) ? bytes.map(b => b.toString(16).padStart(2, '0')).join(':').toUpperCase() : '';
+      ext.slots[i] = { mac, role: dv.getUint8(o + 6) === ROLE_OUT ? ROLE_OUT : ROLE_IN, en: dv.getUint8(o + 7) === 1 };
+      savedMacs[i] = mac;
+      const el = document.getElementById('slotMac' + i);
+      el.value = mac;
+      el.classList.remove('bad');
+    }
+    renderExt();
+  } catch (e) {
+    toast('stReadErr', 'err', { msg: e.message });
+  }
+}
+
+function extFail(el, key, i) {
+  el.classList.add('bad');
+  el.focus();
+  toast(key, 'err', { n: i + 1 });
+}
+
+async function saveExt() {
+  if (!charMap.extConfig) return;
+  const buf = new Uint8Array(EXT_CFG_LEN);
+  buf[0] = 1;                                   /* EXT_CONFIG_VERSION */
+  buf[1] = ext.enabled ? 1 : 0;
+  const used = [];
+  for (let i = 0; i < EXT_SLOTS; i++) {
+    const el = document.getElementById('slotMac' + i);
+    const s = ext.slots[i];
+    el.classList.remove('bad');
+    const raw = el.value.trim();
+    const mac = raw === '' ? '' : parseMac(raw);
+    if (mac === null) return extFail(el, 'stMacBad', i);
+    if (s.en && !mac) return extFail(el, 'stMacMissing', i);
+    if (s.en && used.includes(mac)) return extFail(el, 'stMacDup', i);
+    if (s.en) used.push(mac);
+    el.value = mac;
+    s.mac = mac;
+    const o = 2 + i * 8;
+    if (mac) buf.set(mac.split(':').map(h => parseInt(h, 16)), o);
+    buf[o + 6] = s.role;
+    buf[o + 7] = s.en ? 1 : 0;
+  }
+  try {
+    await charMap.extConfig.writeValueWithResponse(buf);
+    savedMacs = ext.slots.map(s => s.mac);
+    toast('stSaved', 'ok');
+    renderExt();
+  } catch (e) {
+    toast('stWriteErr', 'err', { msg: e.message });
+  }
+}
+
+/* ================================ QR-Leser ================================
+   BarcodeDetector (Chrome auf Android), sonst jsQR aus jsqr.js - erst
+   bei Bedarf nachgeladen. Gesucht wird nur eine MAC im Text des Codes.   */
+let qrStream = null, qrSlot = -1, qrTimer = null, qrDetector = null, qrCanvas = null;
+
+function loadJsQr() {
+  return new Promise((resolve, reject) => {
+    if (typeof jsQR === 'function') { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'jsqr.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('jsqr.js'));
+    document.head.appendChild(s);
+  });
+}
+
+async function openQr(i) {
+  if (qrStream) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    toast('stQrNoCam', 'err', { msg: 'getUserMedia' });
+    return;
+  }
+  qrDetector = null;
+  if ('BarcodeDetector' in window) {
+    try {
+      const formats = await BarcodeDetector.getSupportedFormats();
+      if (formats.includes('qr_code')) qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+    } catch (e) { qrDetector = null; }
+  }
+  if (!qrDetector) {
+    try { await loadJsQr(); } catch (e) { toast('stQrNoReader', 'err'); return; }
+  }
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+  } catch (e) {
+    toast('stQrNoCam', 'err', { msg: e.message });
+    return;
+  }
+  qrSlot = i;
+  const video = document.getElementById('qrVideo');
+  video.srcObject = qrStream;
+  document.getElementById('qrModal').hidden = false;
+  document.getElementById('qrClose').focus();
+  try { await video.play(); } catch (e) {}
+  qrTimer = setTimeout(scanQrFrame, 300);
+}
+
+async function scanQrFrame() {
+  qrTimer = null;
+  if (!qrStream) return;
+  const video = document.getElementById('qrVideo');
+  let text = null;
+  try {
+    if (video.readyState >= 2) {
+      if (qrDetector) {
+        const codes = await qrDetector.detect(video);
+        if (codes.length) text = codes[0].rawValue;
+      } else {
+        const w = video.videoWidth, h = video.videoHeight;
+        if (!qrCanvas) qrCanvas = document.createElement('canvas');
+        qrCanvas.width = w;
+        qrCanvas.height = h;
+        const ctx = qrCanvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0, w, h);
+        const code = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+        if (code) text = code.data;
+      }
+    }
+  } catch (e) {}
+  if (!qrStream) return;                        /* waehrend detect() geschlossen */
+  if (text === null) { qrTimer = setTimeout(scanQrFrame, 200); return; }
+
+  const slot = qrSlot;
+  closeQr();
+  const mac = findMac(text);
+  if (!mac) { toast('stQrNoMac', 'err'); return; }
+  const el = document.getElementById('slotMac' + slot);
+  el.value = mac;
+  el.classList.remove('bad');
+  renderExtLive();
+  toast('stQrOk', 'ok', { mac });
+}
+
+function closeQr() {
+  if (qrTimer) { clearTimeout(qrTimer); qrTimer = null; }
+  if (qrStream) { qrStream.getTracks().forEach(tr => tr.stop()); qrStream = null; }
+  document.getElementById('qrVideo').srcObject = null;
+  document.getElementById('qrModal').hidden = true;
+  if (qrSlot >= 0) document.getElementById('slotQr' + qrSlot).focus();
+  qrSlot = -1;
+}
+
+function initExt() {
+  buildExtSlots();
+  document.getElementById('extMaster').addEventListener('click', () => { ext.enabled = !ext.enabled; renderExt(); });
+  for (let i = 0; i < EXT_SLOTS; i++) {
+    document.getElementById('slotEn' + i).addEventListener('click', () => {
+      const s = ext.slots[i];
+      s.en = !s.en;
+      /* Beim Einschalten eine Rolle nehmen, die keine Grenze verletzt -
+         bei 3 Plaetzen ist immer eine der beiden frei. */
+      if (s.en && !roleAllowed(i, s.role)) s.role = s.role === ROLE_OUT ? ROLE_IN : ROLE_OUT;
+      renderExt();
+    });
+    const setRole = role => {
+      if (!roleAllowed(i, role)) return;
+      ext.slots[i].role = role;
+      renderExt();
+    };
+    document.getElementById('slotIn' + i).addEventListener('click', () => setRole(ROLE_IN));
+    document.getElementById('slotOut' + i).addEventListener('click', () => setRole(ROLE_OUT));
+    const mac = document.getElementById('slotMac' + i);
+    mac.addEventListener('input', () => { mac.classList.remove('bad'); renderExtLive(); });
+    mac.addEventListener('change', () => { const m = parseMac(mac.value); if (m) mac.value = m; renderExtLive(); });
+    document.getElementById('slotQr' + i).addEventListener('click', () => openQr(i));
+  }
+  document.getElementById('saveExtBtn').addEventListener('click', saveExt);
+  document.getElementById('qrClose').addEventListener('click', closeQr);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && qrStream) closeQr(); });
+}
+
 /* =============================== Verdrahtung =============================== */
 document.getElementById('connectBtn').addEventListener('click', doConnect);
 document.getElementById('disconnectBtn').addEventListener('click', doDisconnect);
@@ -1335,6 +1881,7 @@ document.querySelectorAll('.tabbar button[data-view]').forEach(btn =>
   document.getElementById(id).addEventListener('input', e => e.target.classList.remove('bad')));
 document.getElementById("langSel").addEventListener("change", e => applyLang(e.target.value));
 
+initExt();
 applyLang(lang);
 if (!navigator.bluetooth) toast('stNoBluetooth', 'err');
 </script>
