@@ -31,6 +31,13 @@ config TANENBASE_DEFAULT_TEMP_THRESHOLD
 	int
 	default 500
 
+# config.c seeds the tare temperature from this even with compensation off.
+# TANENBASE_TEMPCOMP itself stays undefined here: measure.c only tests it with
+# IS_ENABLED(), so the test app measures uncompensated and needs no tempcomp.c.
+config TANENBASE_TEMPCOMP_T_REF_MDEG
+	int
+	default 25000
+
 config TANENBASE_TEST_INTERVAL_S
 	int "Measure loop interval (seconds)"
 	default 5
