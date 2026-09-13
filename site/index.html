@@ -50,7 +50,7 @@
   --blue-soft:#e6eefa;
   --r:18px;
   --max:1120px;
-  --stick:24px;            /* Sprungziel-Abstand, solange die Kopfzeile mitlaeuft */
+  --stick:92px;            /* Sprungziel-Abstand unter der mitlaufenden Kopfzeile */
   --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -78,16 +78,19 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .skip:focus{inset-block-start:12px}
 
 /* ============================== Kopfbereich ==============================
-   Auf dem Handy laeuft die Kopfzeile mit nach oben weg: drei Zeilen aus
-   Marke, Sprache und Navigation wuerden sonst ein Drittel des Schirms
-   dauerhaft belegen. Ab Tablet-Breite bleibt sie stehen.               */
+   Handy: eine schmale Zeile aus Marke und Menue-Knopf, wie bei BEEP.
+   Navigation und Sprachwahl klappen darunter auf - offen belegten sie den
+   ganzen ersten Schirm, und vom Geraet war nichts zu sehen. Die Zeile ist
+   nur so hoch wie die Marke, deshalb darf sie stehen bleiben.
+   Ab Tablet-Breite steht alles offen in der Kopfzeile.                 */
 .appbar{
+  position:sticky;inset-block-start:0;z-index:30;
   background:var(--surface);border-block-end:3px solid var(--border-strong);
-  padding-block:calc(12px + env(safe-area-inset-top)) 12px;
+  padding-block:calc(10px + env(safe-area-inset-top)) 10px;
 }
 @media (min-width:780px){
   :root{--stick:170px}
-  .appbar{position:sticky;inset-block-start:0;z-index:30}
+  .appbar{padding-block:calc(12px + env(safe-area-inset-top)) 12px}
 }
 .appbar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
 .brand{
@@ -119,10 +122,10 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .lang button:focus-visible{outline-offset:-4px;border-radius:0}
 
-/* Navigation: immer eine eigene Zeile unter Marke und Sprachwahl.
-   Kein Klapp-Menue - was man nicht sieht, findet man auch nicht. Und keine
-   Zeile, die je nach Sprache mal passt und mal umbricht: die arabischen
-   Beschriftungen sind kurz, die englischen lang. */
+/* Navigation: auf breitem Schirm eine eigene Zeile unter Marke und
+   Sprachwahl - keine Zeile, die je nach Sprache mal passt und mal umbricht:
+   die arabischen Beschriftungen sind kurz, die englischen lang. Auf dem
+   Handy steckt sie im Menue (siehe .menu). */
 .nav{flex:1 1 100%;order:3}
 .nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px}
 .nav a{
@@ -136,6 +139,37 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .nav a.nav-setup{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
 .nav a.nav-setup:hover{background:#ffb61a}
 .nav a[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent-edge);box-shadow:inset 0 -5px 0 var(--accent-edge)}
+
+/* Menue-Knopf, nur auf dem Handy. Mit Wort neben den drei Strichen -
+   das Zeichen allein erkennt nicht jeder als Menue. */
+.menu-btn{
+  display:inline-flex;align-items:center;gap:8px;flex:none;
+  min-block-size:52px;padding:8px 16px;border-radius:12px;
+  border:2px solid var(--border-strong);background:var(--surface-2);
+  font-size:1rem;font-weight:800;color:var(--text);
+}
+.menu-btn svg{inline-size:24px;block-size:24px;flex:none}
+.menu-btn .ico-close,.menu-btn[aria-expanded="true"] .ico-open{display:none}
+.menu-btn[aria-expanded="true"] .ico-close{display:block}
+.menu-btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent-edge)}
+/* Aufgeklappt: Sprache oben (order 0), darunter die Bereiche als Liste
+   ueber die volle Breite. Scrollt selbst, falls der Schirm nicht reicht. */
+.menu{
+  flex:1 1 100%;order:3;display:none;flex-direction:column;gap:14px;
+  padding-block:4px 6px;max-block-size:calc(100dvh - 90px);overflow-y:auto;
+}
+.appbar.open .menu{display:flex}
+.menu .lang{align-self:flex-start}
+@media (max-width:779px){
+  .nav ul{flex-direction:column;gap:8px}
+  .nav a{display:flex}
+}
+/* Breiter Schirm: kein Knopf, der Rahmen loest sich auf und Navigation
+   und Sprachwahl sitzen direkt in der Kopfzeile. */
+@media (min-width:780px){
+  .menu-btn{display:none}
+  .menu,.appbar.open .menu{display:contents}
+}
 
 /* ================================ Knoepfe ================================ */
 .btn{
@@ -151,6 +185,12 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .btn-outline:hover{background:var(--surface-2)}
 .btn-lg{min-block-size:76px;font-size:1.2rem;padding:16px 40px}
 .btn-row{display:flex;gap:14px;flex-wrap:wrap}
+/* Handy: etwas flacher und ueber die volle Breite - drei Knoepfe mit 76px
+   schoben den Text sonst weit aus dem Bild. 60px bleibt die Untergrenze. */
+@media (max-width:779px){
+  .btn-lg{min-block-size:60px;font-size:1.08rem;padding:12px 24px}
+  .hero .btn-row .btn{flex:1 1 100%}
+}
 /* Knopf unter der Bildunterschrift: setzt deren Leiste fort, damit der Weg
    zur Einrichtungsseite nicht nur oben in der Kopfzeile steht. */
 .shot-cta{background:var(--surface);padding:0 17px 17px}
@@ -181,6 +221,27 @@ p{font-size:1.05rem}
 .hero .btn-row{margin-block-end:22px}
 .hero-note{font-size:.98rem;color:var(--dim)}
 figure{margin:0}
+/* Bild zuerst auf dem Handy: wer die Seite oeffnet, sieht Geraet und
+   Bedienseite, dann erst den Text - wie bei BEEP. */
+@media (max-width:919px){
+  .hero{padding-block:22px 48px}
+  .hero-media{order:-1}
+}
+/* Foto der Plattform, davor ein Handy mit der Bedienseite. Das Handy
+   haengt rechts unten ueber den Rand, dort wo das Foto nur Erde zeigt.
+   Die Polster in % der Breite halten ihm bei jeder Bildbreite Platz frei. */
+.hero-media{position:relative;padding-block-end:22%;padding-inline-end:5%}
+.hero-photo{
+  border:3px solid var(--border-strong);border-radius:var(--r);overflow:hidden;
+  background:var(--surface-2);box-shadow:var(--shadow);
+}
+.hero-photo img{inline-size:100%}
+.hero-phone{
+  position:absolute;inset-inline-end:0;inset-block-end:0;inline-size:28%;
+  padding:5px;background:#0c1017;border-radius:22px;
+  box-shadow:0 4px 0 rgba(12,16,23,.12),0 16px 34px rgba(12,16,23,.30);
+}
+.hero-phone img{inline-size:100%;border-radius:17px}
 .shot{
   border:3px solid var(--border-strong);border-radius:var(--r);overflow:hidden;
   background:var(--surface-2);box-shadow:var(--shadow);
@@ -253,6 +314,19 @@ html[dir="rtl"] .stat b{text-align:right}
   border-block-start:2px dashed var(--border);padding-block-start:10px;
 }
 .feat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
+
+/* ======================= Bluetooth-Sensoren ======================= */
+/* Erweiterter Modus: zwei Karten neben zwei Hochkant-Bildern. Die Karten
+   nutzen die Listen der Merkmale (.feat), stehen hier aber immer
+   untereinander. Die Bilder werden eingepasst und in der Hoehe gedeckelt -
+   ein Handybild in voller Spaltenbreite waere sonst ueber 1000px hoch. */
+.ble{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+@media (min-width:980px){.ble{grid-template-columns:1fr 1fr;gap:28px}}
+.ble .feat{grid-template-columns:1fr}
+.ble-shots{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ble-shots .shot{display:flex;flex-direction:column}
+.ble-shots .shot img{aspect-ratio:460/996;object-fit:contain;max-block-size:560px;background:var(--surface-2)}
+.ble-shots .shot figcaption{flex:1 0 auto;font-size:.92rem}
 
 /* ======================= Auswerteplattformen ======================= */
 /* Zwei Karten nebeneinander statt drei wie bei den Merkmalen, damit die
@@ -350,9 +424,17 @@ footer p{font-size:.98rem;color:var(--dim)}
       <span>TanenBase<small data-i18n="brandSub">Offene Stockwaage</small></span>
     </a>
 
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
+      <svg class="ico-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>
+      <svg class="ico-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      <span data-i18n="menu">Menü</span>
+    </button>
+
+    <div class="menu" id="menu">
     <nav class="nav" data-i18n-al="navLabel" aria-label="Hauptbereiche">
       <ul>
         <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+        <li><a href="#ble" data-i18n="navBle">Sensoren</a></li>
         <li><a href="#data" data-i18n="navData">Plattformen</a></li>
         <li><a href="#why" data-i18n="navWhy">Warum</a></li>
         <li><a href="#open" data-i18n="navOpen">Offen</a></li>
@@ -366,6 +448,7 @@ footer p{font-size:.98rem;color:var(--dim)}
       <button type="button" data-lang="de" lang="de" aria-pressed="true">DE</button>
       <button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button>
       <button type="button" data-lang="ar" lang="ar" aria-pressed="false">AR</button>
+    </div>
     </div>
   </div>
 </header>
@@ -400,8 +483,13 @@ footer p{font-size:.98rem;color:var(--dim)}
         <p class="hero-note" data-i18n="heroNote">Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu</p>
       </div>
 
-      <figure class="shot">
-        <img src="media/platform.jpeg" width="1200" height="554" alt="Bienenstock steht auf der Wiegeplattform von TanenBase, daneben das wetterfeste Gehäuse" data-i18n-alt="heroAlt" fetchpriority="high" decoding="async">
+      <figure class="hero-media">
+        <div class="hero-photo">
+          <img src="media/bees-hive.jpg" width="1280" height="853" alt="Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese" data-i18n-alt="heroAlt" fetchpriority="high" decoding="async">
+        </div>
+        <div class="hero-phone">
+          <img src="media/setup-page.jpg" width="443" height="795" alt="Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C" data-i18n-alt="heroPhoneAlt" decoding="async">
+        </div>
       </figure>
     </div>
 
@@ -458,12 +546,67 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h3 data-i18n="f3T">Funk ohne Zwang</h3>
         <p data-i18n="f3D">Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.</p>
         <ul>
-          <li data-i18n="f3a">Kein Konto beim Hersteller, keine Zwangs-Wolke</li>
+          <li data-i18n="f3a">Kein Konto beim Hersteller, keine Cloud</li>
           <li data-i18n="f3b">Eingerichtet per Bluetooth im Browser — keine App</li>
           <li data-i18n="f3c">Die Daten laufen dort auf, wo Sie es festlegen</li>
           <li data-i18n="f3d">Fertige Anbindung an BEEP und beelogger über The Things Network</li>
         </ul>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLUETOOTH-SENSOREN ========================= -->
+<!-- Erweiterter Modus: Text links, rechts der Sensor mit Aufkleber und die
+     Live-Werte auf der Einrichtungsseite. Auf dem Handy stehen die Bilder
+     unter dem Text. -->
+<section class="band" id="ble">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker" data-i18n="bleKicker">Erweiterter Modus</span>
+      <h2 data-i18n="bleTitle">Blick ins Volk — ohne den Deckel zu heben</h2>
+      <p data-i18n="bleLead">Bis zu drei kleine Bluetooth-Sensoren messen Temperatur und Luftfeuchte dort, wo es zählt: zwei im Bienenstock, einer draußen. Die Station liest sie ein und funkt ihre Werte zusammen mit dem Gewicht — ohne Kabel in den Stock und ohne zusätzliches Empfangsgerät für die Sensoren.</p>
+    </div>
+
+    <div class="ble">
+      <div class="feat">
+        <article class="card">
+          <span class="card-ico ico-acc" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14.8V5a2.5 2.5 0 015 0v9.8a4.5 4.5 0 11-5 0z"/><path d="M11.5 9v7.5"/><path d="M19 3c1.6 2 2.5 3.4 2.5 4.6a2.5 2.5 0 01-5 0C16.5 6.4 17.4 5 19 3z"/></svg>
+          </span>
+          <h3 data-i18n="b1T">Was im Stock passiert</h3>
+          <p data-i18n="b1D">Temperatur und Feuchte im Brutnest zeigen, was die Waage allein nicht verrät: ob das Volk brütet, ob es im Winter seine Traube hält und ob sich Feuchtigkeit staut.</p>
+          <ul>
+            <li data-i18n="b1a">Zwei Sensoren im Stock, einer außen</li>
+            <li data-i18n="b1b">Der Außen-Sensor liefert die echte Außentemperatur</li>
+            <li data-i18n="b1c">Temperatur und Feuchte kommen auch bei BEEP und beelogger an</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-ico ico-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h7v-4"/></svg>
+          </span>
+          <h3 data-i18n="b2T">Mit dem Handy eingerichtet</h3>
+          <p data-i18n="b2D">QR-Code auf dem Aufkleber des Sensors scannen, Platz wählen — im Stock oder außen — und speichern. Die Werte erscheinen sofort auf der Einrichtungsseite.</p>
+          <ul>
+            <li data-i18n="b2a">Handelsübliche SwitchBot-Sensoren mit eigener Batterie</li>
+            <li data-i18n="b2b">Adresse per QR-Code oder von Hand eintragen</li>
+            <li data-i18n="b2c">Gesucht wird nur beim Senden — rechnerisch rund 3 Jahre mit einem Batteriesatz</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="ble-shots">
+        <figure class="shot">
+          <img src="media/ble-sensor.jpg" width="460" height="996" loading="lazy" decoding="async" alt="Weißer SwitchBot-Sensor in der Hand, mit Aufkleber: Bluetooth-Adresse, QR-Code und Tanen.eu" data-i18n-alt="bleCap1Alt">
+          <figcaption data-i18n="bleCap1">Ein SwitchBot-Sensor mit Tanen-Aufkleber: Bluetooth-Adresse als Text und als QR-Code.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="media/ble-sensors-screen.jpg" width="460" height="997" loading="lazy" decoding="async" alt="Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen" data-i18n-alt="bleCap2Alt">
+          <figcaption data-i18n="bleCap2">Live auf der Einrichtungsseite: zwei Sensoren im Bienenstock, einer außen.</figcaption>
+        </figure>
+      </div>
     </div>
   </div>
 </section>
@@ -626,7 +769,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <figcaption data-i18n="cap3">Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.</figcaption>
       </figure>
       <figure class="shot portrait screen">
-        <img src="media/app-setup.jpg" width="438" height="950" loading="lazy" decoding="async" alt="Einrichtungsseite im Handy-Browser mit großen Schaltflächen" data-i18n-alt="cap4Alt">
+        <img src="media/setup-page.jpg" width="443" height="795" loading="lazy" decoding="async" alt="Übersicht der Einrichtungsseite am Handy: Gewicht groß oben, darunter Temperatur und Batteriespannung" data-i18n-alt="cap4Alt">
         <figcaption data-i18n="cap4">Eingerichtet wird im Browser am Handy: große Schrift, große Knöpfe, keine App zum Installieren.</figcaption>
         <div class="shot-cta">
           <a class="btn" href="setup/">
@@ -647,14 +790,15 @@ footer p{font-size:.98rem;color:var(--dim)}
         <caption data-i18n="techCap">Stand der aktuellen Ausbaustufe. Änderungen stehen im Änderungsprotokoll des Projekts.</caption>
         <tbody>
           <tr><th scope="row" data-i18n="t1L">Messwerte</th><td data-i18n="t1V">Gewicht, Temperatur im Stock, Batteriespannung</td></tr>
+          <tr><th scope="row" data-i18n="t12L">Bluetooth-Sensoren (optional)</th><td data-i18n="t12V">bis zu 3 × SwitchBot Outdoor Meter: Temperatur und Luftfeuchte, 2 im Stock, 1 außen</td></tr>
           <tr><th scope="row" data-i18n="t2L">Wiegebereich</th><td data-i18n="t2V">bis 999 kg</td></tr>
           <tr><th scope="row" data-i18n="t3L">Genauigkeit im Feldversuch</th><td data-i18n="t3V">rund 12 g Streuung über sechs Tage</td></tr>
           <tr><th scope="row" data-i18n="t4L">Funk</th><td data-i18n="t4V">LoRaWAN Klasse A, EU868, OTAA</td></tr>
-          <tr><th scope="row" data-i18n="t5L">Datenpaket</th><td data-i18n="t5V">8 Byte je Meldung</td></tr>
+          <tr><th scope="row" data-i18n="t5L">Datenpaket</th><td data-i18n="t5V">8 Byte je Meldung, dazu 5 Byte je Bluetooth-Sensor</td></tr>
           <tr><th scope="row" data-i18n="t6L">Einrichtung</th><td data-i18n="t6V">Bluetooth, Bedienseite im Browser (Chrome oder Edge)</td></tr>
           <tr><th scope="row" data-i18n="t7L">Ruhestrom</th><td data-i18n="t7V">rund 4 µA</td></tr>
           <tr><th scope="row" data-i18n="t8L">Batterie</th><td data-i18n="t8V">drei AAA-Lithiumzellen in Reihe (1,5 V, 1200 mAh)</td></tr>
-          <tr><th scope="row" data-i18n="t9L">Laufzeit (rechnerisch)</th><td data-i18n="t9V">rund 4,5 Jahre — Messung alle 15 min, Meldung alle 2 h; rund 10 Jahre bei stündlicher Messung und 4-h-Meldung</td></tr>
+          <tr><th scope="row" data-i18n="t9L">Laufzeit (rechnerisch)</th><td data-i18n="t9V">rund 4,5 Jahre — Messung alle 15 min, Meldung alle 2 h; rund 10 Jahre bei stündlicher Messung und 4-h-Meldung; mit Bluetooth-Sensoren rund 3,3 bzw. 7 Jahre</td></tr>
           <tr><th scope="row" data-i18n="t10L">Rechner</th><td data-i18n="t10V">Nordic nRF54LM20A, Zephyr / nRF Connect SDK</td></tr>
           <tr><th scope="row" data-i18n="t11L">Lizenz</th><td data-i18n="t11V">Apache-Lizenz 2.0</td></tr>
         </tbody>
@@ -697,6 +841,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h4 data-i18n="footNav">Bereiche</h4>
         <ul>
           <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+        <li><a href="#ble" data-i18n="navBle">Sensoren</a></li>
           <li><a href="#data" data-i18n="navData">Plattformen</a></li>
           <li><a href="#why" data-i18n="navWhy">Warum</a></li>
           <li><a href="#open" data-i18n="navOpen">Offen</a></li>
@@ -718,6 +863,9 @@ footer p{font-size:.98rem;color:var(--dim)}
     </div>
     <div class="foot-bar">
       <span data-i18n="footLic">Apache-Lizenz 2.0 — nutzen, ändern, weitergeben, auch gewerblich.</span>
+      <!-- Nachweis fuer das Startbild. Es stammt nicht aus dem Projekt,
+           steht aber nur hier, nicht ueber dem Bild selbst. -->
+      <span><span data-i18n="photoBy">Foto</span>: <a href="https://pixabay.com/users/xiserge-15871962/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">xiSerge</a> / <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">Pixabay</a></span>
       <span>&copy; 2026 TanenBase</span>
     </div>
   </div>
@@ -738,8 +886,8 @@ de: {
   metaDesc:'TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.',
   skip:'Zum Inhalt springen',
   brandSub:'Offene Stockwaage',
-  langLabel:'Sprache', navLabel:'Hauptbereiche',
-  navFeat:'Was es kann', navData:'Plattformen', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
+  langLabel:'Sprache', navLabel:'Hauptbereiche', menu:'Menü',
+  navFeat:'Was es kann', navBle:'Sensoren', navData:'Plattformen', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
   navSetup:'Einrichten', setupBtn:'Einrichtungsseite öffnen',
 
   heroKicker:'Offene Technik für die Imkerei',
@@ -749,7 +897,9 @@ de: {
   heroBtn2:'Quellcode und Bauanleitung',
   heroBtn3:'Station einrichten',
   heroNote:'Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu',
-  heroAlt:'Bienenstock steht auf der Wiegeplattform von TanenBase, daneben das wetterfeste Gehäuse',
+  heroAlt:'Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese',
+  heroPhoneAlt:'Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C',
+  photoBy:'Foto',
   stat1:'Stromaufnahme im Ruhezustand',
   statY:'Jahre',
   stat2:'mit drei AAA-Lithiumzellen (rechnerisch)',
@@ -770,7 +920,7 @@ de: {
   f2c:'Temperaturfühler im Stock, nicht nur am Gehäuse',
   f3T:'Funk ohne Zwang',
   f3D:'Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.',
-  f3a:'Kein Konto beim Hersteller, keine Zwangs-Wolke',
+  f3a:'Kein Konto beim Hersteller, keine Cloud',
   f3b:'Eingerichtet per Bluetooth im Browser — keine App',
   f3c:'Die Daten laufen dort auf, wo Sie es festlegen',
   f3d:'Fertige Anbindung an BEEP und beelogger über The Things Network',
@@ -829,7 +979,7 @@ de: {
   cap3:'Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.',
   cap3Alt:'Geöffnetes Gehäuse mit Platine, Funkmodul und Antenne',
   cap4:'Eingerichtet wird im Browser am Handy: große Schrift, große Knöpfe, keine App zum Installieren.',
-  cap4Alt:'Einrichtungsseite im Handy-Browser mit großen Schaltflächen',
+  cap4Alt:'Übersicht der Einrichtungsseite am Handy: Gewicht groß oben, darunter Temperatur und Batteriespannung',
 
   techTitle:'Technische Angaben',
   techLead:'Für alle, die es genau wissen wollen. Für den täglichen Gebrauch müssen Sie hier nichts verstehen.',
@@ -838,11 +988,30 @@ de: {
   t2L:'Wiegebereich', t2V:'bis 999 kg',
   t3L:'Genauigkeit im Feldversuch', t3V:'rund 12 g Streuung über sechs Tage',
   t4L:'Funk', t4V:'LoRaWAN Klasse A, EU868, OTAA',
-  t5L:'Datenpaket', t5V:'8 Byte je Meldung',
+  t5L:'Datenpaket', t5V:'8 Byte je Meldung, dazu 5 Byte je Bluetooth-Sensor',
   t6L:'Einrichtung', t6V:'Bluetooth, Bedienseite im Browser (Chrome oder Edge)',
   t7L:'Ruhestrom', t7V:'rund 4 µA',
   t8L:'Batterie', t8V:'drei AAA-Lithiumzellen in Reihe (1,5 V, 1200 mAh)',
-  t9L:'Laufzeit (rechnerisch)', t9V:'rund 4,5 Jahre — Messung alle 15 min, Meldung alle 2 h; rund 10 Jahre bei stündlicher Messung und 4-h-Meldung',
+  t9L:'Laufzeit (rechnerisch)', t9V:'rund 4,5 Jahre — Messung alle 15 min, Meldung alle 2 h; rund 10 Jahre bei stündlicher Messung und 4-h-Meldung; mit Bluetooth-Sensoren rund 3,3 bzw. 7 Jahre',
+  bleKicker:'Erweiterter Modus',
+  bleTitle:'Blick ins Volk — ohne den Deckel zu heben',
+  bleLead:'Bis zu drei kleine Bluetooth-Sensoren messen Temperatur und Luftfeuchte dort, wo es zählt: zwei im Bienenstock, einer draußen. Die Station liest sie ein und funkt ihre Werte zusammen mit dem Gewicht — ohne Kabel in den Stock und ohne zusätzliches Empfangsgerät für die Sensoren.',
+  b1T:'Was im Stock passiert',
+  b1D:'Temperatur und Feuchte im Brutnest zeigen, was die Waage allein nicht verrät: ob das Volk brütet, ob es im Winter seine Traube hält und ob sich Feuchtigkeit staut.',
+  b1a:'Zwei Sensoren im Stock, einer außen',
+  b1b:'Der Außen-Sensor liefert die echte Außentemperatur',
+  b1c:'Temperatur und Feuchte kommen auch bei BEEP und beelogger an',
+  b2T:'Mit dem Handy eingerichtet',
+  b2D:'QR-Code auf dem Aufkleber des Sensors scannen, Platz wählen — im Stock oder außen — und speichern. Die Werte erscheinen sofort auf der Einrichtungsseite.',
+  b2a:'Handelsübliche SwitchBot-Sensoren mit eigener Batterie',
+  b2b:'Adresse per QR-Code oder von Hand eintragen',
+  b2c:'Gesucht wird nur beim Senden — rechnerisch rund 3 Jahre mit einem Batteriesatz',
+  bleCap1:'Ein SwitchBot-Sensor mit Tanen-Aufkleber: Bluetooth-Adresse als Text und als QR-Code.',
+  bleCap1Alt:'Weißer SwitchBot-Sensor in der Hand, mit Aufkleber: Bluetooth-Adresse, QR-Code und Tanen.eu',
+  bleCap2:'Live auf der Einrichtungsseite: zwei Sensoren im Bienenstock, einer außen.',
+  bleCap2Alt:'Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen',
+  t12L:'Bluetooth-Sensoren (optional)',
+  t12V:'bis zu 3 × SwitchBot Outdoor Meter: Temperatur und Luftfeuchte, 2 im Stock, 1 außen',
   t10L:'Rechner', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
   t11L:'Lizenz', t11V:'Apache-Lizenz 2.0',
 
@@ -863,8 +1032,8 @@ en: {
   metaDesc:'TanenBase is an open hive scale: it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0.',
   skip:'Skip to content',
   brandSub:'Open hive scale',
-  langLabel:'Language', navLabel:'Main sections',
-  navFeat:'What it does', navData:'Platforms', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
+  langLabel:'Language', navLabel:'Main sections', menu:'Menu',
+  navFeat:'What it does', navBle:'Sensors', navData:'Platforms', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
   navSetup:'Set up', setupBtn:'Open the setup page',
 
   heroKicker:'Open technology for beekeepers',
@@ -874,7 +1043,9 @@ en: {
   heroBtn2:'Source code and build guide',
   heroBtn3:'Set up a station',
   heroNote:'Apache License 2.0 — free to use, commercially as well. Questions to info@tanen.eu',
-  heroAlt:'Beehive standing on the TanenBase weighing platform, with the weatherproof enclosure beside it',
+  heroAlt:'Bees flying in front of the entrance of their hive, green meadow behind',
+  heroPhoneAlt:'Phone showing the setup page: weight 1.67 kg, temperature 23.0 °C',
+  photoBy:'Photo',
   stat1:'current draw while asleep',
   statY:'years',
   stat2:'on three AAA lithium cells (calculated)',
@@ -895,7 +1066,7 @@ en: {
   f2c:'Temperature probe inside the hive, not just on the enclosure',
   f3T:'Radio without strings attached',
   f3D:'Readings go out over LoRaWAN — a radio system for small amounts of data over long distances, with no mobile contract. You either put up your own receiver or use an open network such as The Things Network.',
-  f3a:'No manufacturer account, no forced cloud',
+  f3a:'No manufacturer account, no cloud',
   f3b:'Set up over Bluetooth in the browser — no app to install',
   f3c:'The data arrives wherever you decide it should',
   f3d:'Ready-made link to BEEP and beelogger over The Things Network',
@@ -954,7 +1125,7 @@ en: {
   cap3:'The build inside the enclosure: processor, radio module with its antenna, and the load-cell amplifier. Every part is available separately.',
   cap3Alt:'Opened enclosure showing the board, radio module and antenna',
   cap4:'Setup happens in the phone browser: large type, large buttons, no app to install.',
-  cap4Alt:'Setup page in a phone browser with large buttons',
+  cap4Alt:'Setup page overview on a phone: weight in large type, temperature and battery voltage below',
 
   techTitle:'Specifications',
   techLead:'For those who want the detail. For everyday use you need to understand none of it.',
@@ -963,11 +1134,30 @@ en: {
   t2L:'Weighing range', t2V:'up to 999 kg',
   t3L:'Field-test accuracy', t3V:'about 12 g of scatter over six days',
   t4L:'Radio', t4V:'LoRaWAN Class A, EU868, OTAA',
-  t5L:'Data packet', t5V:'8 bytes per report',
+  t5L:'Data packet', t5V:'8 bytes per report, plus 5 per Bluetooth sensor',
   t6L:'Setup', t6V:'Bluetooth, control page in the browser (Chrome or Edge)',
   t7L:'Sleep current', t7V:'about 4 µA',
   t8L:'Battery', t8V:'three AAA lithium cells in series (1.5 V, 1200 mAh)',
-  t9L:'Service life (calculated)', t9V:'about 4.5 years — measuring every 15 min, reporting every 2 h; about 10 years measuring hourly and reporting every 4 h',
+  t9L:'Service life (calculated)', t9V:'about 4.5 years — measuring every 15 min, reporting every 2 h; about 10 years measuring hourly and reporting every 4 h; with Bluetooth sensors about 3.3 and 7 years',
+  bleKicker:'Extended Mode',
+  bleTitle:'A look inside the colony — without lifting the lid',
+  bleLead:'Up to three small Bluetooth sensors measure temperature and humidity where it matters: two inside the hive, one outside. The station reads them and sends their values together with the weight — no cable into the hive and no extra receiver for the sensors.',
+  b1T:'What goes on inside the hive',
+  b1D:'Temperature and humidity in the brood nest show what the scale alone cannot: whether the colony is raising brood, whether it holds its winter cluster, and whether moisture is building up.',
+  b1a:'Two sensors inside the hive, one outside',
+  b1b:'The outside sensor gives the true outside temperature',
+  b1c:'Temperature and humidity also reach BEEP and beelogger',
+  b2T:'Set up from your phone',
+  b2D:'Scan the QR code on the sticker of the sensor, choose its place — inside the hive or outside — and save. The readings appear on the setup page right away.',
+  b2a:'Off-the-shelf SwitchBot sensors on their own battery',
+  b2b:'Address by QR code or typed in by hand',
+  b2c:'Searched only when the station transmits — about 3 years on one set of cells (calculated)',
+  bleCap1:'A SwitchBot sensor with a Tanen sticker: the Bluetooth address as text and as a QR code.',
+  bleCap1Alt:'White SwitchBot sensor in a hand, with a sticker showing a Bluetooth address, a QR code and Tanen.eu',
+  bleCap2:'Live on the setup page: two sensors inside the hive, one outside.',
+  bleCap2Alt:'Phone showing the setup page with three Bluetooth sensors: 25.0 °C and 26.0 °C inside the hive, 24.6 °C outside',
+  t12L:'Bluetooth sensors (optional)',
+  t12V:'up to 3 × SwitchBot Outdoor Meter: temperature and humidity, 2 inside the hive, 1 outside',
   t10L:'Processor', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
   t11L:'Licence', t11V:'Apache License 2.0',
 
@@ -988,8 +1178,8 @@ ar: {
   metaDesc:'TanenBase ميزان خلايا مفتوح المصدر: يزن الخلية، ويقيس حرارتها، ويرسل القراءات عبر LoRaWAN. سنوات على بطارية واحدة، بلا اشتراك، برخصة Apache-2.0.',
   skip:'انتقل إلى المحتوى',
   brandSub:'ميزان خلايا مفتوح المصدر',
-  langLabel:'اللغة', navLabel:'الأقسام الرئيسية',
-  navFeat:'ماذا يفعل', navData:'المنصات', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
+  langLabel:'اللغة', navLabel:'الأقسام الرئيسية', menu:'القائمة',
+  navFeat:'ماذا يفعل', navBle:'الحساسات', navData:'المنصات', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
   navSetup:'الإعداد', setupBtn:'فتح صفحة الإعداد',
 
   heroKicker:'تقنية مفتوحة لتربية النحل',
@@ -999,7 +1189,9 @@ ar: {
   heroBtn2:'الشيفرة ودليل التركيب',
   heroBtn3:'إعداد المحطة',
   heroNote:'رخصة Apache 2.0 — الاستعمال مجاني، وللأغراض التجارية أيضاً. للاستفسار: info@tanen.eu',
-  heroAlt:'خلية نحل قائمة على منصة الوزن، وإلى جانبها العلبة المقاومة للطقس',
+  heroAlt:'نحل يطير أمام مدخل خليته، ومن خلفه مرج أخضر',
+  heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 1.67 كغ، الحرارة 23.0 °م',
+  photoBy:'صورة',
   stat1:'استهلاك التيار أثناء السكون',
   statY:'سنة',
   stat2:'بثلاث خلايا ليثيوم AAA (حسابياً)',
@@ -1020,7 +1212,7 @@ ar: {
   f2c:'مجس الحرارة داخل الخلية، لا على العلبة فقط',
   f3T:'إرسال بلا قيود',
   f3D:'تخرج القراءات عبر LoRaWAN، وهو نظام لاسلكي لكميات بيانات صغيرة عبر مسافات بعيدة، بلا عقد هاتف محمول. إما أن تنصب جهاز استقبال خاصاً بك، أو تستعمل شبكة مفتوحة مثل The Things Network.',
-  f3a:'بلا حساب لدى الشركة المصنّعة وبلا سحابة إجبارية',
+  f3a:'بلا حساب لدى الشركة المصنّعة وبلا سحابة',
   f3b:'الضبط عبر البلوتوث من المتصفح — دون تطبيق',
   f3c:'تصل البيانات إلى حيث تقرر أنت',
   f3d:'ربط جاهز مع BEEP وbeelogger عبر The Things Network',
@@ -1079,7 +1271,7 @@ ar: {
   cap3:'التركيب داخل العلبة: المعالج، ووحدة الإرسال مع هوائيها، ومضخّم خلية الوزن. وكل قطعة متوفرة على حدة.',
   cap3Alt:'علبة مفتوحة تظهر اللوحة ووحدة الإرسال والهوائي',
   cap4:'يجري الضبط من متصفح الهاتف: خط كبير وأزرار كبيرة وبلا تطبيق يُثبَّت.',
-  cap4Alt:'صفحة الضبط في متصفح الهاتف بأزرار كبيرة',
+  cap4Alt:'نظرة عامة على صفحة الإعداد في الهاتف: الوزن بخط كبير، وتحته الحرارة وجهد البطارية',
 
   techTitle:'المواصفات',
   techLead:'لمن يريد التفصيل. أما الاستعمال اليومي فلا يتطلب فهم أي مما يلي.',
@@ -1088,11 +1280,30 @@ ar: {
   t2L:'مجال الوزن', t2V:'حتى 999 كغ',
   t3L:'الدقة في الاختبار الميداني', t3V:'نحو 12 غ تذبذب على مدى ستة أيام',
   t4L:'الإرسال اللاسلكي', t4V:'LoRaWAN الفئة A، EU868، OTAA',
-  t5L:'حزمة البيانات', t5V:'8 بايت لكل بلاغ',
+  t5L:'حزمة البيانات', t5V:'8 بايت لكل بلاغ، و5 بايت إضافية لكل حساس بلوتوث',
   t6L:'الضبط', t6V:'بلوتوث، وصفحة تحكم في المتصفح (Chrome أو Edge)',
   t7L:'تيار السكون', t7V:'نحو 4 ميكرو أمبير',
   t8L:'البطارية', t8V:'ثلاث خلايا ليثيوم AAA على التوالي (1.5 فولت، 1200 مللي أمبير ساعة)',
-  t9L:'العمر التشغيلي (حسابياً)', t9V:'نحو 4.5 سنوات — قياس كل 15 دقيقة وبلاغ كل ساعتين؛ ونحو 10 سنوات بقياس كل ساعة وبلاغ كل 4 ساعات',
+  t9L:'العمر التشغيلي (حسابياً)', t9V:'نحو 4.5 سنوات — قياس كل 15 دقيقة وبلاغ كل ساعتين؛ ونحو 10 سنوات بقياس كل ساعة وبلاغ كل 4 ساعات؛ ومع حساسات البلوتوث نحو 3.3 و7 سنوات',
+  bleKicker:'الوضع المتقدم',
+  bleTitle:'نظرة داخل الطائفة — دون رفع الغطاء',
+  bleLead:'حتى ثلاثة حساسات بلوتوث صغيرة تقيس الحرارة والرطوبة حيث يهمّ الأمر: اثنان داخل الخلية وواحد خارجها. تقرؤها المحطة وترسل قيمها مع الوزن — بلا أسلاك داخل الخلية وبلا جهاز استقبال إضافي للحساسات.',
+  b1T:'ما يجري داخل الخلية',
+  b1D:'تكشف الحرارة والرطوبة في منطقة الحضنة ما لا يظهره الميزان وحده: هل تربّي الطائفة الحضنة، وهل تحافظ على عنقودها الشتوي، وهل تتراكم الرطوبة.',
+  b1a:'حساسان داخل الخلية وواحد خارجها',
+  b1b:'الحساس الخارجي يعطي الحرارة الخارجية الحقيقية',
+  b1c:'الحرارة والرطوبة تصلان أيضاً إلى BEEP وbeelogger',
+  b2T:'إعداد من الهاتف',
+  b2D:'امسح رمز QR على ملصق الحساس، واختر مكانه — داخل الخلية أو خارجها — ثم احفظ. تظهر القراءات فوراً في صفحة الإعداد.',
+  b2a:'حساسات SwitchBot جاهزة ببطاريتها الخاصة',
+  b2b:'العنوان عبر رمز QR أو بالكتابة يدوياً',
+  b2c:'البحث عنها عند الإرسال فقط — نحو 3 سنوات بمجموعة بطاريات واحدة (حسابياً)',
+  bleCap1:'حساس SwitchBot بملصق Tanen: عنوان البلوتوث نصاً ورمز QR.',
+  bleCap1Alt:'حساس SwitchBot أبيض في اليد، عليه ملصق بعنوان بلوتوث ورمز QR وTanen.eu',
+  bleCap2:'مباشرة في صفحة الإعداد: حساسان داخل الخلية وواحد خارجها.',
+  bleCap2Alt:'هاتف يعرض صفحة الإعداد بثلاثة حساسات بلوتوث: 25.0 °م و26.0 °م داخل الخلية و24.6 °م خارجها',
+  t12L:'حساسات البلوتوث (اختيارية)',
+  t12V:'حتى 3 × SwitchBot Outdoor Meter: الحرارة والرطوبة، 2 داخل الخلية و1 خارجها',
   t10L:'المعالج', t10V:'Nordic nRF54LM20A، Zephyr / nRF Connect SDK',
   t11L:'الرخصة', t11V:'رخصة Apache 2.0',
 
@@ -1145,6 +1356,23 @@ document.querySelectorAll('.lang button').forEach(b => {
   let start = null;
   try { start = localStorage.getItem(LANG_STORE); } catch (e) {}
   applyLang(I18N[start] ? start : 'de');
+})();
+
+/* ============================ Menue (Handy) ============================ */
+(function menu(){
+  const bar = document.querySelector('.appbar');
+  const btn = bar.querySelector('.menu-btn');
+  function set(open){
+    bar.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  }
+  btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+  /* Ein Sprung zu einem Abschnitt schliesst das Menue - vor dem Sprung,
+     damit das Ziel nicht unter der aufgeklappten Liste landet. */
+  bar.querySelectorAll('.nav a').forEach(a => a.addEventListener('click', () => set(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && bar.classList.contains('open')) { set(false); btn.focus(); }
+  });
 })();
 
 /* ========================= Aktueller Bereich =========================
