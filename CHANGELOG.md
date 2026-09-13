@@ -45,6 +45,15 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   manual and the site (2026-09-10)
 
 ### Fixed
+- **QR scanner could not read the sensor labels** (2026-09-13). The printed code
+  is ~5 mm; the camera opened at default resolution and scanned the whole frame,
+  and a failing `BarcodeDetector` was swallowed so the scan looped silently. Now:
+  1920×1080 with continuous focus and 2× zoom where supported, an aim square
+  whose centre is scanned enlarged (alternating with the full frame), fallback to
+  jsQR when `BarcodeDetector` errors, a "Foto aufnehmen" path through the phone's
+  camera app with a tiled search, and an info line (reader, resolution, zoom).
+  Verified on a phone. Labels should still print the code at ≥ 12–15 mm with a
+  white margin
 - **SETUP with a dead or absent load cell: web app dropped after ~5 s, node
   watchdog-reset** (2026-09-13). BLE live readings (and tare/calibrate) ran
   `measure_run()` on the cooperative system workqueue; gpio-I2C busy-spins, and
@@ -75,7 +84,8 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   `t_1`/`TempIn2`/`FeuchteIn2`. 8-byte frames decode exactly as before. New GATT
   characteristics `0x000E` ExtConfig and `0x000F` ExtLive; jsQR 1.4.0 vendored as
   `web/jsqr.js`, loaded only where the browser lacks `BarcodeDetector`.
-  Builds; **not yet verified on hardware**
+  Verified on hardware (2026-09-13): three sensors live in SETUP, blocks in the
+  uplink, TX wake measured at 139 mC
 - **`ttndecoder/tanen-decoder.js`** — one uplink formatter for both supported
   platforms. Parses the 8-byte frame once and emits BEEP keys
   (`weight_kg`/`t`/`bv`) and beelogger keys (`Gewicht`/`TempOut`/`VBatt`) in the
