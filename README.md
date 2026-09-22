@@ -99,15 +99,21 @@ underneath the water.*
 
 ![Load cell and its mount](media/loadcell_2.jpeg)
 
-*The cell the coefficient was fitted on — a Bosche H40A-C3-0150 single-point
+*The cell the shipped coefficient was fitted on — a Bosche H40A-C3-0150 single-point
 cell bolted between two steel spreader plates. Worth staring at: the report
 concludes the drift is **not** coming from the cell but from this mount, which
 is 8× outside the OIML R60 envelope the cell is certified to.*
 
 `k` is a property of the **cell plus its mount**, not of the cell alone —
-re-characterise after any mechanical change, override with
-`CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K`, or set it to `0` to disable. Method,
-data, hold-out validation and the (unflattering) hardware conclusions:
+re-characterise after any mechanical change. Which cell is fitted is therefore a
+**runtime setting**, not a build flag: the setup page offers a generic cell (no
+correction), the measured H40A-C3-0150, four named-but-uncharacterised cells
+(Steinberg SBS-PF-150, Zemic L6E, TAL220, Flintec PC/SB — they run uncorrected
+but the unit records which is fitted), or your own measured gain and lag, and
+the correction picks its constants up from there.
+Profile table and how to characterise a cell:
+[`docs/load_cells/`](docs/load_cells/). Method, data, hold-out validation and
+the (unflattering) hardware conclusions for the reference cell:
 [`docs/load_cells/H40A-C3-0150/`](docs/load_cells/H40A-C3-0150/).
 
 ### Extended Mode — a look inside the hive

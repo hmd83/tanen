@@ -57,6 +57,54 @@ typedef struct {
 int config_get_tempcomp_state(tempcomp_state_t *st);
 int config_set_tempcomp_state(const tempcomp_state_t *st);
 
+/* Load-cell profile — which cell is under the hive, and with it the two
+ * compensation constants. Selectable at runtime (web setup page) because the
+ * firmware image is one build for every cell: a station with a generic cell
+ * must be able to turn the correction off without a reflash.
+ *
+ * The built-in profiles are STARTING POINTS. k_c belongs to the cell plus its
+ * mount, so a re-characterised frame goes in as LC_PROFILE_CUSTOM — see
+ * docs/load_cells/README.md. */
+#define LC_PROFILE_GENERIC  0  /* unknown cell: no correction */
+#define LC_PROFILE_H40A     1  /* Bosche H40A-C3-0150, measured */
+#define LC_PROFILE_SBS_PF   2  /* Steinberg SBS-PF-150, not characterised yet */
+#define LC_PROFILE_CUSTOM   3  /* own measurement: gain/tau come from the record */
+/* Named but not characterised — they behave like GENERIC until someone
+ * measures one. The label still earns its place: it records what is bolted
+ * under the hive, and a later firmware fills the constants in without the
+ * beekeeper touching the setup page (config_get_lc resolves from the table on
+ * every read). Appended after CUSTOM because the ids are the wire contract. */
+#define LC_PROFILE_ZEMIC_L6E 4  /* Zemic L6E / L6E3 single point */
+#define LC_PROFILE_TAL220    5  /* TAL220 / TAL220B bar cell (HX711 kits) */
+#define LC_PROFILE_FLINTEC   6  /* Flintec PC / SB series */
+#define LC_PROFILE_COUNT     7
+
+#define LC_CONFIG_VERSION   1
+
+/* Correction gain sanity bounds [mg/K]. The H40A sits at 17734; a cell an
+ * order of magnitude worse is still storable, anything beyond it is a typo
+ * (±200 g/K would swing the reading by kilograms over a daily cycle). */
+#define LC_GAIN_MAX_MG_PER_K  200000
+/* Thermal lag bounds [s]. 0 = no filter (t_eff follows the probe); the upper
+ * bound is a day, past which the filter would never track at all. */
+#define LC_TAU_MAX_S          86400U
+
+/* ZMS record and GATT value byte for byte — packed, little endian. */
+typedef struct __packed {
+	uint8_t  version;        /* LC_CONFIG_VERSION */
+	uint8_t  id;             /* LC_PROFILE_* */
+	int32_t  gain_mg_per_k;  /* effective on read; honoured on write only for CUSTOM */
+	uint32_t tau_s;          /* idem */
+} lc_config_t;
+
+/* Both resolve the profile: the returned record always carries the constants
+ * the correction actually runs with, whatever the id. */
+int config_get_lc(lc_config_t *cfg);
+int config_set_lc(const lc_config_t *cfg);
+/* 0 if storable: known version, id < LC_PROFILE_COUNT, and for CUSTOM a gain
+ * and tau inside the bounds above. */
+int config_lc_validate(const lc_config_t *cfg);
+
 /* Tare temperature (T_ref of the correction) in milli-Celsius — captured by
  * the BLE tare command, since the correction is anchored to whatever
  * temperature the scale was zeroed at. */

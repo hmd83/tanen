@@ -38,6 +38,20 @@ config TANENBASE_TEMPCOMP_T_REF_MDEG
 	int
 	default 25000
 
+# The load-cell profile table lives in config.c, so these are needed even
+# though nothing here consumes the correction.
+config TANENBASE_LC_DEFAULT_PROFILE
+	int
+	default 1
+
+config TANENBASE_TEMPCOMP_GAIN_MG_PER_K
+	int
+	default 17734
+
+config TANENBASE_TEMPCOMP_TAU_S
+	int
+	default 1500
+
 config TANENBASE_TEST_INTERVAL_S
 	int "Measure loop interval (seconds)"
 	default 5

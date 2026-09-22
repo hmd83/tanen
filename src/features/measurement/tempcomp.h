@@ -3,9 +3,16 @@
 
 #include <stdint.h>
 
-/** Load persisted filter state + tare reference temperature.
- *  Call once per wake, before the first tempcomp_correction_mg(). */
+/** Load persisted filter state, tare reference temperature and the active
+ *  load-cell profile. Call once per wake, before the first
+ *  tempcomp_correction_mg(). */
 void tempcomp_init(void);
+
+/** Re-read the load-cell profile after the setup page changed it, so the BLE
+ *  live view shows the new correction within the same session. The filter
+ *  state survives: t_eff is a temperature, and the tare stays valid across a
+ *  profile change because the correction is zero at T_ref for any gain. */
+void tempcomp_reload(void);
 
 /** Advance the thermal-lag filter with one temperature sample and return the
  *  correction to ADD to the raw weight, in milligrams. dt is derived

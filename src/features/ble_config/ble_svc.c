@@ -342,6 +342,43 @@ static ssize_t write_ext_config(struct bt_conn *conn, const struct bt_gatt_attr 
     return len;
 }
 
+/* LcProfile — load-cell profile (R/W, 10 bytes = lc_config_t).
+ * Read returns the constants the correction is actually running with, so the
+ * setup page can show them without carrying a copy of the profile table; only
+ * LC_PROFILE_CUSTOM takes gain and tau from the write. */
+static ssize_t read_lc_config(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                              void *buf, uint16_t len, uint16_t offset)
+{
+    lc_config_t cfg;
+    config_get_lc(&cfg);
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, &cfg, sizeof(cfg));
+}
+
+static ssize_t write_lc_config(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                               const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    lc_config_t cfg;
+
+    if (offset != 0 || len != sizeof(cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    memcpy(&cfg, buf, sizeof(cfg));
+    if (config_lc_validate(&cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_VALUE_NOT_ALLOWED);
+    }
+    if (config_set_lc(&cfg)) {
+        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+    }
+#if IS_ENABLED(CONFIG_TANENBASE_TEMPCOMP)
+    /* The live view is mid-flight — the next notify must already use the new
+     * constants, otherwise picking a profile looks like it did nothing. The
+     * tare survives: the correction is zero at T_ref whatever the gain. */
+    tempcomp_reload();
+#endif
+    LOG_INF("LcProfile written via BLE: id=%u", cfg.id);
+    return len;
+}
+
 /* ConfigCmd (W only, 1 byte) — commands that need sensor I/O are deferred to work queue */
 static ssize_t write_config_cmd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                 const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
@@ -515,6 +552,12 @@ BT_GATT_SERVICE_DEFINE(tanen_svc,
         BT_GATT_PERM_NONE,
         NULL, NULL, NULL),
     BT_GATT_CCC(ext_live_ccc_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+
+    /* LcProfile — load-cell profile + compensation constants (R/W) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x0010),
+        BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+        read_lc_config, write_lc_config, NULL),
 );
 
 /* ---- Advertising ---- */

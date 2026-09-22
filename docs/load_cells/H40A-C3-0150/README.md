@@ -138,6 +138,8 @@ The fit is materially better with a −22.6 g/day term (σ drops 15.7 → 11.3 g
 
 Shipped implementation: [`src/features/measurement/tempcomp.c`](../../../src/features/measurement/tempcomp.c), enabled by `CONFIG_TANENBASE_TEMPCOMP` and applied in `measure.c` between the scale-factor conversion and the 999 kg clamp. Integer-only, no floating point, no dynamic allocation.
 
+The two constants are **not** compiled in: they come from the load-cell profile the user picks on the setup page, and the numbers below are what profile `1` (`LC_PROFILE_H40A`) carries. One image therefore serves a generic cell, this one, and a re-characterised frame — see [`../README.md`](../README.md).
+
 Three things the node has to get right that a desk implementation does not:
 
 - **`T_eff` has to outlive the sleep.** RAM is wiped on every System OFF, so the filter state is persisted in ZMS and reloaded on each wake. Without that it would re-seed every cycle and the 25 min lag term would never do anything.
@@ -147,9 +149,10 @@ Three things the node has to get right that a desk implementation does not:
 | Kconfig | Default | |
 |---|---|---|
 | `CONFIG_TANENBASE_TEMPCOMP` | `y` | compile the correction in |
-| `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` | `17734` | k<sub>c</sub>, per cell **and mount** — `0` keeps the filter running but applies no correction |
-| `CONFIG_TANENBASE_TEMPCOMP_TAU_S` | `1500` | τ, 25 min |
-| `CONFIG_TANENBASE_TEMPCOMP_T_REF_MDEG` | `25000` | fallback T<sub>ref</sub> before the first tare |
+| `CONFIG_TANENBASE_LC_DEFAULT_PROFILE` | `1` | profile a unit runs until the setup page stores one — `1` is this cell |
+| `CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K` | `17734` | k<sub>c</sub> of the **custom** profile, per cell **and mount** — `0` keeps the filter running but applies no correction |
+| `CONFIG_TANENBASE_TEMPCOMP_TAU_S` | `1500` | τ of the custom profile, 25 min |
+| `CONFIG_TANENBASE_TEMPCOMP_T_REF_MDEG` | `25000` | fallback T<sub>ref</sub> before the first tare (all profiles) |
 
 If the temperature probe fails, the weight is reported **uncorrected** rather than corrected against a stale `T_eff` — and the uplink still carries the temp-invalid sentinel, so the two are distinguishable downstream.
 

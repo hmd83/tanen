@@ -32,9 +32,45 @@ LOG_MODULE_REGISTER(config, LOG_LEVEL_DBG);
 #define ZMS_TEMPCOMP_STATE_ID         18  /* load-cell thermal-lag filter state */
 #define ZMS_TARE_TEMP_ID              19  /* temperature at tare = correction T_ref */
 #define ZMS_EXT_CONFIG_ID             20  /* Extended Mode BLE sensor slots */
+#define ZMS_LC_CONFIG_ID              21  /* load-cell profile (tempcomp constants) */
 
 /* ext_config_t is the ZMS record and the GATT value — no padding allowed */
 BUILD_ASSERT(sizeof(ext_config_t) == 2 + EXT_SLOTS * 8);
+BUILD_ASSERT(sizeof(lc_config_t) == 10);
+/* Kconfig carries its own range, but the two live in different files */
+BUILD_ASSERT(CONFIG_TANENBASE_LC_DEFAULT_PROFILE >= 0 &&
+	     CONFIG_TANENBASE_LC_DEFAULT_PROFILE < LC_PROFILE_COUNT);
+
+/* Built-in load-cell profiles. Indexed by LC_PROFILE_*, so the order is part
+ * of the GATT contract — append, never reorder.
+ *
+ * tau is the probe-to-cell-body transport lag, a property of the frame and of
+ * where the DS18B20 sits, not of the cell: the optimum is broad (15-40 min all
+ * within 1 g on the reference unit), so every characterised profile carries the
+ * same 1500 s. The gain is what differs, and only the H40A's is measured. */
+static const struct {
+	int32_t  gain_mg_per_k;
+	uint32_t tau_s;
+} lc_profiles[LC_PROFILE_COUNT] = {
+	[LC_PROFILE_GENERIC] = { 0,     1500 },
+	[LC_PROFILE_H40A]    = { 17734, 1500 },
+	/* Steinberg SBS-PF-150: same 150 kg single-point aluminium class as the
+	 * H40A, but never run through the 40 h thermal sweep. Shipping the H40A
+	 * number here would be a guess that silently ADDS error if this cell
+	 * drifts the other way, so it ships uncorrected — measure the frame and
+	 * enter the result as LC_PROFILE_CUSTOM. */
+	[LC_PROFILE_SBS_PF]  = { 0,     1500 },
+	/* Custom carries the build defaults only as the starting point a unit
+	 * runs before the setup page stores anything — config_get_lc() takes
+	 * this profile's constants from the record, never from here. */
+	[LC_PROFILE_CUSTOM]  = { CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K,
+				 CONFIG_TANENBASE_TEMPCOMP_TAU_S },
+	/* Named, not yet characterised — identical behaviour to GENERIC, but the
+	 * unit records which cell it is and a later firmware can fill the gain in. */
+	[LC_PROFILE_ZEMIC_L6E] = { 0, 1500 },
+	[LC_PROFILE_TAL220]    = { 0, 1500 },
+	[LC_PROFILE_FLINTEC]   = { 0, 1500 },
+};
 
 static struct zms_fs zms;
 static bool zms_ready;
@@ -54,6 +90,7 @@ static int16_t last_tx_temp;
 static uint32_t measurement_count;
 static int32_t tare_temp_mdeg;
 static ext_config_t ext_cfg;
+static lc_config_t lc_cfg;
 
 static int hexstr_to_bytes(const char *hex, uint8_t *out, size_t len)
 {
@@ -224,9 +261,20 @@ int config_init(void)
 		ext_cfg.version = EXT_CONFIG_VERSION;
 	}
 
-	LOG_INF("Config loaded (tx_int=%us ms_int=%us wt=%u tt=%u cnt=%u)",
+	/* Load-cell profile: absent or rule-breaking record falls back to the
+	 * build default, which is what a factory-flashed unit runs until someone
+	 * opens the setup page. */
+	if (!zms_load(ZMS_LC_CONFIG_ID, &lc_cfg, sizeof(lc_cfg)) ||
+	    config_lc_validate(&lc_cfg)) {
+		lc_cfg.version = LC_CONFIG_VERSION;
+		lc_cfg.id = CONFIG_TANENBASE_LC_DEFAULT_PROFILE;
+		lc_cfg.gain_mg_per_k = lc_profiles[lc_cfg.id].gain_mg_per_k;
+		lc_cfg.tau_s = lc_profiles[lc_cfg.id].tau_s;
+	}
+
+	LOG_INF("Config loaded (tx_int=%us ms_int=%us wt=%u tt=%u cnt=%u lc=%u)",
 		tx_interval, ms_interval, anomaly_weight_threshold,
-		anomaly_temp_threshold, measurement_count);
+		anomaly_temp_threshold, measurement_count, lc_cfg.id);
 	return 0;
 }
 
@@ -458,6 +506,55 @@ int config_set_tare_temp(int32_t val)
 {
 	tare_temp_mdeg = val;
 	return zms_store(ZMS_TARE_TEMP_ID, &tare_temp_mdeg, sizeof(tare_temp_mdeg));
+}
+
+/* Load-cell profile. Everything outside this file sees resolved constants —
+ * the id is a label, not a branch every caller has to repeat. */
+int config_lc_validate(const lc_config_t *cfg)
+{
+	if (cfg->version != LC_CONFIG_VERSION || cfg->id >= LC_PROFILE_COUNT) {
+		return -EINVAL;
+	}
+	/* Only CUSTOM carries its own constants; for the built-ins the fields
+	 * are read-back values and whatever the writer put there is ignored. */
+	if (cfg->id == LC_PROFILE_CUSTOM) {
+		if (cfg->gain_mg_per_k > LC_GAIN_MAX_MG_PER_K ||
+		    cfg->gain_mg_per_k < -LC_GAIN_MAX_MG_PER_K ||
+		    cfg->tau_s > LC_TAU_MAX_S) {
+			return -EINVAL;
+		}
+	}
+	return 0;
+}
+
+int config_get_lc(lc_config_t *cfg)
+{
+	*cfg = lc_cfg;
+	if (cfg->id != LC_PROFILE_CUSTOM) {
+		cfg->gain_mg_per_k = lc_profiles[cfg->id].gain_mg_per_k;
+		cfg->tau_s = lc_profiles[cfg->id].tau_s;
+	}
+	return 0;
+}
+
+int config_set_lc(const lc_config_t *cfg)
+{
+	int rc = config_lc_validate(cfg);
+
+	if (rc) {
+		return rc;
+	}
+	lc_cfg = *cfg;
+	/* Store the built-in's constants too, so a reader that never resolves
+	 * (or a future firmware that retunes a profile) still sees what this
+	 * unit was configured with. */
+	if (lc_cfg.id != LC_PROFILE_CUSTOM) {
+		lc_cfg.gain_mg_per_k = lc_profiles[lc_cfg.id].gain_mg_per_k;
+		lc_cfg.tau_s = lc_profiles[lc_cfg.id].tau_s;
+	}
+	LOG_INF("Load cell: profile %u gain=%d mg/K tau=%us",
+		lc_cfg.id, lc_cfg.gain_mg_per_k, lc_cfg.tau_s);
+	return zms_store(ZMS_LC_CONFIG_ID, &lc_cfg, sizeof(lc_cfg));
 }
 
 /* Extended Mode */

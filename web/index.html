@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-702QF9X4ZK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-702QF9X4ZK');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
@@ -76,12 +85,38 @@ a{color:var(--blue)}
 .conn-pill.on{display:inline-flex;color:#06381b;background:var(--green-soft);border-color:var(--green)}
 .conn-pill.on .led{background:var(--green)}
 
-.lang-select{
-  order:2;flex:none;min-block-size:46px;
-  padding:6px 10px;border-radius:12px;
-  border:2px solid var(--border-strong);background:var(--surface-2);
-  font-size:.95rem;font-weight:700;color:var(--text);
+/* Sprachwahl: Klappliste mit Flaggen. "Language" bleibt in jeder Sprache
+   englisch - wer die aktuelle Sprache nicht liest, findet das Wort trotzdem.
+   Flaggen als SVG: Windows zeigt Flaggen-Emoji nur als zwei Buchstaben. */
+.lang{position:relative;flex:none;order:2}
+.lang-btn{
+  display:flex;align-items:center;gap:10px;min-block-size:54px;padding:6px 12px;
+  font:inherit;color:var(--text);cursor:pointer;text-align:start;
+  border:3px solid var(--border-strong);border-radius:14px;background:var(--surface-2);
 }
+.lang-btn:hover,.lang-btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent-edge)}
+.lang-txt{display:flex;flex-direction:column;line-height:1.2}
+.lang-cap{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.lang-name{font-size:1rem;font-weight:800;min-inline-size:5.2em}
+.lang-chev{inline-size:20px;block-size:20px;flex:none}
+.lang-btn[aria-expanded="true"] .lang-chev{transform:rotate(180deg)}
+.lang-list{
+  position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;z-index:40;
+  min-inline-size:100%;list-style:none;padding:6px;
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
+}
+.lang-list button{
+  display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:56px;padding:8px 14px;
+  font:inherit;font-size:1rem;font-weight:700;color:var(--text);background:none;border:0;border-radius:9px;
+  cursor:pointer;text-align:start;white-space:nowrap;
+}
+.lang-list button:hover{background:var(--accent-soft)}
+.lang-list button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.lang-list button:focus-visible{outline-offset:-4px}
+.flag{inline-size:30px;block-size:20px;flex:none;border-radius:3px;background:center/cover no-repeat;box-shadow:0 0 0 1px rgba(12,16,23,.35)}
+.flag-de{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Cpath fill='%23000' d='M0 0h5v1H0z'/%3E%3Cpath fill='%23D00' d='M0 1h5v1H0z'/%3E%3Cpath fill='%23FFCE00' d='M0 2h5v1H0z'/%3E%3C/svg%3E")}
+.flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
+.flag-ar{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cpath fill='%23007A3D' d='M0 0h900v200H0z'/%3E%3Cpath fill='%23fff' d='M0 200h900v200H0z'/%3E%3Cpath d='M0 400h900v200H0z'/%3E%3Cg fill='%23CE1126'%3E%3Cpath transform='translate(225 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(450 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(675 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3C/g%3E%3C/svg%3E")}
 
 /* Weg zurueck auf die Startseite. Auf dem Handy eine eigene Zeile unter
    Name und Sprachwahl (order hinter der Status-Anzeige), auf breiten
@@ -210,7 +245,13 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
   font-family:ui-monospace,Consolas,monospace;font-size:1.2rem;
   direction:ltr;text-align:start;
 }
-.field input:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
+.field select{
+  inline-size:100%;min-block-size:62px;padding:14px 16px;
+  border:3px solid var(--border-strong);border-radius:12px;
+  background:var(--surface);color:var(--text);
+  font-size:1.05rem;font-weight:700;
+}
+.field input:focus-visible,.field select:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
 .field input::placeholder{color:#5c6880}
 .field input.bad{border-color:var(--red);background:var(--red-soft)}
 .hint{font-size:.95rem;color:var(--dim);margin-block-start:7px}
@@ -402,11 +443,18 @@ html[dir="rtl"] .steps{direction:rtl}
     <span id="connPillTxt" data-i18n="pillOff">Nicht verbunden</span>
     <span class="conn-timer" id="idleTime" role="timer" aria-live="off" data-i18n-al="idleTitle" hidden>3:00</span>
   </div>
-  <select class="lang-select" id="langSel" data-i18n-al="langGroup" aria-label="Sprache">
-    <option value="de" lang="de">Deutsch</option>
-    <option value="en" lang="en">English</option>
-    <option value="ar" lang="ar">&#1593;&#1585;&#1576;&#1610;</option>
-  </select>
+  <div class="lang">
+    <button type="button" class="lang-btn" aria-expanded="false" aria-controls="langList">
+      <span class="flag flag-de" aria-hidden="true"></span>
+      <span class="lang-txt"><span class="lang-cap" lang="en">Language</span><span class="lang-name" lang="de">Deutsch</span></span>
+      <svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <ul class="lang-list" id="langList" hidden>
+      <li><button type="button" data-lang="de" lang="de" aria-current="true"><span class="flag flag-de" aria-hidden="true"></span>Deutsch</button></li>
+      <li><button type="button" data-lang="en" lang="en"><span class="flag flag-en" aria-hidden="true"></span>English</button></li>
+      <li><button type="button" data-lang="ar" lang="ar"><span class="flag flag-ar" aria-hidden="true"></span>العربية</button></li>
+    </ul>
+  </div>
   <a class="home-link" href="../">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
     <span data-i18n="home">Zur Startseite</span>
@@ -617,6 +665,45 @@ html[dir="rtl"] .steps{direction:rtl}
     <h2 class="view-title" data-i18n="calTitle">Waage einstellen</h2>
     <p class="view-sub" data-i18n="calSub">In drei Schritten zur genauen Waage</p>
 
+    <!-- Waegezelle: nur sichtbar, wenn die Firmware das Merkmal kennt -->
+    <div class="card" id="lcCard" hidden>
+      <h3 data-i18n="lcTitle">Wägezelle</h3>
+      <p class="card-sub" data-i18n="lcSub">Welche Wägezelle ist eingebaut? Die Station rechnet damit die Temperatur aus dem Gewicht heraus.</p>
+      <div class="field">
+        <label for="lcProfile" data-i18n="lcLabel">Eingebaute Wägezelle</label>
+        <!-- Reihenfolge der Liste, NICHT der Nummern: die eigenen Messwerte
+             stehen zuletzt, tragen aber die 3 (die Nummern sind fest). -->
+        <select id="lcProfile">
+          <option value="0" data-i18n="lc0">Andere / unbekannt</option>
+          <option value="1" data-i18n="lc1">Bosche H40A-C3-0150</option>
+          <option value="2" data-i18n="lc2">Steinberg SBS-PF-150</option>
+          <option value="4" data-i18n="lc4">Zemic L6E / L6E3</option>
+          <option value="5" data-i18n="lc5">TAL220 / TAL220B</option>
+          <option value="6" data-i18n="lc6">Flintec PC / SB</option>
+          <option value="3" data-i18n="lc3">Eigene Messwerte</option>
+        </select>
+        <p class="hint" id="lcHint"></p>
+      </div>
+      <div id="lcCustom" hidden>
+        <div class="grid-2">
+          <div class="field">
+            <label for="lcGain" data-i18n="lcGain">Abweichung (Gramm je °C)</label>
+            <input id="lcGain" type="number" step="0.001" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="lcTau" data-i18n="lcTau">Nachlauf (Minuten)</label>
+            <input id="lcTau" type="number" step="1" min="0" inputmode="numeric">
+          </div>
+        </div>
+        <p class="hint" data-i18n="lcCustomHint">Beide Werte stammen aus einer eigenen Messreihe. Anleitung: docs/load_cells im Projekt.</p>
+      </div>
+      <p class="hint" id="lcActive"></p>
+      <button class="btn btn-save btn-block" id="saveLcBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+        <span data-i18n="lcSave">Wägezelle speichern</span>
+      </button>
+    </div>
+
     <div class="steps" aria-hidden="true">
       <span class="step-dot now" id="dot1">1</span>
       <span class="step-line" id="line1"></span>
@@ -817,7 +904,7 @@ const I18N = {
     _dir: 'ltr', _locale: 'de-DE',
     brand: 'TanenBase',
     home: 'Zur Startseite',
-    langGroup: 'Sprache', navLabel: 'Hauptbereiche',
+    navLabel: 'Hauptbereiche',
     pillOff: 'Nicht verbunden', pillOn: 'Verbunden',
     heroTitle: 'Gerät verbinden',
     step1: 'Drücken Sie den roten Knopf an der Station.',
@@ -844,6 +931,21 @@ const I18N = {
     wiz3Desc: 'Die neuen Werte sind auf dem Gerät gespeichert.',
     zeroOffset: 'Null-Punkt', scaleFactor: 'Umrechnung',
     recal: 'Noch einmal einstellen',
+    lcTitle: 'Wägezelle',
+    lcSub: 'Welche Wägezelle ist eingebaut? Die Station rechnet damit die Temperatur aus dem Gewicht heraus.',
+    lcLabel: 'Eingebaute Wägezelle',
+    lc0: 'Andere / unbekannt', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'Eigene Messwerte',
+    lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
+    lcUnknown: 'Profil {id} (dieser Seite unbekannt)',
+    lcHintOff: 'Ohne Temperatur-Ausgleich. Das Gewicht schwankt dann mit der Tageswärme — bei einer 150-kg-Zelle sind das schnell 300 Gramm.',
+    lcHintH40A: 'Die Zelle im TanenBase-Bausatz. Ihre Werte stammen aus einer 40-Stunden-Messreihe am Referenzgerät.',
+    lcHintRaw: 'Diese Zelle ist noch nicht vermessen. Sie läuft vorerst ohne Ausgleich — die Station merkt sich aber, welche Zelle verbaut ist. Eigene Werte tragen Sie unter „Eigene Messwerte“ ein.',
+    lcHintCustom: 'Werte aus einer eigenen Messreihe. Sie gelten für Zelle und Gestell zusammen.',
+    lcGain: 'Abweichung (Gramm je °C)', lcTau: 'Nachlauf (Minuten)',
+    lcCustomHint: 'So messen Sie das selbst: docs/load_cells im Projekt.',
+    lcActiveOn: 'Die Station rechnet mit {gain} Gramm je °C, Nachlauf {min} Minuten.',
+    lcActiveOff: 'Die Station rechnet ohne Temperatur-Ausgleich.',
+    lcSave: 'Wägezelle speichern',
     setSub: 'Zeiten und Alarm-Grenzen',
     timingCard: 'Zeiten & Alarm', timingCardSub: 'Alle Zeiten in Minuten.',
     timing: 'Zeiten',
@@ -890,6 +992,7 @@ const I18N = {
     stCmdOk: '{name}: erledigt',
     stCmdFail: '{name}: fehlgeschlagen (Code {code})',
     stMinBad: 'Bitte ganze Minuten eintragen — mindestens 1.',
+    stLcBad: 'Bitte gültige Werte für die Wägezelle eintragen.',
     stTxLtMs: '„Senden alle“ darf nicht kleiner sein als „Messen alle“.',
     cmd1: 'Einrichtung beenden', cmd2: 'Auf Null setzen', cmd3: 'Sitzung löschen',
     cmd4: 'Funk-Test', cmd5: 'Waage einstellen', cmdX: 'Befehl 0x{hex}',
@@ -922,7 +1025,7 @@ const I18N = {
     _dir: 'ltr', _locale: 'en-US',
     brand: 'TanenBase',
     home: 'Back to the home page',
-    langGroup: 'Language', navLabel: 'Main sections',
+    navLabel: 'Main sections',
     pillOff: 'Not connected', pillOn: 'Connected',
     heroTitle: 'Connect your device',
     step1: 'Press the red button on the station.',
@@ -949,6 +1052,21 @@ const I18N = {
     wiz3Desc: 'The new values are stored on the device.',
     zeroOffset: 'Zero point', scaleFactor: 'Conversion',
     recal: 'Set up again',
+    lcTitle: 'Load cell',
+    lcSub: 'Which load cell is fitted? The station uses it to take the temperature back out of the weight.',
+    lcLabel: 'Fitted load cell',
+    lc0: 'Other / unknown', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'Own measured values',
+    lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
+    lcUnknown: 'Profile {id} (unknown to this page)',
+    lcHintOff: 'No temperature correction. The weight then moves with the daily warmth — on a 150 kg cell that is easily 300 grams.',
+    lcHintH40A: 'The cell in the TanenBase kit. Its values come from a 40-hour measurement run on the reference unit.',
+    lcHintRaw: 'This cell has not been measured yet. For now it runs without correction — but the station remembers which cell is fitted. Enter your own numbers under “Own measured values”.',
+    lcHintCustom: 'Values from your own measurement run. They cover the cell and its frame together.',
+    lcGain: 'Drift (grams per °C)', lcTau: 'Lag (minutes)',
+    lcCustomHint: 'How to measure this yourself: docs/load_cells in the project.',
+    lcActiveOn: 'The station is using {gain} grams per °C, lag {min} minutes.',
+    lcActiveOff: 'The station is running without temperature correction.',
+    lcSave: 'Save load cell',
     setSub: 'Times and alarm limits',
     timingCard: 'Times & alarm', timingCardSub: 'All times in minutes.',
     timing: 'Times',
@@ -994,6 +1112,7 @@ const I18N = {
     stCmdOk: '{name}: done',
     stCmdFail: '{name}: failed (code {code})',
     stMinBad: 'Please enter whole minutes — at least 1.',
+    stLcBad: 'Please enter valid load-cell values.',
     stTxLtMs: '“Send every” must not be smaller than “Measure every”.',
     cmd1: 'Finish setup', cmd2: 'Set to zero', cmd3: 'Clear session',
     cmd4: 'Radio test', cmd5: 'Set up scale', cmdX: 'Command 0x{hex}',
@@ -1025,7 +1144,7 @@ const I18N = {
     _dir: 'rtl', _locale: 'ar-EG-u-nu-latn',
     brand: 'قاعدة طنين',
     home: 'العودة إلى الصفحة الرئيسية',
-    langGroup: 'اللغة', navLabel: 'الأقسام الرئيسية',
+    navLabel: 'الأقسام الرئيسية',
     pillOff: 'غير متصل', pillOn: 'متصل',
     heroTitle: 'اربط الجهاز',
     step1: 'اضغط الزر الأحمر على المحطة.',
@@ -1052,6 +1171,21 @@ const I18N = {
     wiz3Desc: 'حُفظت القيم الجديدة في الجهاز.',
     zeroOffset: 'نقطة الصفر', scaleFactor: 'معامل التحويل',
     recal: 'إعادة الضبط',
+    lcTitle: 'خلية الوزن',
+    lcSub: 'ما خلية الوزن المركّبة؟ تستخدمها المحطة لإزالة أثر الحرارة من الوزن.',
+    lcLabel: 'خلية الوزن المركّبة',
+    lc0: 'أخرى / غير معروفة', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'قيم من قياسك',
+    lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
+    lcUnknown: 'الملف {id} (غير معروف لهذه الصفحة)',
+    lcHintOff: 'بدون تصحيح حراري. عندها يتغيّر الوزن مع حرارة النهار — في خلية 150 كغ قد يبلغ ذلك 300 غرام.',
+    lcHintH40A: 'الخلية الموجودة في طقم TanenBase. قيمها مأخوذة من سلسلة قياس استمرّت 40 ساعة على الجهاز المرجعي.',
+    lcHintRaw: 'لم تُقَس هذه الخلية بعد. تعمل حالياً بدون تصحيح — لكن المحطة تحفظ أي خلية مركّبة. أدخل قيمك تحت «قيم من قياسك».',
+    lcHintCustom: 'قيم من سلسلة قياس خاصة بك. تشمل الخلية والحامل معاً.',
+    lcGain: 'الانحراف (غرام لكل °م)', lcTau: 'التأخّر (دقائق)',
+    lcCustomHint: 'طريقة القياس بنفسك: docs/load_cells في المشروع.',
+    lcActiveOn: 'تحسب المحطة بـ {gain} غرام لكل °م، وتأخّر {min} دقيقة.',
+    lcActiveOff: 'تعمل المحطة بدون تصحيح حراري.',
+    lcSave: 'حفظ خلية الوزن',
     setSub: 'الأوقات وحدود التنبيه',
     timingCard: 'الأوقات والتنبيه', timingCardSub: 'كل الأوقات بالدقائق.',
     timing: 'الأوقات',
@@ -1097,6 +1231,7 @@ const I18N = {
     stCmdOk: '{name}: تم',
     stCmdFail: '{name}: فشل (رمز {code})',
     stMinBad: 'أدخل دقائق صحيحة — دقيقة واحدة على الأقل.',
+    stLcBad: 'أدخل قيماً صحيحة لخلية الوزن.',
     stTxLtMs: '«الإرسال كل» يجب ألا يقل عن «القياس كل».',
     cmd1: 'إنهاء الإعداد', cmd2: 'ضبط على الصفر', cmd3: 'مسح الجلسة',
     cmd4: 'اختبار الإرسال', cmd5: 'ضبط الميزان', cmdX: 'أمر 0x{hex}',
@@ -1126,6 +1261,8 @@ const I18N = {
   },
 };
 
+/* Den Schluessel teilt sich die Seite mit der Startseite (../): die dort
+   gewaehlte Sprache gilt hier auch. */
 let lang = 'de';
 try { const s = localStorage.getItem('tb3-lang'); if (I18N[s]) lang = s; } catch (e) {}
 
@@ -1150,9 +1287,56 @@ function applyLang(next) {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
-  document.getElementById("langSel").value = lang;
+  syncLangPicker(lang);
   updatePill(connected);
+  renderLc();
   renderExt();
+}
+
+/* Flagge und Name im Knopf, Markierung in der Liste auf die aktuelle Sprache */
+function syncLangPicker(code){
+  const btn = document.querySelector('.lang-btn');
+  document.querySelectorAll('.lang-list button').forEach(b => {
+    if (b.dataset.lang !== code) { b.removeAttribute('aria-current'); return; }
+    b.setAttribute('aria-current', 'true');
+    btn.querySelector('.flag').className = 'flag flag-' + code;
+    const name = btn.querySelector('.lang-name');
+    name.textContent = b.textContent.trim();
+    name.lang = code;
+  });
+}
+
+/* Klappliste: Klick daneben oder Esc schliesst, Pfeiltasten wandern. */
+function langPicker(onPick){
+  const box = document.querySelector('.lang');
+  const btn = box.querySelector('.lang-btn');
+  const list = box.querySelector('.lang-list');
+  const items = Array.from(list.querySelectorAll('button'));
+  function open(show, focusCur){
+    list.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+    if (show && focusCur) (list.querySelector('[aria-current="true"]') || items[0]).focus();
+  }
+  btn.addEventListener('click', () => open(list.hidden, false));
+  btn.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); open(true, true); }
+  });
+  items.forEach((b, i) => {
+    b.addEventListener('click', () => { onPick(b.dataset.lang); open(false); btn.focus(); });
+    b.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus();
+    });
+  });
+  document.addEventListener('click', e => { if (!box.contains(e.target)) open(false); });
+  /* Esc schliesst zuerst nur die Liste, nicht auch das Menue dahinter. */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || list.hidden) return;
+    e.stopImmediatePropagation();
+    open(false);
+    btn.focus();
+  });
 }
 
 /* =============================== Meldung =============================== */
@@ -1199,6 +1383,8 @@ function setConnected(on) {
     extLive = [null, null, null];
     extSupported = false;
     document.getElementById('tabExt').hidden = true;
+    lcActive = null;
+    document.getElementById('lcCard').hidden = true;
     renderExt();
   }
 }
@@ -1289,6 +1475,7 @@ const CHARS = {
   liveSensors: { uuid: chr(0xD), len: 8,  type: 'notify' },
   extConfig:   { uuid: chr(0xE), len: 26, type: 'ext' },
   extLive:     { uuid: chr(0xF), len: 18, type: 'notify' },
+  lcProfile:   { uuid: chr(0x10), len: 10, type: 'lc' },
 };
 
 const SEC_PER_MIN = 60;
@@ -1369,10 +1556,13 @@ async function doConnect() {
     /* Aeltere Firmware ohne Erweiterten Modus: der Reiter bleibt versteckt */
     extSupported = !!charMap.extConfig;
     document.getElementById('tabExt').hidden = !extSupported;
+    /* Ebenso die Waegezelle: aeltere Firmware kennt nur die eine Zelle */
+    document.getElementById('lcCard').hidden = !charMap.lcProfile;
 
     setConnected(true);
     toast('stConnected', 'ok', { name: device.name || 'TanenBase' });
     await readAll(true);
+    await readLc();
     await readExt();
   } catch (e) {
     btn.disabled = false;
@@ -1417,7 +1607,7 @@ function onLiveSensor(event) {
 async function readAll(silent) {
   try {
     for (const [key, def] of Object.entries(CHARS)) {
-      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || def.type === 'ext' || !charMap[key]) continue;
+      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || def.type === 'ext' || def.type === 'lc' || !charMap[key]) continue;
       const val = await charMap[key].readValue();
       const el = document.getElementById(def.el || key);
       if (!el) continue;
@@ -1533,6 +1723,93 @@ async function sendCmd(cmd) {
     else toast('stSent', 'ok', { name: cmdName(cmd) });
   } catch (e) {
     toast('stCmdErr', 'err', { msg: e.message });
+  }
+}
+
+/* ============================== Waegezelle ==============================
+   LcProfile (10 Bytes) ist lc_config_t der Firmware:
+   [Version][Profil][Abweichung int32 LE in mg je K][Nachlauf uint32 LE in s].
+   Gelesen kommen IMMER die Werte zurueck, mit denen die Station gerade
+   rechnet - die Seite braucht darum keine eigene Tabelle der Profile.
+   Geschrieben zaehlen die beiden Zahlen nur beim Profil "eigene Messwerte";
+   bei den fertigen Profilen setzt die Station ihre eigenen ein.
+   Ein Profilwechsel macht das Nullstellen NICHT ungueltig: bei der
+   Temperatur des Nullstellens ist die Korrektur in jedem Profil null.    */
+const LC_CUSTOM = 3;
+const LC_GAIN_MAX_G = 200;      /* Firmware: LC_GAIN_MAX_MG_PER_K */
+const LC_TAU_MAX_MIN = 1440;    /* Firmware: LC_TAU_MAX_S */
+/* Erklaerung je Zelle. Alle noch nicht vermessenen teilen sich einen Text —
+   und ein Profil, das diese Seite noch nicht kennt, bekommt ihn auch. */
+const LC_HINT = { 0: 'lcHintOff', 1: 'lcHintH40A', 3: 'lcHintCustom' };
+let lcActive = null;            /* zuletzt gelesene, gueltige Werte */
+
+function renderLc() {
+  const id = parseInt(document.getElementById('lcProfile').value, 10) || 0;
+  document.getElementById('lcCustom').hidden = (id !== LC_CUSTOM);
+  document.getElementById('lcHint').textContent = t(LC_HINT[id] || 'lcHintRaw');
+  const act = document.getElementById('lcActive');
+  if (!lcActive) { act.textContent = ''; return; }
+  act.textContent = lcActive.gain === 0
+    ? t('lcActiveOff')
+    : t('lcActiveOn', { gain: fmtNum(lcActive.gain / 1000, 3), min: Math.round(lcActive.tau / 60) });
+}
+
+async function readLc() {
+  if (!charMap.lcProfile) return;
+  try {
+    const v = await charMap.lcProfile.readValue();
+    if (v.byteLength < 10) return;
+    lcActive = { id: v.getUint8(1), gain: v.getInt32(2, true), tau: v.getUint32(6, true) };
+    /* Neuere Firmware kann ein Profil kennen, das diese Seite nicht hat. Ohne
+       Eintrag stuende die Liste leer da und ein Speichern wuerde die Station
+       stillschweigend auf "Andere / unbekannt" zuruecksetzen. */
+    const sel = document.getElementById('lcProfile');
+    if (!sel.querySelector('option[value="' + lcActive.id + '"]')) {
+      const opt = document.createElement('option');
+      opt.value = String(lcActive.id);
+      opt.textContent = t('lcUnknown', { id: lcActive.id });
+      sel.appendChild(opt);
+    }
+    sel.value = String(lcActive.id);
+    /* Die Felder starten bei dem, was gerade laeuft - wer auf "eigene
+       Messwerte" wechselt, korrigiert dann nur noch eine Zahl. */
+    document.getElementById('lcGain').value = (lcActive.gain / 1000).toFixed(3);
+    document.getElementById('lcTau').value = Math.round(lcActive.tau / 60);
+    renderLc();
+  } catch (e) {
+    toast('stReadErr', 'err', { msg: e.message });
+  }
+}
+
+async function saveLc() {
+  if (!charMap.lcProfile) { toast('stCmdNotFound', 'err'); return; }
+  const id = parseInt(document.getElementById('lcProfile').value, 10) || 0;
+  const gEl = document.getElementById('lcGain');
+  const tEl = document.getElementById('lcTau');
+  let gainMg = 0, tauS = 0;
+
+  [gEl, tEl].forEach(el => el.classList.remove('bad'));
+  if (id === LC_CUSTOM) {
+    const g = parseFloat(gEl.value);
+    const m = parseFloat(tEl.value);
+    if (!isFinite(g) || Math.abs(g) > LC_GAIN_MAX_G) { gEl.classList.add('bad'); toast('stLcBad', 'err'); gEl.focus(); return; }
+    if (!isFinite(m) || m < 0 || m > LC_TAU_MAX_MIN) { tEl.classList.add('bad'); toast('stLcBad', 'err'); tEl.focus(); return; }
+    gainMg = Math.round(g * 1000);
+    tauS = Math.round(m * SEC_PER_MIN);
+  }
+
+  try {
+    const buf = new ArrayBuffer(10);
+    const dv = new DataView(buf);
+    dv.setUint8(0, 1);            /* LC_CONFIG_VERSION */
+    dv.setUint8(1, id);
+    dv.setInt32(2, gainMg, true);
+    dv.setUint32(6, tauS, true);
+    await charMap.lcProfile.writeValueWithResponse(dv);
+    await readLc();               /* zeigt, womit die Station nun rechnet */
+    toast('stSaved', 'ok');
+  } catch (e) {
+    toast('stWriteErr', 'err', { msg: e.message });
   }
 }
 
@@ -1999,6 +2276,8 @@ document.getElementById('saveNetBtn').addEventListener('click', () => writeGroup
 document.getElementById('saveSetBtn').addEventListener('click', () => writeGroup('set'));
 document.getElementById('tareBtn').addEventListener('click', () => sendCmd(0x02));
 document.getElementById('calibrateBtn').addEventListener('click', doCalibrate);
+document.getElementById('lcProfile').addEventListener('change', renderLc);
+document.getElementById('saveLcBtn').addEventListener('click', saveLc);
 document.getElementById('wizBack').addEventListener('click', () => setWizStep(1));
 document.getElementById('wizRestart').addEventListener('click', () => setWizStep(1));
 document.querySelectorAll('[data-cmd]').forEach(btn =>
@@ -2007,7 +2286,7 @@ document.querySelectorAll('.tabbar button[data-view]').forEach(btn =>
   btn.addEventListener('click', () => showView(btn.dataset.view)));
 ['txMin', 'msMin'].forEach(id =>
   document.getElementById(id).addEventListener('input', e => e.target.classList.remove('bad')));
-document.getElementById("langSel").addEventListener("change", e => applyLang(e.target.value));
+langPicker(applyLang);
 
 initExt();
 applyLang(lang);

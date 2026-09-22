@@ -80,25 +80,42 @@ config TANENBASE_TEMPCOMP
 	  17.5 K daily cycle, down to sigma = 15.7 g compensated. Full report in
 	  docs/load_cells/H40A-C3-0150/README.md.
 
+	  Which constants it runs with is picked at RUNTIME from the load-cell
+	  profile (setup page), not built in — one image serves every cell. This
+	  switch only decides whether the correction is compiled at all.
+
+config TANENBASE_LC_DEFAULT_PROFILE
+	int "Default load-cell profile (0=generic 1=H40A-C3-0150 2=SBS-PF-150 3=custom)"
+	default 1
+	range 0 3
+	help
+	  Profile a unit runs until the setup page stores one. Must match
+	  LC_PROFILE_* in src/config/config.h. 0 (generic) applies no correction,
+	  3 (custom) uses the two constants below. See docs/load_cells/README.md.
+
 config TANENBASE_TEMPCOMP_GAIN_MG_PER_K
-	int "Compensation gain (milligram per kelvin)"
+	int "Custom-profile compensation gain (milligram per kelvin)"
 	default 17734
 	help
-	  k_c = -k, added to the raw weight per kelvin of filtered temperature
-	  above T_ref. 17734 = +17.734 g/K, fitted on the reference cell.
-	  THIS IS A PROPERTY OF THE CELL PLUS ITS MOUNT, not of the H40A —
-	  re-characterise after any mechanical change to the frame. Set to 0 to
-	  keep the filter running (t_eff is logged) but apply no correction.
+	  Gain of the CUSTOM profile: added to the raw weight per kelvin of
+	  filtered temperature above T_ref. 17734 = +17.734 g/K, fitted on the
+	  reference H40A cell and kept here as the starting point for a frame
+	  that gets re-characterised.
+	  THIS IS A PROPERTY OF THE CELL PLUS ITS MOUNT, not of any one cell
+	  model — re-characterise after any mechanical change to the frame. Set
+	  to 0 to keep the filter running (t_eff is logged) but apply no
+	  correction. The setup page overrides this per unit.
 
 config TANENBASE_TEMPCOMP_TAU_S
-	int "Thermal lag time constant (seconds)"
+	int "Custom-profile thermal lag time constant (seconds)"
 	default 1500
 	help
 	  Time constant of the low-pass filter on the probe temperature, which
 	  models the lag between the probe and the cell body. 1500 = 25 min,
 	  found by sweeping tau; the optimum is broad (15-40 min all within 1 g)
-	  so it does not need tuning per unit. Only matters while the probe is
-	  not bonded to the cell body.
+	  so it does not need tuning per unit — every built-in profile carries
+	  the same value. Only matters while the probe is not bonded to the cell
+	  body.
 
 config TANENBASE_TEMPCOMP_T_REF_MDEG
 	int "Fallback reference temperature (milli-Celsius)"
