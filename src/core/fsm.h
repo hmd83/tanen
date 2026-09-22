@@ -13,8 +13,13 @@ int fsm_init(void);
 
 /**
  * Run single-pass FSM. Checks wake reason:
- *   - Button/Reset → SETUP (BLE + sensors, blocks up to timeout)
+ *   - Button → SETUP (BLE + sensors, blocks up to timeout) → MEASUREMENT
  *   - Timer → MEASUREMENT → anomaly check → TX if needed → SLEEP
+ *   - Reset → MEASUREMENT. NOT setup: power-on, pin reset, watchdog and
+ *     fatal-error reboots would otherwise each open a 180 s BLE advertise
+ *     window, and a boot loop would sit in it. A unit that has just been
+ *     flashed therefore does NOT come up in SETUP — press the button once
+ *     it is asleep.
  * Never returns on success (ends in System OFF).
  */
 void fsm_run(void);
