@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-702QF9X4ZK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-702QF9X4ZK');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
@@ -106,21 +115,38 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .brand-mark svg{inline-size:30px;block-size:30px}
 .brand small{display:block;font-size:.72rem;font-weight:700;color:var(--dim);line-height:1.2}
 
-/* Sprachwahl: drei sichtbare Schalter statt Klappliste - nichts zum Aufklappen,
-   jede Sprache mit einem Griff erreichbar. */
-/* direction:ltr haelt DE|EN|AR immer in derselben Reihenfolge. Sonst
-   tauschen die Schalter beim Wechsel ins Arabische die Plaetze - und wer
-   zurueck nach Deutsch will, sucht den Knopf auf der falschen Seite. */
-.lang{display:flex;direction:ltr;gap:0;flex:none;border:3px solid var(--border-strong);border-radius:14px;overflow:hidden;background:var(--surface-2)}
-.lang button{
-  min-block-size:54px;min-inline-size:66px;padding:8px 16px;
-  font-size:1rem;font-weight:800;color:var(--dim);
-  border-inline-end:3px solid var(--border-strong);
+/* Sprachwahl: Klappliste mit Flaggen. "Language" bleibt in jeder Sprache
+   englisch - wer die aktuelle Sprache nicht liest, findet das Wort trotzdem.
+   Flaggen als SVG: Windows zeigt Flaggen-Emoji nur als zwei Buchstaben. */
+.lang{position:relative;flex:none}
+.lang-btn{
+  display:flex;align-items:center;gap:10px;min-block-size:54px;padding:6px 12px;
+  font:inherit;color:var(--text);cursor:pointer;text-align:start;
+  border:3px solid var(--border-strong);border-radius:14px;background:var(--surface-2);
 }
-.lang button:last-child{border-inline-end:0}
-.lang button:hover{background:var(--accent-soft);color:var(--text)}
-.lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.lang button:focus-visible{outline-offset:-4px;border-radius:0}
+.lang-btn:hover,.lang-btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent-edge)}
+.lang-txt{display:flex;flex-direction:column;line-height:1.2}
+.lang-cap{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.lang-name{font-size:1rem;font-weight:800;min-inline-size:5.2em}
+.lang-chev{inline-size:20px;block-size:20px;flex:none}
+.lang-btn[aria-expanded="true"] .lang-chev{transform:rotate(180deg)}
+.lang-list{
+  position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;z-index:40;
+  min-inline-size:100%;list-style:none;padding:6px;
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
+}
+.lang-list button{
+  display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:56px;padding:8px 14px;
+  font:inherit;font-size:1rem;font-weight:700;color:var(--text);background:none;border:0;border-radius:9px;
+  cursor:pointer;text-align:start;white-space:nowrap;
+}
+.lang-list button:hover{background:var(--accent-soft)}
+.lang-list button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.lang-list button:focus-visible{outline-offset:-4px}
+.flag{inline-size:30px;block-size:20px;flex:none;border-radius:3px;background:center/cover no-repeat;box-shadow:0 0 0 1px rgba(12,16,23,.35)}
+.flag-de{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Cpath fill='%23000' d='M0 0h5v1H0z'/%3E%3Cpath fill='%23D00' d='M0 1h5v1H0z'/%3E%3Cpath fill='%23FFCE00' d='M0 2h5v1H0z'/%3E%3C/svg%3E")}
+.flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
+.flag-ar{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cpath fill='%23007A3D' d='M0 0h900v200H0z'/%3E%3Cpath fill='%23fff' d='M0 200h900v200H0z'/%3E%3Cpath d='M0 400h900v200H0z'/%3E%3Cg fill='%23CE1126'%3E%3Cpath transform='translate(225 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(450 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(675 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3C/g%3E%3C/svg%3E")}
 
 /* Navigation: auf breitem Schirm eine eigene Zeile unter Marke und
    Sprachwahl - keine Zeile, die je nach Sprache mal passt und mal umbricht:
@@ -160,6 +186,9 @@ img{max-inline-size:100%;block-size:auto;display:block}
 }
 .appbar.open .menu{display:flex}
 .menu .lang{align-self:flex-start}
+/* Im Handy-Menue klappt die Liste im Fluss auf - die Menue-Flaeche scrollt
+   selbst und wuerde eine schwebende Liste abschneiden. */
+@media (max-width:779px){.lang-list{position:static;margin-block-start:8px;box-shadow:none}}
 @media (max-width:779px){
   .nav ul{flex-direction:column;gap:8px}
   .nav a{display:flex}
@@ -217,7 +246,8 @@ p{font-size:1.05rem}
 .hero{background:var(--surface);border-block-end:3px solid var(--border-strong);padding-block:56px 64px}
 .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
 @media (min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:52px}}
-.hero p.lead{margin-block:18px 28px;max-inline-size:56ch}
+.hero p.lead{margin-block:18px 14px;max-inline-size:56ch}
+.hero p.lead-2{margin-block:0 28px;padding-inline-start:14px;border-inline-start:4px solid var(--accent);font-size:1.08rem;color:var(--dim)}
 .hero .btn-row{margin-block-end:22px}
 .hero-note{font-size:.98rem;color:var(--dim)}
 figure{margin:0}
@@ -299,11 +329,7 @@ html[dir="rtl"] .stat b{text-align:right}
   border-radius:var(--r);padding:26px;
 }
 .answer h3{color:#054d23}
-.answer ul{list-style:none;margin-block-start:16px;display:grid;gap:14px}
-@media (min-width:820px){.answer ul{grid-template-columns:1fr 1fr;gap:16px 30px}}
-.answer li{display:flex;gap:14px;align-items:flex-start;font-size:1.05rem;color:#08301a}
-.answer li svg{inline-size:28px;block-size:28px;flex:none;color:var(--green);margin-block-start:2px}
-.answer li b{display:block}
+.answer p{margin-block-start:10px;font-size:1.1rem;color:#08301a}
 
 /* ============================== Merkmale ============================== */
 .feat{display:grid;grid-template-columns:1fr;gap:18px}
@@ -326,7 +352,13 @@ html[dir="rtl"] .stat b{text-align:right}
 .ble-shots{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .ble-shots .shot{display:flex;flex-direction:column}
 .ble-shots .shot img{aspect-ratio:460/996;object-fit:contain;max-block-size:560px;background:var(--surface-2)}
-.ble-shots .shot figcaption{flex:1 0 auto;font-size:.92rem}
+/* Nebeneinander bestimmt die Karte die Hoehe: contain:size nimmt den Bildern
+   den Einfluss auf die Zeilenhoehe, danach fuellen sie genau diese Hoehe. */
+@media (min-width:980px){
+  .ble{align-items:stretch}
+  .ble-shots{contain:size}
+  .ble-shots .shot img{flex:1 1 0;min-block-size:0;max-block-size:none;aspect-ratio:auto;object-fit:cover}
+}
 
 /* ======================= Auswerteplattformen ======================= */
 /* Zwei Karten nebeneinander statt drei wie bei den Merkmalen, damit die
@@ -444,10 +476,17 @@ footer p{font-size:.98rem;color:var(--dim)}
       </ul>
     </nav>
 
-    <div class="lang" role="group" data-i18n-al="langLabel" aria-label="Sprache">
-      <button type="button" data-lang="de" lang="de" aria-pressed="true">DE</button>
-      <button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button>
-      <button type="button" data-lang="ar" lang="ar" aria-pressed="false">AR</button>
+    <div class="lang">
+      <button type="button" class="lang-btn" aria-expanded="false" aria-controls="langList">
+        <span class="flag flag-de" aria-hidden="true"></span>
+        <span class="lang-txt"><span class="lang-cap" lang="en">Language</span><span class="lang-name" lang="de">Deutsch</span></span>
+        <svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <ul class="lang-list" id="langList" hidden>
+        <li><button type="button" data-lang="de" lang="de" aria-current="true"><span class="flag flag-de" aria-hidden="true"></span>Deutsch</button></li>
+        <li><button type="button" data-lang="en" lang="en"><span class="flag flag-en" aria-hidden="true"></span>English</button></li>
+        <li><button type="button" data-lang="ar" lang="ar"><span class="flag flag-ar" aria-hidden="true"></span>العربية</button></li>
+      </ul>
     </div>
     </div>
   </div>
@@ -463,9 +502,9 @@ footer p{font-size:.98rem;color:var(--dim)}
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <span class="kicker" data-i18n="heroKicker">Offene Technik für die Imkerei</span>
         <h1 data-i18n="heroTitle">Ihr Bienenstock meldet sich von selbst.</h1>
-        <p class="lead" data-i18n="heroLead">TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen. Eine einzige Batterie reicht dafür viele Jahre. Kein Abo, keine monatliche Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.</p>
+        <p class="lead" data-i18n="heroLead">TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen.</p>
+        <p class="lead lead-2" data-i18n="heroLead2">Ein Batteriesatz reicht für Jahre. Kein Abo, keine Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.</p>
         <div class="btn-row">
           <a class="btn btn-lg" href="#features">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h13"/><path d="M13 6l6 6-6 6"/></svg>
@@ -520,7 +559,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h3 data-i18n="f1T">Jahrelang mit einer Batterie</h3>
         <p data-i18n="f1D">Zwischen zwei Messungen ist das Gerät praktisch aus. Der Funksender wird nur eingeschaltet, wenn es wirklich etwas zu melden gibt — nicht nach der Uhr, sondern wenn sich Gewicht oder Temperatur deutlich geändert haben.</p>
         <ul>
-          <li data-i18n="f1a">Rund 4 Millionstel Ampere im Schlaf</li>
+          <li data-i18n="f1a">Rund 4 µA im Schlaf — etwa 4 Millionstel Ampere</li>
           <li data-i18n="f1b">Drei AAA-Lithiumzellen, kein Solarpanel am Stock</li>
           <li data-i18n="f1c">Rechnerisch etwa viereinhalb Jahre Laufzeit</li>
         </ul>
@@ -546,7 +585,6 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h3 data-i18n="f3T">Funk ohne Zwang</h3>
         <p data-i18n="f3D">Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.</p>
         <ul>
-          <li data-i18n="f3a">Kein Konto beim Hersteller, keine Cloud</li>
           <li data-i18n="f3b">Eingerichtet per Bluetooth im Browser — keine App</li>
           <li data-i18n="f3c">Die Daten laufen dort auf, wo Sie es festlegen</li>
           <li data-i18n="f3d">Fertige Anbindung an BEEP und beelogger über The Things Network</li>
@@ -582,29 +620,14 @@ footer p{font-size:.98rem;color:var(--dim)}
             <li data-i18n="b1c">Temperatur und Feuchte kommen auch bei BEEP und beelogger an</li>
           </ul>
         </article>
-
-        <article class="card">
-          <span class="card-ico ico-blue" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h7v-4"/></svg>
-          </span>
-          <h3 data-i18n="b2T">Mit dem Handy eingerichtet</h3>
-          <p data-i18n="b2D">QR-Code auf dem Aufkleber des Sensors scannen, Platz wählen — im Stock oder außen — und speichern. Die Werte erscheinen sofort auf der Einrichtungsseite.</p>
-          <ul>
-            <li data-i18n="b2a">Handelsübliche SwitchBot-Sensoren mit eigener Batterie</li>
-            <li data-i18n="b2b">Adresse per QR-Code oder von Hand eintragen</li>
-            <li data-i18n="b2c">Gesucht wird nur beim Senden — rechnerisch rund 3 Jahre mit einem Batteriesatz</li>
-          </ul>
-        </article>
       </div>
 
       <div class="ble-shots">
         <figure class="shot">
           <img src="media/ble-sensor.jpg" width="460" height="996" loading="lazy" decoding="async" alt="Weißer SwitchBot-Sensor in der Hand, mit Aufkleber: Bluetooth-Adresse, QR-Code und Tanen.eu" data-i18n-alt="bleCap1Alt">
-          <figcaption data-i18n="bleCap1">Ein SwitchBot-Sensor mit Tanen-Aufkleber: Bluetooth-Adresse als Text und als QR-Code.</figcaption>
         </figure>
         <figure class="shot">
           <img src="media/ble-sensors-screen.jpg" width="460" height="997" loading="lazy" decoding="async" alt="Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen" data-i18n-alt="bleCap2Alt">
-          <figcaption data-i18n="bleCap2">Live auf der Einrichtungsseite: zwei Sensoren im Bienenstock, einer außen.</figcaption>
         </figure>
       </div>
     </div>
@@ -627,6 +650,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <ul>
           <li data-i18n="d1a">Kurven und Stockbuch in einem</li>
           <li data-i18n="d1b">Im Dauerbetrieb am Stand erprobt</li>
+          <li data-i18n="d1c">Oberfläche in 15 Sprachen</li>
         </ul>
         <a class="btn btn-outline" href="https://beep.nl" rel="noopener">
           <span data-i18n="d1L">beep.nl öffnen</span>
@@ -635,10 +659,11 @@ footer p{font-size:.98rem;color:var(--dim)}
 
       <article class="card">
         <h3><span class="plat-name">beelogger</span></h3>
-        <p data-i18n="d2D">Deutschsprachiges Imkerprojekt mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.</p>
+        <p data-i18n="d2D">Imkerprojekt aus Deutschland mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.</p>
         <ul>
-          <li data-i18n="d2a">Deutschsprachige Oberfläche und Anleitung</li>
+          <li data-i18n="d2a">Oberfläche auf Deutsch und Englisch</li>
           <li data-i18n="d2b">Ein Zugang für beliebig viele Waagen</li>
+          <li data-i18n="d2c">Anbindung direkt aus The Things Network</li>
         </ul>
         <a class="btn btn-outline" href="https://beelogger.de" rel="noopener">
           <span data-i18n="d2L">beelogger.de öffnen</span>
@@ -646,7 +671,7 @@ footer p{font-size:.98rem;color:var(--dim)}
       </article>
     </div>
 
-    <p class="plat-note" data-i18n="dataNote">Es ist derselbe Funkspruch: Die Umsetzung in The Things Network liefert beide Formate gleichzeitig. Sie können eine Plattform nutzen, beide parallel — oder die Werte auf Ihren eigenen Server holen, ohne uns zu fragen.</p>
+    <p class="plat-note" data-i18n="dataNote">Beide Plattformen bekommen denselben Funkspruch, an der Waage ändert sich nichts. Nutzen Sie eine, beide parallel oder holen Sie die Werte auf Ihren eigenen Server — ohne uns zu fragen.</p>
   </div>
 </section>
 
@@ -695,24 +720,7 @@ footer p{font-size:.98rem;color:var(--dim)}
 
     <div class="answer">
       <h3 data-i18n="ansTitle">Die Antwort von TanenBase</h3>
-      <ul>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
-          <span><b data-i18n="a1T">Standardbauteile statt Sonderanfertigung.</b><span data-i18n="a1D">Wägezelle, Funkmodul, Fühler: alles frei erhältlich und einzeln nachkaufbar.</span></span>
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
-          <span><b data-i18n="a2T">Kein Vertrag, kein Konto.</b><span data-i18n="a2D">Die Station funkt in das Netz, das Sie bestimmen. Von uns kommt keine Rechnung.</span></span>
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
-          <span><b data-i18n="a3T">Nichts ist verschlossen.</b><span data-i18n="a3D">Quellcode, Schaltplan und Messberichte liegen offen. Auch in zehn Jahren noch baubar und änderbar.</span></span>
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
-          <span><b data-i18n="a4T">Strom sparen ist eingebaut.</b><span data-i18n="a4D">Das Gerät schläft fast die ganze Zeit und meldet sich, wenn es etwas zu melden gibt.</span></span>
-        </li>
-      </ul>
+      <p data-i18n="ansLine">Standardbauteile statt Sonderanfertigung, kein Vertrag, alles offen — und ein Gerät, das fast die ganze Zeit schläft.</p>
     </div>
   </div>
 </section>
@@ -886,13 +894,13 @@ de: {
   metaDesc:'TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.',
   skip:'Zum Inhalt springen',
   brandSub:'Offene Stockwaage',
-  langLabel:'Sprache', navLabel:'Hauptbereiche', menu:'Menü',
+  navLabel:'Hauptbereiche', menu:'Menü',
   navFeat:'Was es kann', navBle:'Sensoren', navData:'Plattformen', navWhy:'Warum', navOpen:'Offen', navTech:'Technik', navContact:'Kontakt',
   navSetup:'Einrichten', setupBtn:'Einrichtungsseite öffnen',
 
-  heroKicker:'Offene Technik für die Imkerei',
   heroTitle:'Ihr Bienenstock meldet sich von selbst.',
-  heroLead:'TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen. Ein Satz Batterien reicht dafür Jahre. Kein Abo, keine monatliche Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.',
+  heroLead:'TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen.',
+  heroLead2:'Ein Batteriesatz reicht für Jahre. Kein Abo, keine Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.',
   heroBtn1:'Was das Gerät kann',
   heroBtn2:'Quellcode und Bauanleitung',
   heroBtn3:'Station einrichten',
@@ -910,7 +918,7 @@ de: {
   featLead:'Drei Dinge, und die richtig: lange durchhalten, ehrlich messen, ohne fremde Hilfe funken.',
   f1T:'Jahrelang mit einer Batterie',
   f1D:'Zwischen zwei Messungen ist das Gerät praktisch aus. Der Funksender wird nur eingeschaltet, wenn es wirklich etwas zu melden gibt — nicht nach der Uhr, sondern wenn sich Gewicht oder Temperatur deutlich geändert haben.',
-  f1a:'Rund 4 Millionstel Ampere im Schlaf',
+  f1a:'Rund 4 µA im Schlaf — etwa 4 Millionstel Ampere',
   f1b:'Drei AAA-Lithiumzellen, kein Solarpanel am Stock',
   f1c:'Rechnerisch etwa viereinhalb Jahre Laufzeit',
   f2T:'Gewicht und Temperatur, verlässlich',
@@ -920,7 +928,6 @@ de: {
   f2c:'Temperaturfühler im Stock, nicht nur am Gehäuse',
   f3T:'Funk ohne Zwang',
   f3D:'Die Werte gehen über LoRaWAN heraus — eine Funkart für kleine Datenmengen über weite Strecken, ohne Mobilfunkvertrag. Sie stellen entweder ein eigenes Empfangsgerät auf oder nutzen ein offenes Netz wie The Things Network.',
-  f3a:'Kein Konto beim Hersteller, keine Cloud',
   f3b:'Eingerichtet per Bluetooth im Browser — keine App',
   f3c:'Die Daten laufen dort auf, wo Sie es festlegen',
   f3d:'Fertige Anbindung an BEEP und beelogger über The Things Network',
@@ -930,12 +937,14 @@ de: {
   d1D:'Offene Plattform aus den Niederlanden. Gewicht, Temperatur und Batterie als Kurven, dazu ein digitales Stockbuch für jedes Volk. Konto anlegen, Gerätenummer vom Aufkleber eintragen — mehr ist nicht zu tun.',
   d1a:'Kurven und Stockbuch in einem',
   d1b:'Im Dauerbetrieb am Stand erprobt',
+  d1c:'Oberfläche in 15 Sprachen',
   d1L:'beep.nl öffnen',
-  d2D:'Deutschsprachiges Imkerprojekt mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.',
-  d2a:'Deutschsprachige Oberfläche und Anleitung',
+  d2D:'Imkerprojekt aus Deutschland mit eigenem Community-Server. Ihre Station meldet dort dieselben Werte; ein einziger Zugang trägt alle Waagen eines Standes, nicht eine Anmeldung je Gerät.',
+  d2a:'Oberfläche auf Deutsch und Englisch',
   d2b:'Ein Zugang für beliebig viele Waagen',
+  d2c:'Anbindung direkt aus The Things Network',
   d2L:'beelogger.de öffnen',
-  dataNote:'Es ist derselbe Funkspruch: Die Umsetzung in The Things Network liefert beide Formate gleichzeitig. Sie können eine Plattform nutzen, beide parallel — oder die Werte auf Ihren eigenen Server holen, ohne uns zu fragen.',
+  dataNote:'Beide Plattformen bekommen denselben Funkspruch, an der Waage ändert sich nichts. Nutzen Sie eine, beide parallel oder holen Sie die Werte auf Ihren eigenen Server — ohne uns zu fragen.',
 
   whyKicker:'Die Lücke am Markt',
   whyTitle:'Warum es TanenBase gibt',
@@ -949,14 +958,7 @@ de: {
   p4T:'Schwache Batterielaufzeit',
   p4D:'Wer jede Stunde funkt, egal ob sich etwas geändert hat, braucht jede Saison eine neue Batterie oder ein Solarpanel samt Halterung. Beides sind Wege zum Stand, die Sie sonst nicht gehen müssten.',
   ansTitle:'Die Antwort von TanenBase',
-  a1T:'Standardbauteile statt Sonderanfertigung.',
-  a1D:'Wägezelle, Funkmodul, Fühler: alles frei erhältlich und einzeln nachkaufbar.',
-  a2T:'Kein Vertrag, kein Konto.',
-  a2D:'Die Station funkt in das Netz, das Sie bestimmen. Von uns kommt keine Rechnung.',
-  a3T:'Nichts ist verschlossen.',
-  a3D:'Quellcode, Schaltplan und Messberichte liegen offen. Auch in zehn Jahren noch baubar und änderbar.',
-  a4T:'Strom sparen ist eingebaut.',
-  a4D:'Das Gerät schläft fast die ganze Zeit und meldet sich, wenn es etwas zu melden gibt.',
+  ansLine:'Standardbauteile statt Sonderanfertigung, kein Vertrag, alles offen — und ein Gerät, das fast die ganze Zeit schläft.',
 
   openKicker:'Apache-Lizenz 2.0',
   openTitle:'Offen — und zwar wirklich',
@@ -1001,14 +1003,7 @@ de: {
   b1a:'Zwei Sensoren im Stock, einer außen',
   b1b:'Der Außen-Sensor liefert die echte Außentemperatur',
   b1c:'Temperatur und Feuchte kommen auch bei BEEP und beelogger an',
-  b2T:'Mit dem Handy eingerichtet',
-  b2D:'QR-Code auf dem Aufkleber des Sensors scannen, Platz wählen — im Stock oder außen — und speichern. Die Werte erscheinen sofort auf der Einrichtungsseite.',
-  b2a:'Handelsübliche SwitchBot-Sensoren mit eigener Batterie',
-  b2b:'Adresse per QR-Code oder von Hand eintragen',
-  b2c:'Gesucht wird nur beim Senden — rechnerisch rund 3 Jahre mit einem Batteriesatz',
-  bleCap1:'Ein SwitchBot-Sensor mit Tanen-Aufkleber: Bluetooth-Adresse als Text und als QR-Code.',
   bleCap1Alt:'Weißer SwitchBot-Sensor in der Hand, mit Aufkleber: Bluetooth-Adresse, QR-Code und Tanen.eu',
-  bleCap2:'Live auf der Einrichtungsseite: zwei Sensoren im Bienenstock, einer außen.',
   bleCap2Alt:'Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen',
   t12L:'Bluetooth-Sensoren (optional)',
   t12V:'bis zu 3 × SwitchBot Outdoor Meter: Temperatur und Luftfeuchte, 2 im Stock, 1 außen',
@@ -1032,13 +1027,13 @@ en: {
   metaDesc:'TanenBase is an open hive scale: it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0.',
   skip:'Skip to content',
   brandSub:'Open hive scale',
-  langLabel:'Language', navLabel:'Main sections', menu:'Menu',
+  navLabel:'Main sections', menu:'Menu',
   navFeat:'What it does', navBle:'Sensors', navData:'Platforms', navWhy:'Why', navOpen:'Open source', navTech:'Specifications', navContact:'Contact',
   navSetup:'Set up', setupBtn:'Open the setup page',
 
-  heroKicker:'Open technology for beekeepers',
   heroTitle:'Your hive reports for itself.',
-  heroLead:'TanenBase weighs the hive, measures its temperature and sends the readings to you by radio. One set of batteries lasts for years. No subscription, no monthly fee, and no manufacturer who can switch your device off one day.',
+  heroLead:'TanenBase weighs the hive, measures its temperature and sends the readings to you by radio.',
+  heroLead2:'One set of batteries lasts for years. No subscription, no fees, no manufacturer who can switch your device off one day.',
   heroBtn1:'What the device does',
   heroBtn2:'Source code and build guide',
   heroBtn3:'Set up a station',
@@ -1056,7 +1051,7 @@ en: {
   featLead:'Three things, done properly: last a long time, measure honestly, transmit without anyone else’s permission.',
   f1T:'Years on a single battery',
   f1D:'Between two measurements the device is practically off. The transmitter is powered up only when there is genuinely something to report — not by the clock, but when weight or temperature has clearly changed.',
-  f1a:'About 4 millionths of an amp while asleep',
+  f1a:'About 4 µA while asleep',
   f1b:'Three AAA lithium cells, no solar panel on the hive',
   f1c:'Roughly four and a half years of calculated service life',
   f2T:'Weight and temperature you can trust',
@@ -1066,7 +1061,6 @@ en: {
   f2c:'Temperature probe inside the hive, not just on the enclosure',
   f3T:'Radio without strings attached',
   f3D:'Readings go out over LoRaWAN — a radio system for small amounts of data over long distances, with no mobile contract. You either put up your own receiver or use an open network such as The Things Network.',
-  f3a:'No manufacturer account, no cloud',
   f3b:'Set up over Bluetooth in the browser — no app to install',
   f3c:'The data arrives wherever you decide it should',
   f3d:'Ready-made link to BEEP and beelogger over The Things Network',
@@ -1076,12 +1070,14 @@ en: {
   d1D:'Open platform from the Netherlands. Weight, temperature and battery as curves, plus a digital hive log for every colony. Create an account, enter the device number from the sticker — that is all it takes.',
   d1a:'Curves and hive log in one place',
   d1b:'Proven in continuous use at the apiary',
+  d1c:'Interface in 15 languages',
   d1L:'Open beep.nl',
-  d2D:'German-language beekeeping project with its own community server. Your station reports the same readings there; one account carries every scale at the apiary instead of a sign-up per device.',
-  d2a:'German-language interface and instructions',
+  d2D:'Beekeeping project from Germany with its own community server. Your station reports the same readings there; one account carries every scale at the apiary instead of a sign-up per device.',
+  d2a:'Interface in German and English',
   d2b:'One account for any number of scales',
+  d2c:'Connected straight from The Things Network',
   d2L:'Open beelogger.de',
-  dataNote:'It is the same radio message: the formatter in The Things Network emits both formats at once. Use one platform, both in parallel — or pull the readings onto your own server without asking us.',
+  dataNote:'Both platforms receive the same radio message — nothing to change on the scale. Use one, both in parallel, or pull the readings onto your own server without asking us.',
 
   whyKicker:'The gap in the market',
   whyTitle:'Why TanenBase exists',
@@ -1095,14 +1091,7 @@ en: {
   p4T:'Poor battery life',
   p4D:'Transmitting every hour whether anything changed or not means a new battery every season, or a solar panel and its bracket. Both are trips to the apiary you would otherwise not have to make.',
   ansTitle:'How TanenBase answers that',
-  a1T:'Standard parts, not custom ones.',
-  a1D:'Load cell, radio module, probe: all openly available and replaceable one by one.',
-  a2T:'No contract, no account.',
-  a2D:'The station transmits into the network you choose. No invoice ever comes from us.',
-  a3T:'Nothing is locked away.',
-  a3D:'Source code, schematic and measurement reports are all public. Still buildable and modifiable in ten years.',
-  a4T:'Saving power is built in.',
-  a4D:'The device sleeps almost all the time and speaks up when there is something to say.',
+  ansLine:'Standard parts instead of custom ones, no contract, nothing locked away — and a device that sleeps almost all the time.',
 
   openKicker:'Apache License 2.0',
   openTitle:'Open — and genuinely so',
@@ -1147,14 +1136,7 @@ en: {
   b1a:'Two sensors inside the hive, one outside',
   b1b:'The outside sensor gives the true outside temperature',
   b1c:'Temperature and humidity also reach BEEP and beelogger',
-  b2T:'Set up from your phone',
-  b2D:'Scan the QR code on the sticker of the sensor, choose its place — inside the hive or outside — and save. The readings appear on the setup page right away.',
-  b2a:'Off-the-shelf SwitchBot sensors on their own battery',
-  b2b:'Address by QR code or typed in by hand',
-  b2c:'Searched only when the station transmits — about 3 years on one set of cells (calculated)',
-  bleCap1:'A SwitchBot sensor with a Tanen sticker: the Bluetooth address as text and as a QR code.',
   bleCap1Alt:'White SwitchBot sensor in a hand, with a sticker showing a Bluetooth address, a QR code and Tanen.eu',
-  bleCap2:'Live on the setup page: two sensors inside the hive, one outside.',
   bleCap2Alt:'Phone showing the setup page with three Bluetooth sensors: 25.0 °C and 26.0 °C inside the hive, 24.6 °C outside',
   t12L:'Bluetooth sensors (optional)',
   t12V:'up to 3 × SwitchBot Outdoor Meter: temperature and humidity, 2 inside the hive, 1 outside',
@@ -1175,106 +1157,100 @@ en: {
 ar: {
   _dir:'rtl',
   pageTitle:'TanenBase — ميزان خلايا مفتوح المصدر',
-  metaDesc:'TanenBase ميزان خلايا مفتوح المصدر: يزن الخلية، ويقيس حرارتها، ويرسل القراءات عبر LoRaWAN. سنوات على بطارية واحدة، بلا اشتراك، برخصة Apache-2.0.',
+  metaDesc:'TanenBase ميزان خلايا مفتوح المصدر: يزن الخلية، يقيس حرارتها، ويرسل القراءات عبر LoRaWAN. سنوات على طقم بطاريات واحد، بلا اشتراك، برخصة Apache-2.0.',
   skip:'انتقل إلى المحتوى',
   brandSub:'ميزان خلايا مفتوح المصدر',
-  langLabel:'اللغة', navLabel:'الأقسام الرئيسية', menu:'القائمة',
+  navLabel:'الأقسام الرئيسية', menu:'القائمة',
   navFeat:'ماذا يفعل', navBle:'الحساسات', navData:'المنصات', navWhy:'لماذا', navOpen:'مفتوح المصدر', navTech:'المواصفات', navContact:'اتصل بنا',
   navSetup:'الإعداد', setupBtn:'فتح صفحة الإعداد',
 
-  heroKicker:'تقنية مفتوحة لتربية النحل',
   heroTitle:'خليتك تُبلغك بنفسها.',
-  heroLead:'يزن TanenBase الخلية، ويقيس حرارتها، ويرسل القراءات إليك لاسلكياً. طقم بطاريات واحد يكفي سنوات. بلا اشتراك، وبلا رسوم شهرية، وبلا شركة تستطيع إيقاف جهازك يوماً ما.',
+  heroLead:'يزن TanenBase خليتك ويقيس حرارتها، ثم يرسل القراءات إليك لاسلكياً.',
+  heroLead2:'طقم بطاريات واحد يكفي لسنوات. لا اشتراك، لا رسوم، ولا شركة تستطيع إطفاء جهازك يوماً ما.',
   heroBtn1:'ماذا يفعل الجهاز',
   heroBtn2:'الشيفرة ودليل التركيب',
   heroBtn3:'إعداد المحطة',
-  heroNote:'رخصة Apache 2.0 — الاستعمال مجاني، وللأغراض التجارية أيضاً. للاستفسار: info@tanen.eu',
+  heroNote:'رخصة Apache 2.0 — مجاني للجميع، حتى للاستعمال التجاري. للأسئلة: info@tanen.eu',
   heroAlt:'نحل يطير أمام مدخل خليته، ومن خلفه مرج أخضر',
   heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 1.67 كغ، الحرارة 23.0 °م',
   photoBy:'صورة',
   stat1:'استهلاك التيار أثناء السكون',
   statY:'سنة',
-  stat2:'بثلاث خلايا ليثيوم AAA (حسابياً)',
+  stat2:'بثلاث بطاريات ليثيوم AAA (حسابياً)',
   stat3:'التذبذب المتبقي في الاختبار الميداني',
   stat4:'تكاليف جارية، بلا اشتراك',
 
   featTitle:'ماذا يفعل الجهاز',
-  featLead:'ثلاثة أمور يتقنها: عمر طويل، وقياس صادق، وإرسال لا يحتاج إذن أحد.',
+  featLead:'ثلاثة أمور يتقنها: عمر طويل، قياس صادق، وإرسال لا يخضع لشركة.',
   f1T:'سنوات ببطارية واحدة',
-  f1D:'بين قياس وآخر يكون الجهاز مطفأً عملياً. ولا يُشغَّل جهاز الإرسال إلا حين يوجد ما يستحق الإبلاغ فعلاً — لا حسب الساعة، بل حين يتغير الوزن أو الحرارة تغيراً واضحاً.',
-  f1a:'نحو أربعة أجزاء من المليون من الأمبير أثناء النوم',
-  f1b:'ثلاث خلايا ليثيوم AAA، بلا لوح شمسي على الخلية',
-  f1c:'عمر تشغيلي يقارب أربع سنوات ونصف حسابياً',
+  f1D:'بين قياس والتالي، الجهاز نائم عملياً. جهاز الإرسال لا يعمل حسب الساعة، بل حين يتغير الوزن أو الحرارة تغيراً واضحاً.',
+  f1a:'نحو 4 ميكروأمبير (µA) أثناء السكون',
+  f1b:'ثلاث بطاريات ليثيوم AAA، بلا لوح شمسي فوق الخلية',
+  f1c:'نحو أربع سنوات ونصف من التشغيل (حسابياً)',
   f2T:'وزن وحرارة يُعتمد عليهما',
-  f2D:'كل ميزان يتأثر بالحرارة: شمس الظهيرة ثم ليل بارد، فيظهر كيلوغرام من الرحيق لم يوجد قط. يقيس TanenBase الحرارة أيضاً ويطرح هذا الخطأ من النتيجة.',
-  f2a:'اختبار ستة أيام في الهواء الطلق بوزن معلوم',
-  f2b:'نحو 12 غراماً من التذبذب بدل 63 غراماً',
+  f2D:'كل ميزان يتأثر بالحرارة. شمس الظهيرة ثم ليلة باردة، فيظهر كيلوغرام من الرحيق لم يكن موجوداً. يقيس TanenBase الحرارة معه ويصحّح هذا الخطأ.',
+  f2a:'اختُبر ستة أيام في الهواء الطلق بوزن معروف',
+  f2b:'تذبذب نحو 12 غراماً بدل 63 غراماً',
   f2c:'مجس الحرارة داخل الخلية، لا على العلبة فقط',
   f3T:'إرسال بلا قيود',
-  f3D:'تخرج القراءات عبر LoRaWAN، وهو نظام لاسلكي لكميات بيانات صغيرة عبر مسافات بعيدة، بلا عقد هاتف محمول. إما أن تنصب جهاز استقبال خاصاً بك، أو تستعمل شبكة مفتوحة مثل The Things Network.',
-  f3a:'بلا حساب لدى الشركة المصنّعة وبلا سحابة',
-  f3b:'الضبط عبر البلوتوث من المتصفح — دون تطبيق',
-  f3c:'تصل البيانات إلى حيث تقرر أنت',
+  f3D:'تُرسل القراءات عبر LoRaWAN: تقنية لاسلكية للبيانات الصغيرة والمسافات البعيدة، بلا شريحة ولا عقد اتصالات. انصب جهاز استقبال خاصاً بك، أو استعمل شبكة مفتوحة مثل The Things Network.',
+  f3b:'الإعداد عبر البلوتوث من المتصفح — بلا تطبيق',
+  f3c:'بياناتك تصل إلى حيث تقرر أنت',
   f3d:'ربط جاهز مع BEEP وbeelogger عبر The Things Network',
   dataKicker:'التحليل',
   dataTitle:'إلى أين تصل بياناتك',
-  dataLead:'ترسل الميزان قراءاتها عبر The Things Network، ومن هناك تنتقل إلى منصة تحليل مجانية ومفتوحة ترسمها منحنيات وتحفظ سجلك. منصتان جاهزتان ومجرَّبتان ميدانياً — دون أي برمجة.',
-  d1D:'منصة مفتوحة من هولندا: الوزن والحرارة والبطارية كمنحنيات، مع دفتر خلية رقمي لكل طائفة. أنشئ حساباً وأدخل رقم الجهاز من الملصق، وانتهى الأمر.',
+  dataLead:'يرسل الميزان قراءاته عبر The Things Network. من هناك تنتقل إلى منصة تحليل مجانية مفتوحة، ترسمها منحنيات وتحفظ سجلك. منصتان جاهزتان ومجرّبتان في الميدان، بلا أي برمجة.',
+  d1D:'منصة مفتوحة من هولندا. الوزن والحرارة والبطارية كمنحنيات، مع دفتر خلية رقمي لكل طائفة. أنشئ حساباً، أدخل رقم الجهاز من الملصق، وانتهى الأمر.',
   d1a:'منحنيات ودفتر خلية في مكان واحد',
   d1b:'مجرَّبة في التشغيل المستمر في المنحل',
+  d1c:'واجهة متوفرة بـ 15 لغة',
   d1L:'فتح beep.nl',
-  d2D:'مشروع نحّالين ألماني اللغة بخادم مجتمعي خاص به. ترسل محطتك القراءات نفسها إليه، وحساب واحد يكفي لكل موازين المنحل بدل تسجيل لكل جهاز.',
-  d2a:'واجهة وإرشادات بالألمانية',
+  d2D:'مشروع ألماني للنحالين بخادم مجتمعي خاص. محطتك ترسل إليه القراءات نفسها، وحساب واحد يكفي لكل موازين المنحل.',
+  d2a:'واجهة بالألمانية والإنكليزية',
   d2b:'حساب واحد لأي عدد من الموازين',
+  d2c:'ربط مباشر من The Things Network',
   d2L:'فتح beelogger.de',
-  dataNote:'إنها الرسالة اللاسلكية نفسها: المُحوِّل في The Things Network يُخرج الصيغتين معاً. استعمل منصة واحدة أو الاثنتين معاً، أو اسحب القراءات إلى خادمك الخاص دون الرجوع إلينا.',
+  dataNote:'المنصتان تستلمان الرسالة اللاسلكية نفسها، ولا شيء يتغير في الميزان. استعمل واحدة أو الاثنتين، أو اسحب القراءات إلى خادمك الخاص دون أن تسألنا.',
 
   whyKicker:'الفجوة في السوق',
   whyTitle:'لماذا وُجد TanenBase',
-  whyLead:'موازين الخلايا متوفرة للشراء، لكن أغلبها يقود إلى الطرق المسدودة الأربعة نفسها — وهي طرق لا علاقة لها بالنحل، بل بنموذج العمل التجاري.',
+  whyLead:'موازين الخلايا تُباع جاهزة، لكن أغلبها ينتهي إلى الطرق المسدودة الأربعة نفسها. السبب ليس النحل، بل نموذج الربح.',
   p1T:'أجهزة غالية ومقيدة بالمورّد',
-  p1D:'يكلف الميزان الجاهز مئات اليوروات حسب المورّد، ثم المبلغ نفسه عن كل طائفة إضافية. والثمن ليس ثمن خلية الوزن، فهي قطعة صناعية زهيدة، بل ثمن النظام المغلق المبني حولها.',
-  p2T:'الارتهان للاشتراك',
-  p2D:'كثير من الأجهزة لا يعمل إلا بعقد ساري المفعول. وحين ينتهي العقد يصمت الميزان وتصبح السجلات القديمة بعيدة المنال، مع أن الجهاز قائم في أرضك وملك لك.',
+  p1D:'الميزان الجاهز يكلف مئات اليوروات حسب الشركة، ثم المبلغ نفسه لكل طائفة إضافية. أنت لا تدفع ثمن حساس الوزن، فهو قطعة صناعية رخيصة، بل ثمن النظام المغلق حوله.',
+  p2T:'اشتراك إجباري',
+  p2D:'كثير من الأجهزة لا يعمل إلا بعقد ساري. ينتهي العقد، فيصمت الميزان ولا تعود السجلات القديمة متاحة، مع أن الجهاز في أرضك وملكك.',
   p3T:'التقادم المخطط له',
-  p3D:'إذا أوقفت الشركة الخدمة أو خرجت من السوق، تحولت أجهزة سليمة تماماً إلى نفايات إلكترونية. ولا أحد سوى المصنّع يستطيع تجديد البرمجية، لأن أحداً غيره لم يرها قط.',
+  p3D:'إذا أوقفت الشركة الخدمة أو خرجت من السوق، يصير الجهاز السليم خردة إلكترونية. لا أحد غير المصنّع يستطيع تحديث برمجيته، لأن أحداً غيره لم يرها.',
   p4T:'عمر بطارية قصير',
-  p4D:'الإرسال كل ساعة سواء تغير شيء أم لا يعني بطارية جديدة كل موسم، أو لوحاً شمسياً بحاملِه. وكلاهما رحلة إلى المنحل كنت في غنى عنها.',
-  ansTitle:'كيف يجيب TanenBase عن ذلك',
-  a1T:'قطع قياسية لا قطع خاصة.',
-  a1D:'خلية الوزن ووحدة الإرسال والمجس: كلها متاحة في السوق ويمكن استبدالها واحدة واحدة.',
-  a2T:'بلا عقد وبلا حساب.',
-  a2D:'ترسل المحطة إلى الشبكة التي تختارها أنت. ولن تصلك منا فاتورة أبداً.',
-  a3T:'لا شيء مغلق.',
-  a3D:'الشيفرة والمخطط الكهربائي وتقارير القياس كلها منشورة. وستظل قابلة للبناء والتعديل بعد عشر سنوات.',
-  a4T:'توفير الطاقة مدمج في التصميم.',
-  a4D:'ينام الجهاز معظم الوقت ولا يتكلم إلا حين يكون لديه ما يقوله.',
+  p4D:'جهاز يرسل كل ساعة، تغيّر شيء أم لا، يحتاج بطارية جديدة كل موسم أو لوحاً شمسياً مع حامله. كلاهما مشوار إلى المنحل كنت في غنى عنه.',
+  ansTitle:'جواب TanenBase',
+  ansLine:'قطع متوفرة في السوق، لا عقد، كل شيء منشور — وجهاز ينام معظم وقته.',
 
   openKicker:'رخصة Apache 2.0',
   openTitle:'مفتوح — بالمعنى الحقيقي',
-  openLead:'ليس المقصود بالانفتاح هنا أن ورقة مواصفات متاحة للتنزيل، بل أن بين يديك كل ما يلزم لبناء الجهاز بنفسك والتحقق منه وتعديله ونقله إلى غيرك.',
+  openLead:'الانفتاح هنا لا يعني ورقة مواصفات للتنزيل. يعني أن بين يديك كل ما يلزم لتبني الجهاز بنفسك، تفحصه، تعدّله، وتعطيه لغيرك.',
   o1T:'كل شيء منشور',
-  o1D:'البرمجية والمخطط الكهربائي وملفات اللوحة ودليل التركيب وسلاسل القياس الكاملة لتصحيح الحرارة — بما في ذلك المواضع التي يظهر فيها العتاد بصورة سيئة. ومن أراد التحقق من صحة الأرقام فبإمكانه ذلك.',
+  o1D:'البرمجية، المخطط الكهربائي، ملفات اللوحة، دليل التركيب، وسلاسل القياس الكاملة لتصحيح الحرارة — حتى المواضع التي يظهر فيها العتاد ضعيفاً. من أراد التحقق من الأرقام يستطيع ذلك.',
   o2T:'الإصلاح بدل الاستبدال',
-  o2D:'العلبة تُفتح، والبطارية خلية عادية، والقطع تُشترى مفردة. ويحتاج التبديل إلى مفك براغي وأحياناً إلى كاوية لحام، لا إلى إرجاع الجهاز إلى المصنع.',
+  o2D:'العلبة تُفتح، البطارية عادية، والقطع تُشترى منفردة. التبديل يحتاج مفك براغي وأحياناً كاوية لحام، لا شحن الجهاز إلى المصنع.',
   o3T:'بياناتك ملك لك',
-  o3D:'ترسل المحطة إلى جهاز الاستقبال أو الشبكة التي تدخلها أنت. لا وسيط يطّلع على القراءات، ولا خدمة يتوقف مصير سجلاتك على بقائها.',
+  o3D:'المحطة ترسل إلى جهاز الاستقبال أو الشبكة التي تحددها أنت. لا وسيط يقرأ بياناتك، ولا خدمة يتعلق مصير سجلاتك ببقائها.',
   o4T:'نبني عليه معاً',
-  o4D:'تتيح رخصة Apache 2.0 لأي شخص استعمال TanenBase وتعديله ونقله — تجارياً أيضاً، بلا رسوم وبلا استئذان. والتحسينات القادمة من النحّالين تعود إلى المشروع.',
+  o4D:'رخصة Apache 2.0 تسمح لأي شخص باستعمال TanenBase وتعديله ونشره — تجارياً أيضاً، بلا رسوم ولا استئذان. تحسينات النحالين تعود إلى المشروع.',
 
   mediaTitle:'من الميدان',
-  mediaLead:'ليست رسوماً تخيلية، بل صور للأجهزة نفسها التي قيست عليها أرقام هذه الصفحة.',
-  cap1:'المنصة أثناء الخدمة: الخلية قائمة على الميزان، والعلبة المقاومة للطقس إلى جانبها تحمل الإلكترونيات والبطارية.',
+  mediaLead:'ليست رسوماً تخيلية، بل صور الأجهزة نفسها التي قيست بها أرقام هذه الصفحة.',
+  cap1:'المنصة في الخدمة: الخلية فوق الميزان، وبجانبها علبة مقاومة للطقس فيها الإلكترونيات والبطارية.',
   cap1Alt:'منصة وزن خشبية في الهواء الطلق وعليها خلية نحل',
-  cap2:'خلية الوزن بين صفيحتين فولاذيتين — وهذه القطعة بالذات اختُبرت ستة أيام في الهواء الطلق بوزن معلوم.',
-  cap2Alt:'خلية وزن مثبتة ببراغٍ بين صفيحتين فولاذيتين',
-  cap3:'التركيب داخل العلبة: المعالج، ووحدة الإرسال مع هوائيها، ومضخّم خلية الوزن. وكل قطعة متوفرة على حدة.',
+  cap2:'حساس الوزن بين صفيحتين فولاذيتين. هذه القطعة نفسها اختُبرت ستة أيام في الهواء الطلق بوزن معروف.',
+  cap2Alt:'حساس وزن مثبت ببراغٍ بين صفيحتين فولاذيتين',
+  cap3:'داخل العلبة: المعالج، وحدة الإرسال مع هوائيها، ومضخّم حساس الوزن. كل قطعة تُشترى منفردة.',
   cap3Alt:'علبة مفتوحة تظهر اللوحة ووحدة الإرسال والهوائي',
-  cap4:'يجري الضبط من متصفح الهاتف: خط كبير وأزرار كبيرة وبلا تطبيق يُثبَّت.',
+  cap4:'الإعداد من متصفح الهاتف: خط كبير، أزرار كبيرة، ولا تطبيق للتثبيت.',
   cap4Alt:'نظرة عامة على صفحة الإعداد في الهاتف: الوزن بخط كبير، وتحته الحرارة وجهد البطارية',
 
   techTitle:'المواصفات',
-  techLead:'لمن يريد التفصيل. أما الاستعمال اليومي فلا يتطلب فهم أي مما يلي.',
+  techLead:'لمن يحب التفاصيل. للاستعمال اليومي لا تحتاج إلى فهم أي منها.',
   techCap:'حسب الإصدار الحالي. والتغييرات مدونة في سجل تغييرات المشروع.',
   t1L:'القراءات', t1V:'الوزن، حرارة داخل الخلية، جهد البطارية',
   t2L:'مجال الوزن', t2V:'حتى 999 كغ',
@@ -1282,25 +1258,18 @@ ar: {
   t4L:'الإرسال اللاسلكي', t4V:'LoRaWAN الفئة A، EU868، OTAA',
   t5L:'حزمة البيانات', t5V:'8 بايت لكل بلاغ، و5 بايت إضافية لكل حساس بلوتوث',
   t6L:'الضبط', t6V:'بلوتوث، وصفحة تحكم في المتصفح (Chrome أو Edge)',
-  t7L:'تيار السكون', t7V:'نحو 4 ميكرو أمبير',
-  t8L:'البطارية', t8V:'ثلاث خلايا ليثيوم AAA على التوالي (1.5 فولت، 1200 مللي أمبير ساعة)',
+  t7L:'تيار السكون', t7V:'نحو 4 ميكروأمبير (µA)',
+  t8L:'البطارية', t8V:'ثلاث بطاريات ليثيوم AAA على التوالي (1.5 فولت، 1200 مللي أمبير ساعة)',
   t9L:'العمر التشغيلي (حسابياً)', t9V:'نحو 4.5 سنوات — قياس كل 15 دقيقة وبلاغ كل ساعتين؛ ونحو 10 سنوات بقياس كل ساعة وبلاغ كل 4 ساعات؛ ومع حساسات البلوتوث نحو 3.3 و7 سنوات',
   bleKicker:'الوضع المتقدم',
   bleTitle:'نظرة داخل الطائفة — دون رفع الغطاء',
-  bleLead:'حتى ثلاثة حساسات بلوتوث صغيرة تقيس الحرارة والرطوبة حيث يهمّ الأمر: اثنان داخل الخلية وواحد خارجها. تقرؤها المحطة وترسل قيمها مع الوزن — بلا أسلاك داخل الخلية وبلا جهاز استقبال إضافي للحساسات.',
+  bleLead:'حتى ثلاثة حساسات بلوتوث صغيرة تقيس الحرارة والرطوبة حيث يهم: اثنان داخل الخلية، وواحد خارجها. المحطة تقرؤها وترسل قيمها مع الوزن، بلا أسلاك داخل الخلية ولا جهاز استقبال إضافي.',
   b1T:'ما يجري داخل الخلية',
-  b1D:'تكشف الحرارة والرطوبة في منطقة الحضنة ما لا يظهره الميزان وحده: هل تربّي الطائفة الحضنة، وهل تحافظ على عنقودها الشتوي، وهل تتراكم الرطوبة.',
+  b1D:'حرارة الحضنة ورطوبتها تكشفان ما لا يقوله الميزان وحده: هل تربّي الطائفة حضنة؟ هل تحافظ على عنقودها في الشتاء؟ هل تتراكم الرطوبة؟',
   b1a:'حساسان داخل الخلية وواحد خارجها',
   b1b:'الحساس الخارجي يعطي الحرارة الخارجية الحقيقية',
   b1c:'الحرارة والرطوبة تصلان أيضاً إلى BEEP وbeelogger',
-  b2T:'إعداد من الهاتف',
-  b2D:'امسح رمز QR على ملصق الحساس، واختر مكانه — داخل الخلية أو خارجها — ثم احفظ. تظهر القراءات فوراً في صفحة الإعداد.',
-  b2a:'حساسات SwitchBot جاهزة ببطاريتها الخاصة',
-  b2b:'العنوان عبر رمز QR أو بالكتابة يدوياً',
-  b2c:'البحث عنها عند الإرسال فقط — نحو 3 سنوات بمجموعة بطاريات واحدة (حسابياً)',
-  bleCap1:'حساس SwitchBot بملصق Tanen: عنوان البلوتوث نصاً ورمز QR.',
   bleCap1Alt:'حساس SwitchBot أبيض في اليد، عليه ملصق بعنوان بلوتوث ورمز QR وTanen.eu',
-  bleCap2:'مباشرة في صفحة الإعداد: حساسان داخل الخلية وواحد خارجها.',
   bleCap2Alt:'هاتف يعرض صفحة الإعداد بثلاثة حساسات بلوتوث: 25.0 °م و26.0 °م داخل الخلية و24.6 °م خارجها',
   t12L:'حساسات البلوتوث (اختيارية)',
   t12V:'حتى 3 × SwitchBot Outdoor Meter: الحرارة والرطوبة، 2 داخل الخلية و1 خارجها',
@@ -1308,18 +1277,22 @@ ar: {
   t11L:'الرخصة', t11V:'رخصة Apache 2.0',
 
   ctaTitle:'لديك سؤال؟ راسلنا.',
-  ctaLead:'سواء أردت بناء محطة، أو ترددت في اختيار القطع، أو رغبت في استعمال المشروع في جمعيتك للنحالين — تكفي رسالة بريد إلكتروني. ونحن نجيب بالألمانية والإنكليزية والعربية.',
+  ctaLead:'تريد بناء محطة؟ محتار في اختيار القطع؟ تود تجربة المشروع في جمعية النحالين عندك؟ تكفي رسالة بريد إلكتروني. نجيب بالألمانية والإنكليزية والعربية.',
   ctaBtn:'أرسل رسالة',
   ctaGit:'اطّلع على دليل التركيب',
 
-  footAbout:'ميزان خلايا مفتوح المصدر للوزن والحرارة. مصمم للخدمة الدائمة في المنحل، لا للعرض في خزانة.',
+  footAbout:'ميزان خلايا مفتوح المصدر للوزن والحرارة. مصمَّم للعمل الدائم في المنحل، لا للعرض في خزانة.',
   footNav:'الأقسام', footContact:'اتصل بنا', footRepo:'المشروع على GitHub',
   footLic:'رخصة Apache 2.0 — استعمله وعدّله وانقله، وللأغراض التجارية أيضاً.'
 }
 
 };
 
-const LANG_STORE = 'tanen-site-lang';
+/* Gemeinsam mit der Einrichtungsseite (setup/, gleiche Adresse): wer hier
+   Englisch waehlt, sieht dort auch Englisch. Der alte Schluessel der
+   Startseite zaehlt nur noch, solange der neue fehlt. */
+const LANG_STORE = 'tb3-lang';
+const LANG_STORE_OLD = 'tanen-site-lang';
 let lang = 'de';
 
 function t(key){ return (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key; }
@@ -1340,21 +1313,63 @@ function applyLang(next){
   document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
 
-  document.querySelectorAll('.lang button').forEach(b => {
-    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  syncLangPicker(lang);
+}
+
+/* Flagge und Name im Knopf, Markierung in der Liste auf die aktuelle Sprache */
+function syncLangPicker(code){
+  const btn = document.querySelector('.lang-btn');
+  document.querySelectorAll('.lang-list button').forEach(b => {
+    if (b.dataset.lang !== code) { b.removeAttribute('aria-current'); return; }
+    b.setAttribute('aria-current', 'true');
+    btn.querySelector('.flag').className = 'flag flag-' + code;
+    const name = btn.querySelector('.lang-name');
+    name.textContent = b.textContent.trim();
+    name.lang = code;
   });
 }
 
-document.querySelectorAll('.lang button').forEach(b => {
-  b.addEventListener('click', () => applyLang(b.dataset.lang));
-});
+/* Klappliste: Klick daneben oder Esc schliesst, Pfeiltasten wandern. */
+function langPicker(onPick){
+  const box = document.querySelector('.lang');
+  const btn = box.querySelector('.lang-btn');
+  const list = box.querySelector('.lang-list');
+  const items = Array.from(list.querySelectorAll('button'));
+  function open(show, focusCur){
+    list.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+    if (show && focusCur) (list.querySelector('[aria-current="true"]') || items[0]).focus();
+  }
+  btn.addEventListener('click', () => open(list.hidden, false));
+  btn.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); open(true, true); }
+  });
+  items.forEach((b, i) => {
+    b.addEventListener('click', () => { onPick(b.dataset.lang); open(false); btn.focus(); });
+    b.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus();
+    });
+  });
+  document.addEventListener('click', e => { if (!box.contains(e.target)) open(false); });
+  /* Esc schliesst zuerst nur die Liste, nicht auch das Menue dahinter. */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || list.hidden) return;
+    e.stopImmediatePropagation();
+    open(false);
+    btn.focus();
+  });
+}
+
+langPicker(applyLang);
 
 /* Deutsch ist die Vorgabe. Nur eine frueher getroffene Wahl geht davor -
    die Sprache des Browsers wird bewusst nicht ausgewertet, damit dieselbe
    Adresse allen dieselbe Seite zeigt, ueber die man sich unterhalten kann. */
 (function initLang(){
   let start = null;
-  try { start = localStorage.getItem(LANG_STORE); } catch (e) {}
+  try { start = localStorage.getItem(LANG_STORE) || localStorage.getItem(LANG_STORE_OLD); } catch (e) {}
   applyLang(I18N[start] ? start : 'de');
 })();
 
