@@ -65,6 +65,29 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   before SETUP returns. Pre-dates Extended Mode; found testing it on a bare board
 
 ### Added
+- **Load-cell profiles — the firmware is no longer tied to the H40A**
+  (2026-09-20). Which cell is fitted is now a runtime setting, picked on the
+  setup page (*Waage → Wägezelle*) and stored in ZMS id 21: generic (no
+  correction), Bosche H40A-C3-0150 (the measured 17.734 g/K · 25 min), four
+  named cells that are not characterised yet (Steinberg SBS-PF-150, Zemic
+  L6E/L6E3, TAL220/TAL220B, Flintec PC/SB — gain 0, so they behave like generic
+  while still recording what is fitted, and a later firmware fills the constants
+  in without the beekeeper touching anything), or own measured values entered as
+  g/K and minutes. The temperature
+  correction reads its two constants from that profile instead of Kconfig, so
+  one image serves every build of the frame; non-custom profiles resolve from
+  the table on every read, never from the stored copy; `CONFIG_TANENBASE_TEMPCOMP` still
+  decides whether the correction is compiled at all and
+  `CONFIG_TANENBASE_LC_DEFAULT_PROFILE` what an unprovisioned unit runs.
+  New GATT characteristic `0x0010` (10 B, reads back the *effective* constants).
+  Changing the profile does not invalidate the tare — the correction is zero at
+  `T_ref` for any gain. **The SBS-PF-150 ships with gain 0 (uncorrected):** it
+  has not been through the thermal sweep, and `k_c` belongs to the cell *plus
+  its mount*, so a borrowed number would add error rather than remove it. New
+  [`docs/load_cells/README.md`](docs/load_cells/README.md) documents the profile
+  table, how to characterise a cell, and how to do it **from a production week**
+  (gain 0, dead weight, 15–30 min uplinks, TTN export → the fit script) instead
+  of a bench sweep
 - **Extended Mode showcased on the landing page and in the README** (2026-09-13):
   own section with the sensor photo and the live setup-page screenshot
   (`media/BLE_Thermometer_Hygrometer_sensor.jpeg`,

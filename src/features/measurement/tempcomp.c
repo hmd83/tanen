@@ -14,6 +14,10 @@
  *
  * k_c is a property of the CELL PLUS ITS MOUNT, not of the H40A — re-characterise
  * after any mechanical change to the frame, and set the gain to 0 to disable.
+ * Both constants come from the load-cell profile the user picked on the setup
+ * page (config_get_lc), so one image serves a generic cell, the H40A and a
+ * re-characterised frame alike; an uncharacterised profile carries gain 0 and
+ * the correction is then a no-op.
  * Full report + the Python/host-replay reference: docs/load_cells/H40A-C3-0150/.
  *
  * Integer only: no float, no libm, no allocation.
@@ -37,6 +41,7 @@ LOG_MODULE_REGISTER(tempcomp, LOG_LEVEL_INF);
 #define Q16 16
 
 static tempcomp_state_t state;    /* mirrored in ZMS */
+static lc_config_t lc;            /* active profile, resolved constants */
 static int32_t  t_ref_mdeg;       /* tare temperature */
 static int64_t  last_sample_ms;
 static bool     have_last_sample; /* false = first sample of this wake */
@@ -94,10 +99,18 @@ static uint32_t elapsed_s(void)
 	return dt;
 }
 
+void tempcomp_reload(void)
+{
+	config_get_lc(&lc);
+	LOG_INF("tempcomp: profile %u gain=%d mg/K tau=%us",
+		lc.id, lc.gain_mg_per_k, lc.tau_s);
+}
+
 void tempcomp_init(void)
 {
 	config_get_tempcomp_state(&state);
 	config_get_tare_temp(&t_ref_mdeg);
+	config_get_lc(&lc);
 	have_last_sample = false;
 
 	/* Only a timer wake has a known gap since the last sample. After a
@@ -107,9 +120,8 @@ void tempcomp_init(void)
 		state.primed = 0;
 	}
 
-	LOG_INF("tempcomp: gain=%d mg/K tau=%us T_ref=%d.%03d C t_eff=%s",
-		CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K,
-		CONFIG_TANENBASE_TEMPCOMP_TAU_S,
+	LOG_INF("tempcomp: profile=%u gain=%d mg/K tau=%us T_ref=%d.%03d C t_eff=%s",
+		lc.id, lc.gain_mg_per_k, lc.tau_s,
 		t_ref_mdeg / 1000, abs(t_ref_mdeg % 1000),
 		state.primed ? "restored" : "re-seeding");
 }
@@ -124,7 +136,7 @@ int32_t tempcomp_correction_mg(int32_t t_mdeg)
 		state.t_eff_mdeg = t_mdeg;
 		state.primed = 1;
 	} else {
-		int32_t a = alpha_q16(dt_s, CONFIG_TANENBASE_TEMPCOMP_TAU_S);
+		int32_t a = alpha_q16(dt_s, lc.tau_s);
 		int64_t err = (int64_t)t_mdeg - (int64_t)state.t_eff_mdeg;
 
 		state.t_eff_mdeg += (int32_t)((err * a) >> Q16);
@@ -132,10 +144,11 @@ int32_t tempcomp_correction_mg(int32_t t_mdeg)
 
 	/* dT is milli-kelvin and the gain is milligram per kelvin:
 	 *     correction[mg] = gain[mg/K] * dT[mK] / 1000
-	 * Worst case 17734 mg/K * 60000 mK ~= 1.06e9 — fits int64 easily, and
-	 * the int32 result holds far more than the cell's E_max. */
+	 * Worst case is the LC_GAIN_MAX_MG_PER_K ceiling, 200000 mg/K * 60000 mK
+	 * ~= 1.2e10 — fits int64 easily, and the int32 result holds far more than
+	 * the cell's E_max. */
 	int64_t d_mk = (int64_t)state.t_eff_mdeg - (int64_t)t_ref_mdeg;
-	int64_t corr = ((int64_t)CONFIG_TANENBASE_TEMPCOMP_GAIN_MG_PER_K * d_mk) / 1000LL;
+	int64_t corr = ((int64_t)lc.gain_mg_per_k * d_mk) / 1000LL;
 
 	LOG_INF("T=%d.%03d C T_eff=%d.%03d C (dt=%us) corr=%+d mg",
 		t_mdeg / 1000, abs(t_mdeg % 1000),

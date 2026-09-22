@@ -180,8 +180,8 @@ die eingelegten Batterien und Funkempfang am Standort.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Wägezelle</strong> (Bosche H40A-C3-0150)</td>
-<td>Der eigentliche Gewichtssensor. Sitzt mittig unter der Waage.</td>
+<td><strong>Wägezelle</strong> (z. B. Bosche H40A-C3-0150)</td>
+<td>Der eigentliche Gewichtssensor. Sitzt mittig unter der Waage. Andere Zellen bis 150 kg gehen auch — Sie stellen sie auf der Bedienseite ein (Kapitel 4.3).</td>
 </tr>
 <tr>
 <td><strong>Waagengestell</strong></td>
@@ -671,13 +671,50 @@ ideal.</p>
 einer Personen- oder Kofferwaage ab. Ein 10-Liter-Kanister <strong>randvoll mit
 Wasser</strong> wiegt 10,0 kg — das ist die einfachste zuverlässige Lösung.</p>
 </blockquote>
-<h3>4.3 Vorbereitung</h3>
+<h3>4.3 Vorbereitung — und einmalig: welche Wägezelle?</h3>
 <ol>
 <li>Roten Knopf drücken, auf <strong>http://tanen.eu/setup</strong> verbinden (Kapitel 3.4).</li>
 <li>Auf den Reiter <strong>„Waage&quot;</strong> tippen.</li>
 </ol>
-<p>Sie sehen jetzt den Ablauf in <strong>drei Schritten</strong> — oben zeigen die Kreise
-<strong>1 – 2 – 3</strong>, wo Sie gerade sind.</p>
+<p>Ganz oben steht die Karte <strong>„Wägezelle&quot;</strong>. Stellen Sie dort <strong>einmal</strong> ein,
+welche Zelle bei Ihnen verbaut ist, und tippen Sie auf <strong>„Wägezelle
+speichern&quot;</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Auswahl</th>
+<th>Wann</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bosche H40A-C3-0150</strong></td>
+<td>Die Zelle aus dem Bausatz. ⭐ Voreingestellt. Sie ist als einzige vermessen — nur sie rechnet die Temperatur wirklich heraus.</td>
+</tr>
+<tr>
+<td><strong>Steinberg SBS-PF-150</strong>, <strong>Zemic L6E / L6E3</strong>, <strong>TAL220 / TAL220B</strong>, <strong>Flintec PC / SB</strong></td>
+<td>Diese Zellen sind <strong>noch nicht vermessen</strong>. Sie laufen vorerst <strong>ohne</strong> Temperatur-Ausgleich — die Station merkt sich aber, welche Zelle bei Ihnen verbaut ist. Kommt später eine Messung dazu, genügt ein Firmware-Update.</td>
+</tr>
+<tr>
+<td><strong>Andere / unbekannt</strong></td>
+<td>Jede andere Zelle, ohne Temperatur-Ausgleich.</td>
+</tr>
+<tr>
+<td><strong>Eigene Messwerte</strong></td>
+<td>Sie haben Ihre Waage selbst über mehrere Tage vermessen und kennen die Abweichung in Gramm je °C.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Warum das wichtig ist:</strong> Metall dehnt sich bei Wärme aus, die Waage zeigt
+dann über den Tag mehrere hundert Gramm zu viel oder zu wenig an. Die Station
+rechnet das heraus — aber nur, wenn sie weiß, wie stark <strong>Ihre</strong> Zelle darauf
+reagiert. Steht dort „Andere / unbekannt&quot;, misst die Waage trotzdem richtig,
+nur schwankt der Wert stärker mit dem Wetter.</p>
+<p>Unter der Auswahl steht in einer Zeile, <strong>womit die Station gerade rechnet</strong>.
+Ein Wechsel der Wägezelle macht ein früheres Nullsetzen übrigens <strong>nicht</strong>
+ungültig.</p>
+<p>Darunter sehen Sie den Ablauf in <strong>drei Schritten</strong> — die Kreise <strong>1 – 2 – 3</strong>
+zeigen, wo Sie gerade sind.</p>
 <h3>4.4 Schritt 1: Nullpunkt setzen (Tarieren)</h3>
 <img src="../media/web_screens/Screenshot_20260902_202428_Chrome.jpg" alt="Schritt 1 der Kalibrierung" width="250">
 <blockquote>
@@ -842,7 +879,7 @@ Gesamtgewicht Ihres Stocks. Notieren Sie diesen Startwert in Ihrem Stockbuch.</p
 </tr>
 <tr>
 <td><strong>Wert wandert über den Tag um mehrere hundert Gramm</strong></td>
-<td>Sonne auf Plattform oder Wägezelle — <strong>oder</strong> der Temperaturfühler liegt nicht mehr an der Zelle an. → Fühler prüfen und neu befestigen (Kapitel 2.4), Waage beschatten.</td>
+<td>Sonne auf Plattform oder Wägezelle — <strong>oder</strong> der Temperaturfühler liegt nicht mehr an der Zelle an — <strong>oder</strong> unter „Waage → Wägezelle&quot; steht eine Zelle ohne Temperatur-Ausgleich. → Fühler prüfen und neu befestigen (Kapitel 2.4), Wägezelle prüfen (Kapitel 4.3), Waage beschatten.</td>
 </tr>
 <tr>
 <td><strong>Wert ist konstant zu hoch oder zu niedrig</strong></td>

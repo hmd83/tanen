@@ -48,7 +48,7 @@ beziehungsweise rund sieben Jahre.
 
 | Teil | Wozu |
 |------|------|
-| **Wägezelle** (Bosche H40A-C3-0150) | Der eigentliche Gewichtssensor. Sitzt mittig unter der Waage. |
+| **Wägezelle** (z. B. Bosche H40A-C3-0150) | Der eigentliche Gewichtssensor. Sitzt mittig unter der Waage. Andere Zellen bis 150 kg gehen auch — Sie stellen sie auf der Bedienseite ein (Kapitel 4.3). |
 | **Waagengestell** | Zwei Platten (oben/unten), zwischen denen die Wägezelle sitzt. Selbst gebaut oder fertig gekauft. |
 | **Elektronik-Gehäuse** | Wetterfeste Box mit durchsichtigem Deckel. Darin steckt die Technik. |
 | **Roter Knopf** | Seitlich am Gehäuse. Damit starten Sie die Einrichtung. |
@@ -470,13 +470,34 @@ Sie einmal beim Aufbau — und danach nur noch selten.
 > einer Personen- oder Kofferwaage ab. Ein 10-Liter-Kanister **randvoll mit
 > Wasser** wiegt 10,0 kg — das ist die einfachste zuverlässige Lösung.
 
-### 4.3 Vorbereitung
+### 4.3 Vorbereitung — und einmalig: welche Wägezelle?
 
 1. Roten Knopf drücken, auf **http://tanen.eu/setup** verbinden (Kapitel 3.4).
 2. Auf den Reiter **„Waage"** tippen.
 
-Sie sehen jetzt den Ablauf in **drei Schritten** — oben zeigen die Kreise
-**1 – 2 – 3**, wo Sie gerade sind.
+Ganz oben steht die Karte **„Wägezelle"**. Stellen Sie dort **einmal** ein,
+welche Zelle bei Ihnen verbaut ist, und tippen Sie auf **„Wägezelle
+speichern"**:
+
+| Auswahl | Wann |
+|---|---|
+| **Bosche H40A-C3-0150** | Die Zelle aus dem Bausatz. ⭐ Voreingestellt. Sie ist als einzige vermessen — nur sie rechnet die Temperatur wirklich heraus. |
+| **Steinberg SBS-PF-150**, **Zemic L6E / L6E3**, **TAL220 / TAL220B**, **Flintec PC / SB** | Diese Zellen sind **noch nicht vermessen**. Sie laufen vorerst **ohne** Temperatur-Ausgleich — die Station merkt sich aber, welche Zelle bei Ihnen verbaut ist. Kommt später eine Messung dazu, genügt ein Firmware-Update. |
+| **Andere / unbekannt** | Jede andere Zelle, ohne Temperatur-Ausgleich. |
+| **Eigene Messwerte** | Sie haben Ihre Waage selbst über mehrere Tage vermessen und kennen die Abweichung in Gramm je °C. |
+
+**Warum das wichtig ist:** Metall dehnt sich bei Wärme aus, die Waage zeigt
+dann über den Tag mehrere hundert Gramm zu viel oder zu wenig an. Die Station
+rechnet das heraus — aber nur, wenn sie weiß, wie stark **Ihre** Zelle darauf
+reagiert. Steht dort „Andere / unbekannt", misst die Waage trotzdem richtig,
+nur schwankt der Wert stärker mit dem Wetter.
+
+Unter der Auswahl steht in einer Zeile, **womit die Station gerade rechnet**.
+Ein Wechsel der Wägezelle macht ein früheres Nullsetzen übrigens **nicht**
+ungültig.
+
+Darunter sehen Sie den Ablauf in **drei Schritten** — die Kreise **1 – 2 – 3**
+zeigen, wo Sie gerade sind.
 
 ### 4.4 Schritt 1: Nullpunkt setzen (Tarieren)
 
@@ -581,7 +602,7 @@ etwas seltsam aussieht, kann Ihr Betreuer damit sofort etwas anfangen.
 | **Wert springt wild hin und her** | Etwas berührt die obere Platte: Gras, Stein, Kabel, Nachbarbeute, Spanngurt. → Spalt rundum freimachen (Regel 3). |
 | **Anzeige immer 0,00 kg, egal was drauf liegt** | Kabel der Wägezelle sitzt nicht fest in der Klemme. → Deckel öffnen, grüne Klemme prüfen. |
 | **Wert ist negativ** | Beim Nullsetzen lag noch etwas auf der Waage, das jetzt fehlt. → Neu tarieren (Kapitel 4.4). |
-| **Wert wandert über den Tag um mehrere hundert Gramm** | Sonne auf Plattform oder Wägezelle — **oder** der Temperaturfühler liegt nicht mehr an der Zelle an. → Fühler prüfen und neu befestigen (Kapitel 2.4), Waage beschatten. |
+| **Wert wandert über den Tag um mehrere hundert Gramm** | Sonne auf Plattform oder Wägezelle — **oder** der Temperaturfühler liegt nicht mehr an der Zelle an — **oder** unter „Waage → Wägezelle" steht eine Zelle ohne Temperatur-Ausgleich. → Fühler prüfen und neu befestigen (Kapitel 2.4), Wägezelle prüfen (Kapitel 4.3), Waage beschatten. |
 | **Wert ist konstant zu hoch oder zu niedrig** | Nullpunkt hat sich verschoben (Waage umgestellt, Boden gesackt). → Neu tarieren. |
 | **Wert ändert sich, je nachdem wo das Gewicht liegt** | Wägezelle nicht fest oder verkantet. → Alle Schrauben nachziehen, mit der Wasserwaage neu ausrichten. |
 | **Plötzlich +200 g nach Regen** | Das ist **echt** — Holz und Beute saugen Wasser. Nach ein bis zwei trockenen Tagen ist es wieder weg. |
