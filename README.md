@@ -151,7 +151,7 @@ through the hive wall and no extra gateway: the node's own nRF54LM20A radio
 listens for them.
 
 <p align="center">
-  <img src="media/BLE_Thermometer_Hygrometer_sensor.jpeg" alt="SwitchBot sensor in a hand, with a Tanen label showing its Bluetooth address and a QR code" width="280">
+  <img src="media/BLE_Thermometer_Hygrometer_sensor.jpeg" alt="SwitchBot sensor with a Tanen label showing a QR code, its Bluetooth address and Tanen.eu" width="280">
   &nbsp;&nbsp;
   <img src="media/screen_shots/BLE_Thermometer_Hygrometer_screen.jpeg" alt="Setup page on a phone showing three Bluetooth sensors: two inside the hive, one outside" width="280">
 </p>
