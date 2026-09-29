@@ -1,0 +1,1 @@
+change  lorawan sucess  notification in german setup page to (LoRaWAN-Funktest: Erfolgreich)  
