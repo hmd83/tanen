@@ -33,6 +33,30 @@ runs inside the hive.*
 
 ---
 
+## In the field: apiary in Bühl (Baden)
+
+A TanenBase runs under a hive in Bühl, Baden. It reports over LoRaWAN to a
+gateway on Windeck Castle, about 4 km away, and sends one reading an hour.
+
+| | |
+|---|---|
+| **Radio link** | ≈ 4 km to the gateway (3.6 km line of sight) |
+| **Reporting** | once an hour |
+| **Gateway** | Kerlink iStation, Windeck Castle, 378 m above sea level |
+| **Live data** | 📈 **[beelogger dashboard — Bühl apiary](https://community.beelogger.de/tanen/beelogger1/beelogger_show.php)** (weight and temperature, updated hourly) |
+
+<p>
+  <img src="site/media/buehl-hive.jpg" alt="Beehive on the weighing platform with the station enclosure and its red button underneath" height="300">
+  <img src="site/media/buehl-gateway.webp" alt="Windeck Castle above vineyards, arrow pointing at the tower carrying the gateway" height="300">
+  <img src="site/media/buehl-map.webp" alt="Map of Bühl with a red 3.6 km line from the gateway to the apiary" height="300">
+</p>
+
+*Left to right: the hive on its platform, the enclosure with the red setup button
+underneath; the gateway tower on Windeck Castle; the 3.6 km path from the
+gateway to the apiary.*
+
+---
+
 ## How it works
 
 The firmware is a **single-pass state machine**, not a loop. Every wake is a cold
@@ -368,7 +392,7 @@ out of direct sun.
 
 ## Status
 
-Running in the field. The core loop — measure, delta-detect, uplink, sleep — is
+Running in the field — see [the Bühl apiary](#in-the-field-apiary-in-bühl-baden). The core loop — measure, delta-detect, uplink, sleep — is
 verified end to end on hardware, including ingestion by both BEEP and the
 beelogger community server from the same uplink. Extended Mode is verified on
 hardware too (2026-09-13): three sensors live in the setup page, their blocks in
