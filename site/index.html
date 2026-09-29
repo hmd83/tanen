@@ -404,6 +404,24 @@ html[dir="rtl"] td{direction:rtl}
    waere von der Bedien-Oberflaeche nur ein Streifen zu sehen. */
 .gallery .screen img{object-fit:contain;background:var(--surface-2);padding:10px}
 
+/* ============================ Einsatz Buehl ============================ */
+.case-title{font-size:1.5rem}
+.case-facts{list-style:none;padding:0;margin:0 0 24px;display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:760px){.case-facts{grid-template-columns:repeat(3,1fr)}}
+.case-facts li{background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.case-facts b{display:block;font-size:1.5rem;font-weight:800;line-height:1.2}
+.case-facts span{color:var(--dim);font-size:.98rem}
+/* Hochkant-Foto links ueber zwei Reihen, rechts Gateway und Karte. */
+@media (min-width:760px){.case-gallery .portrait{grid-row:span 2}.case-gallery .portrait img{max-block-size:none;block-size:100%}}
+.case-gallery .shot:not(.portrait) img{aspect-ratio:auto}
+.case-dash{
+  margin-block-start:24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);
+}
+.case-dash h4{font-size:1.2rem;font-weight:800;margin:0 0 4px}
+.case-dash p{margin:0;color:var(--dim)}
+@media (max-width:759px){.case-dash .btn{inline-size:100%}}
+
 /* ================================ Kontakt ================================ */
 .contact{
   background:var(--surface);border:3px solid var(--border-strong);border-radius:24px;
@@ -765,10 +783,6 @@ footer p{font-size:.98rem;color:var(--dim)}
 
     <div class="gallery">
       <figure class="shot">
-        <img src="media/platform-2.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wiegeplattform aus Holz mit aufgesetztem Bienenstock im Freien" data-i18n-alt="cap1Alt">
-        <figcaption data-i18n="cap1">Die Plattform im Einsatz: Der Stock steht auf der Waage, das wetterfeste Gehäuse an der Seite trägt Elektronik und Batterie.</figcaption>
-      </figure>
-      <figure class="shot">
         <img src="media/loadcell.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wägezelle zwischen zwei Stahlplatten verschraubt" data-i18n-alt="cap2Alt">
         <figcaption data-i18n="cap2">Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.</figcaption>
       </figure>
@@ -786,6 +800,40 @@ footer p{font-size:.98rem;color:var(--dim)}
           </a>
         </div>
       </figure>
+    </div>
+
+    <div class="sec-head" style="margin-block:52px 24px" id="buehl">
+      <h3 class="case-title" data-i18n="caseTitle">Im Einsatz: Bienenstand in Bühl (Baden)</h3>
+      <p data-i18n="caseLead">Ein TanenBase unter einem Bienenstock in Bühl. Die Station funkt per LoRaWAN an ein Gateway auf der Burg Windeck, rund 4 km entfernt, und schickt jede Stunde einen Messwert.</p>
+    </div>
+
+    <ul class="case-facts">
+      <li><b data-i18n="cf1V">≈ 4 km</b><span data-i18n="cf1L">Funkstrecke zum Gateway (3,6 km Luftlinie)</span></li>
+      <li><b data-i18n="cf2V">1 × pro Stunde</b><span data-i18n="cf2L">Sendeintervall der Messwerte</span></li>
+      <li><b data-i18n="cf3V">LoRaWAN</b><span data-i18n="cf3L">Kerlink iStation, Burg Windeck, 378 m ü. NN</span></li>
+    </ul>
+
+    <div class="gallery case-gallery">
+      <figure class="shot portrait">
+        <img src="media/buehl-hive.jpg" width="693" height="1500" loading="lazy" decoding="async" alt="Bienenstock auf der Wiegeplattform, darunter das Gehäuse der Station mit rotem Knopf" data-i18n-alt="case1Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/buehl-gateway.webp" width="1119" height="709" loading="lazy" decoding="async" alt="Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway" data-i18n-alt="case2Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/buehl-map.webp" width="813" height="759" loading="lazy" decoding="async" alt="Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand" data-i18n-alt="case3Alt">
+      </figure>
+    </div>
+
+    <div class="case-dash">
+      <div>
+        <h4 data-i18n="caseDashTitle">Live-Daten des Bienenstands Bühl</h4>
+        <p data-i18n="caseDash">Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.</p>
+      </div>
+      <a class="btn" href="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        <span data-i18n="caseDashLink">Live-Daten ansehen</span>
+      </a>
     </div>
 
     <div class="sec-head" style="margin-block:52px 24px">
@@ -974,8 +1022,17 @@ de: {
 
   mediaTitle:'Aus der Praxis',
   mediaLead:'Keine Zeichnungen, sondern Aufnahmen der Geräte, mit denen die Zahlen auf dieser Seite gemessen wurden.',
-  cap1:'Die Plattform im Einsatz: Der Stock steht auf der Waage, das wetterfeste Gehäuse an der Seite trägt Elektronik und Batterie.',
-  cap1Alt:'Wiegeplattform aus Holz mit aufgesetztem Bienenstock im Freien',
+  caseTitle:'Im Einsatz: Bienenstand in Bühl (Baden)',
+  caseLead:'Ein TanenBase unter einem Bienenstock in Bühl. Die Station funkt per LoRaWAN an ein Gateway auf der Burg Windeck, rund 4 km entfernt, und schickt jede Stunde einen Messwert.',
+  cf1V:'≈ 4 km', cf1L:'Funkstrecke zum Gateway (3,6 km Luftlinie)',
+  cf2V:'1 × pro Stunde', cf2L:'Sendeintervall der Messwerte',
+  cf3V:'LoRaWAN', cf3L:'Kerlink iStation, Burg Windeck, 378 m ü. NN',
+  case1Alt:'Bienenstock auf der Wiegeplattform, darunter das Gehäuse der Station mit rotem Knopf',
+  case2Alt:'Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway',
+  case3Alt:'Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand',
+  caseDash:'Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.',
+  caseDashLink:'Live-Daten ansehen',
+  caseDashTitle:'Live-Daten des Bienenstands Bühl',
   cap2:'Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.',
   cap2Alt:'Wägezelle zwischen zwei Stahlplatten verschraubt',
   cap3:'Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.',
@@ -1107,8 +1164,17 @@ en: {
 
   mediaTitle:'From the field',
   mediaLead:'Not renderings — photographs of the very equipment the numbers on this page were measured on.',
-  cap1:'The platform in service: the hive stands on the scale, and the weatherproof enclosure beside it holds the electronics and the battery.',
-  cap1Alt:'Wooden weighing platform outdoors with a beehive placed on it',
+  caseTitle:'In use: apiary in Bühl (Baden)',
+  caseLead:'A TanenBase under a hive in Bühl. The station talks LoRaWAN to a gateway on Windeck Castle, about 4 km away, and sends a reading every hour.',
+  cf1V:'≈ 4 km', cf1L:'Radio link to the gateway (3.6 km line of sight)',
+  cf2V:'Once an hour', cf2L:'Transmission interval',
+  cf3V:'LoRaWAN', cf3L:'Kerlink iStation, Windeck Castle, 378 m above sea level',
+  case1Alt:'Beehive on the weighing platform with the station enclosure and its red button underneath',
+  case2Alt:'Windeck Castle above vineyards, arrow pointing at the tower carrying the gateway',
+  case3Alt:'Map of Bühl with a red 3.6 km line from the gateway to the apiary',
+  caseDash:'Weight and temperature of this hive, updated hourly on the beelogger dashboard.',
+  caseDashLink:'View live data',
+  caseDashTitle:'Live data from the Bühl apiary',
   cap2:'The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.',
   cap2Alt:'Load cell bolted between two steel plates',
   cap3:'The build inside the enclosure: processor, radio module with its antenna, and the load-cell amplifier. Every part is available separately.',
@@ -1240,8 +1306,17 @@ ar: {
 
   mediaTitle:'من الميدان',
   mediaLead:'ليست رسوماً تخيلية، بل صور الأجهزة نفسها التي قيست بها أرقام هذه الصفحة.',
-  cap1:'المنصة في الخدمة: الخلية فوق الميزان، وبجانبها علبة مقاومة للطقس فيها الإلكترونيات والبطارية.',
-  cap1Alt:'منصة وزن خشبية في الهواء الطلق وعليها خلية نحل',
+  caseTitle:'في الميدان: منحل في بول (بادن)',
+  caseLead:'جهاز TanenBase تحت خلية نحل في بول. ترسل المحطة عبر LoRaWAN إلى بوابة فوق قلعة فيندك على بعد نحو 4 كم، وتبعث قراءة كل ساعة.',
+  cf1V:'≈ 4 كم', cf1L:'مسافة الاتصال اللاسلكي إلى البوابة (3.6 كم خط مستقيم)',
+  cf2V:'مرة كل ساعة', cf2L:'فاصل إرسال القراءات',
+  cf3V:'LoRaWAN', cf3L:'Kerlink iStation، قلعة فيندك، ارتفاع 378 م',
+  case1Alt:'خلية نحل فوق منصة الوزن وتحتها علبة المحطة بزر أحمر',
+  case2Alt:'قلعة فيندك فوق كروم العنب وسهم يشير إلى البرج الذي عليه البوابة',
+  case3Alt:'خريطة بول وعليها خط أحمر بطول 3.6 كم من البوابة إلى المنحل',
+  caseDash:'وزن هذه الخلية وحرارتها، تُحدَّث كل ساعة على لوحة beelogger.',
+  caseDashLink:'عرض البيانات المباشرة',
+  caseDashTitle:'البيانات المباشرة لمنحل بول',
   cap2:'حساس الوزن بين صفيحتين فولاذيتين. هذه القطعة نفسها اختُبرت ستة أيام في الهواء الطلق بوزن معروف.',
   cap2Alt:'حساس وزن مثبت ببراغٍ بين صفيحتين فولاذيتين',
   cap3:'داخل العلبة: المعالج، وحدة الإرسال مع هوائيها، ومضخّم حساس الوزن. كل قطعة تُشترى منفردة.',
