@@ -414,9 +414,13 @@ html[dir="rtl"] td{direction:rtl}
 /* Hochkant-Foto links ueber zwei Reihen, rechts Gateway und Karte. */
 @media (min-width:760px){.case-gallery .portrait{grid-row:span 2}.case-gallery .portrait img{max-block-size:none;block-size:100%}}
 .case-gallery .shot:not(.portrait) img{aspect-ratio:auto}
-.case-dash{margin-block-start:24px}
-.case-dash iframe{display:block;inline-size:100%;block-size:720px;border:0;background:#fff}
-@media (max-width:759px){.case-dash iframe{block-size:560px}}
+.case-dash{
+  margin-block-start:24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);
+}
+.case-dash h4{font-size:1.2rem;font-weight:800;margin:0 0 4px}
+.case-dash p{margin:0;color:var(--dim)}
+@media (max-width:759px){.case-dash .btn{inline-size:100%}}
 
 /* ================================ Kontakt ================================ */
 .contact{
@@ -824,10 +828,16 @@ footer p{font-size:.98rem;color:var(--dim)}
       </figure>
     </div>
 
-    <figure class="shot case-dash">
-      <iframe src="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" title="Live-Daten des Bienenstands Bühl" data-i18n-title="caseDashTitle" loading="lazy" referrerpolicy="no-referrer"></iframe>
-      <figcaption><span data-i18n="caseDash">Live-Daten dieses Stocks, direkt aus dem beelogger-Dashboard.</span> <a href="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" target="_blank" rel="noopener" data-i18n="caseDashLink">Im neuen Fenster öffnen</a></figcaption>
-    </figure>
+    <div class="case-dash">
+      <div>
+        <h4 data-i18n="caseDashTitle">Live-Daten des Bienenstands Bühl</h4>
+        <p data-i18n="caseDash">Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.</p>
+      </div>
+      <a class="btn" href="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        <span data-i18n="caseDashLink">Live-Daten ansehen</span>
+      </a>
+    </div>
 
     <div class="sec-head" style="margin-block:52px 24px">
       <h2 data-i18n="techTitle">Technische Angaben</h2>
@@ -1026,8 +1036,8 @@ de: {
   case2Alt:'Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway',
   case3:'Die Funkstrecke: 3,6 km Luftlinie vom Gateway bis zum Stock, über die Stadt hinweg.',
   case3Alt:'Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand',
-  caseDash:'Live-Daten dieses Stocks, direkt aus dem beelogger-Dashboard.',
-  caseDashLink:'Im neuen Fenster öffnen',
+  caseDash:'Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.',
+  caseDashLink:'Live-Daten ansehen',
   caseDashTitle:'Live-Daten des Bienenstands Bühl',
   cap2:'Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.',
   cap2Alt:'Wägezelle zwischen zwei Stahlplatten verschraubt',
@@ -1171,8 +1181,8 @@ en: {
   case2Alt:'Windeck Castle above vineyards, arrow pointing at the tower carrying the gateway',
   case3:'The radio link: 3.6 km in a straight line from the gateway to the hive, across the town.',
   case3Alt:'Map of Bühl with a red 3.6 km line from the gateway to the apiary',
-  caseDash:'Live data from this hive, straight from the beelogger dashboard.',
-  caseDashLink:'Open in a new window',
+  caseDash:'Weight and temperature of this hive, updated hourly on the beelogger dashboard.',
+  caseDashLink:'View live data',
   caseDashTitle:'Live data from the Bühl apiary',
   cap2:'The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.',
   cap2Alt:'Load cell bolted between two steel plates',
@@ -1316,8 +1326,8 @@ ar: {
   case2Alt:'قلعة فيندك فوق كروم العنب وسهم يشير إلى البرج الذي عليه البوابة',
   case3:'مسار الإرسال: 3.6 كم بخط مستقيم من البوابة إلى الخلية فوق المدينة.',
   case3Alt:'خريطة بول وعليها خط أحمر بطول 3.6 كم من البوابة إلى المنحل',
-  caseDash:'بيانات هذه الخلية مباشرة من لوحة beelogger.',
-  caseDashLink:'فتح في نافذة جديدة',
+  caseDash:'وزن هذه الخلية وحرارتها، تُحدَّث كل ساعة على لوحة beelogger.',
+  caseDashLink:'عرض البيانات المباشرة',
   caseDashTitle:'البيانات المباشرة لمنحل بول',
   cap2:'حساس الوزن بين صفيحتين فولاذيتين. هذه القطعة نفسها اختُبرت ستة أيام في الهواء الطلق بوزن معروف.',
   cap2Alt:'حساس وزن مثبت ببراغٍ بين صفيحتين فولاذيتين',
@@ -1389,7 +1399,6 @@ function applyLang(next){
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.setAttribute('title', t(el.dataset.i18nTitle)); });
 
   syncLangPicker(lang);
 }
