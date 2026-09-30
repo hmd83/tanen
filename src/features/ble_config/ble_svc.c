@@ -812,6 +812,7 @@ static void lora_test_entry(void *p1, void *p2, void *p3)
     }
 
     LOG_INF("LoRa test: init + join...");
+    lora_set_manual(true);   /* installer present: no SF12 backoff/skip */
     err = lora_init();
     if (err) {
         LOG_ERR("LoRa init failed: %d", err);
@@ -845,6 +846,7 @@ static void lora_test_entry(void *p1, void *p2, void *p3)
     notify_cmd_status(CMD_TEST_LORA, err ? 2 : 0);
 
 out:
+    lora_set_manual(false);   /* a later FSM TX this boot is routine again */
     atomic_set(&lora_test_running, 0);
     atomic_clear(&pending_cmd);
 }

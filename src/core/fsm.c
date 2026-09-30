@@ -171,6 +171,10 @@ static void fsm_measure_and_decide(void)
                     config_set_last_tx_temp(data.temp_cc);
                 }
                 config_set_tx_pending(0);
+            } else if (err == LORA_TX_SKIPPED) {
+                /* Deliberately not sent (SF12 fair use): no retry, and the
+                 * delta baseline stays on the last frame actually sent. */
+                config_set_tx_pending(0);
             } else {
                 config_set_tx_pending(1);
             }

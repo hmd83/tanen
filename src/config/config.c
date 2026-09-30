@@ -33,6 +33,7 @@ LOG_MODULE_REGISTER(config, LOG_LEVEL_DBG);
 #define ZMS_TARE_TEMP_ID              19  /* temperature at tare = correction T_ref */
 #define ZMS_EXT_CONFIG_ID             20  /* Extended Mode BLE sensor slots */
 #define ZMS_LC_CONFIG_ID              21  /* load-cell profile (tempcomp constants) */
+#define ZMS_MAC_CMDS_ID               22  /* pending LoRaMAC answers (RAM-only in the MAC) */
 
 /* ext_config_t is the ZMS record and the GATT value — no padding allowed */
 BUILD_ASSERT(sizeof(ext_config_t) == 2 + EXT_SLOTS * 8);
@@ -358,6 +359,35 @@ int config_session_clear(void)
 	return zms_delete(&zms, ZMS_SESSION_ID);
 }
 
+/* Pending uplink MAC answers. Written only when the MAC queued some (rare once
+ * ADR settles); an empty set deletes the record, but only if one exists, so a
+ * quiet wake costs no flash write. */
+int config_mac_cmds_save(const uint8_t *buf, size_t len)
+{
+	if (!zms_ready) {
+		return -ENODEV;
+	}
+	if (len == 0) {
+		uint8_t probe;
+
+		if (zms_read(&zms, ZMS_MAC_CMDS_ID, &probe, sizeof(probe)) < 0) {
+			return 0;
+		}
+		return zms_delete(&zms, ZMS_MAC_CMDS_ID);
+	}
+	return zms_store(ZMS_MAC_CMDS_ID, buf, len);
+}
+
+int config_mac_cmds_load(uint8_t *buf, size_t cap)
+{
+	if (!zms_ready) {
+		return 0;
+	}
+	ssize_t rd = zms_read(&zms, ZMS_MAC_CMDS_ID, buf, cap);
+
+	return (rd > 0) ? (int)MIN((size_t)rd, cap) : 0;
+}
+
 /* Link-health state. Defaults to healthy (forced_dr=-1) when never stored. */
 int config_get_link_state(link_state_t *st)
 {
@@ -366,6 +396,7 @@ int config_get_link_state(link_state_t *st)
 		st->link_fail = 0;
 		st->join_fail = 0;
 		st->forced_dr = -1;
+		st->join_wait = 0;
 	}
 	return 0;
 }

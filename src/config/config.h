@@ -23,6 +23,12 @@ int config_session_save(const void *data, size_t len);
 int config_session_load(void *data, size_t len);
 int config_session_clear(void);
 
+/* Pending LoRaMAC uplink answers (serialized CID+payload), persisted across
+ * System OFF because the MAC keeps them in RAM only. load returns the byte
+ * count (0 = none). */
+int config_mac_cmds_save(const uint8_t *buf, size_t len);
+int config_mac_cmds_load(uint8_t *buf, size_t cap);
+
 /* LoRaWAN link-health state — persisted across System OFF so the recovery
  * ladder advances over wakes (RAM is wiped each cycle). */
 typedef struct {
@@ -30,6 +36,7 @@ typedef struct {
 	uint8_t  link_fail;     /* consecutive confirmed-probe no-ACKs */
 	uint8_t  join_fail;     /* consecutive OTAA join failures */
 	int8_t   forced_dr;     /* -1 = ADR/healthy; >=0 = pinned DR (degraded) */
+	uint16_t join_wait;     /* wakes to skip before the next SF12 join try */
 } link_state_t;
 
 int config_get_link_state(link_state_t *st);

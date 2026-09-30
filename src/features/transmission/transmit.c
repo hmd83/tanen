@@ -82,6 +82,9 @@ int transmit_run(const measurement_data_t *data, const ext_data_t *ext, uint8_t 
     bool confirmed = (flags & ANOMALY_FLAG_WEIGHT) != 0;
 
     int err = lora_send(payload, len, confirmed);
+    if (err == LORA_TX_SKIPPED) {
+        return err;   /* SF12 fair-use skip — not a failure */
+    }
     if (err) {
         LOG_ERR("Uplink failed: %d", err);
         return err;
