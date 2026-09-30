@@ -271,7 +271,13 @@ figure{margin:0}
   padding:5px;background:#0c1017;border-radius:22px;
   box-shadow:0 4px 0 rgba(12,16,23,.12),0 16px 34px rgba(12,16,23,.30);
 }
-.hero-phone img{inline-size:100%;border-radius:17px}
+/* Im Handy laeuft phone-demo.html: gezeichnet mit 420 x 910 px wie auf
+   einem echten Handy, per Skript auf die Breite des Rahmens verkleinert. */
+.hero-phone-screen{position:relative;aspect-ratio:420/910;overflow:hidden;border-radius:17px;background:#eaeef5}
+.hero-phone-screen iframe{
+  position:absolute;top:0;left:0;inline-size:420px;block-size:910px;border:0;
+  transform-origin:0 0;pointer-events:none;
+}
 .shot{
   border:3px solid var(--border-strong);border-radius:var(--r);overflow:hidden;
   background:var(--surface-2);box-shadow:var(--shadow);
@@ -544,8 +550,11 @@ footer p{font-size:.98rem;color:var(--dim)}
         <div class="hero-photo">
           <img src="media/bees-hive.jpg" width="1280" height="853" alt="Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese" data-i18n-alt="heroAlt" fetchpriority="high" decoding="async">
         </div>
-        <div class="hero-phone">
-          <img src="media/setup-page.jpg" width="443" height="795" alt="Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C" data-i18n-alt="heroPhoneAlt" decoding="async">
+        <div class="hero-phone" role="img" aria-label="Handy mit der Einrichtungsseite: Gewicht 41,36 kg, Temperatur 21,4 °C, ein Bluetooth-Sensor im Bienenstock mit 34,8 °C" data-i18n-al="heroPhoneAlt">
+          <!-- Nachbildung der Uebersicht der Einrichtungsseite, Beispielwerte -->
+          <div class="hero-phone-screen">
+            <iframe src="phone-demo.html" width="420" height="910" title="Vorschau der Einrichtungsseite" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
+          </div>
         </div>
       </figure>
     </div>
@@ -944,7 +953,7 @@ de: {
   heroBtn3:'Station einrichten',
   heroNote:'Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu',
   heroAlt:'Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese',
-  heroPhoneAlt:'Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C',
+  heroPhoneAlt:'Handy mit der Einrichtungsseite: Gewicht 41,36 kg, Temperatur 21,4 °C, ein Bluetooth-Sensor im Bienenstock mit 34,8 °C',
   photoBy:'Foto',
   stat1:'Stromaufnahme im Ruhezustand',
   statY:'Jahre',
@@ -1084,7 +1093,7 @@ en: {
   heroBtn3:'Set up a station',
   heroNote:'Apache License 2.0 — free to use, commercially as well. Questions to info@tanen.eu',
   heroAlt:'Bees flying in front of the entrance of their hive, green meadow behind',
-  heroPhoneAlt:'Phone showing the setup page: weight 1.67 kg, temperature 23.0 °C',
+  heroPhoneAlt:'Phone showing the setup page: weight 41.36 kg, temperature 21.4 °C, one Bluetooth sensor inside the hive at 34.8 °C',
   photoBy:'Photo',
   stat1:'current draw while asleep',
   statY:'years',
@@ -1224,7 +1233,7 @@ ar: {
   heroBtn3:'إعداد المحطة',
   heroNote:'رخصة Apache 2.0 — مجاني للجميع، حتى للاستعمال التجاري. للأسئلة: info@tanen.eu',
   heroAlt:'نحل يطير أمام مدخل خليته، ومن خلفه مرج أخضر',
-  heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 1.67 كغ، الحرارة 23.0 °م',
+  heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 41.36 كغ، الحرارة 21.4 °م، وحساس بلوتوث داخل الخلية عند 34.8 °م',
   photoBy:'صورة',
   stat1:'استهلاك التيار أثناء السكون',
   statY:'سنة',
@@ -1373,7 +1382,23 @@ function applyLang(next){
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
 
   syncLangPicker(lang);
+  const demo = document.querySelector('.hero-phone iframe');
+  try { if (demo && demo.contentWindow.tbDemoLang) demo.contentWindow.tbDemoLang(lang); } catch (e) {}
 }
+
+/* Handy im Kopfbereich: Vorschau auf die Rahmenbreite verkleinern */
+(function(){
+  const box = document.querySelector('.hero-phone-screen');
+  if (!box) return;
+  const frame = box.querySelector('iframe');
+  const fit = () => { frame.style.transform = 'scale(' + (box.clientWidth / 420) + ')'; };
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(box);
+  else addEventListener('resize', fit);
+  frame.addEventListener('load', () => {
+    try { frame.contentWindow.tbDemoLang(lang); } catch (e) {}
+  });
+})();
 
 /* Flagge und Name im Knopf, Markierung in der Liste auf die aktuelle Sprache */
 function syncLangPicker(code){

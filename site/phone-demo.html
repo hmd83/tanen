@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=420">
+<meta name="robots" content="noindex">
+<title>TanenBase – Vorschau</title>
+<!-- Nachbildung der Uebersicht der Einrichtungsseite (setup/) fuer das Handy
+     auf der Startseite. Aussehen = Stylesheet von setup/index.html, 1:1
+     uebernommen; die Werte sind Beispieldaten, keine Station ist verbunden.
+     Wird mit 420 x 910 px gezeichnet und von der Startseite verkleinert. -->
+<style>
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;
+  --surface:#ffffff;
+  --surface-2:#e4eaf4;
+  --border:#8f9cb5;
+  --border-strong:#4a5568;
+  --text:#0c1017;          /* 18:1 auf Weiss */
+  --dim:#39445a;           /* 9.6:1 auf Weiss */
+  --accent:#f0a500;        /* Marken-Gelb - immer Flaeche, nie Text */
+  --accent-ink:#231800;
+  --accent-edge:#a06d00;
+  --accent-soft:#fff4dc;
+  --green:#0a6b33;
+  --green-soft:#e2f3e8;
+  --red:#9e1030;
+  --red-soft:#fdeaee;
+  --blue:#0f4c96;
+  --blue-soft:#e6eefa;
+  --nav-h:80px;
+  --r:18px;
+  --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100dvh;line-height:1.55;font-size:1rem;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input{font:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+/* ============================ Kopfbereich ============================ */
+.appbar{
+  position:sticky;top:0;z-index:30;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:var(--surface);border-bottom:3px solid var(--border-strong);
+}
+.brand{order:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;flex:1 1 auto}
+.brand-mark{
+  inline-size:40px;block-size:40px;border-radius:11px;flex:none;
+  background:var(--accent);border:2px solid var(--accent-edge);
+  display:grid;place-items:center;color:var(--accent-ink);
+}
+.brand-mark svg{inline-size:26px;block-size:26px}
+.conn-pill{
+  order:3;flex:0 0 auto;
+  display:none;align-items:center;gap:8px;
+  font-size:.85rem;font-weight:700;color:var(--dim);
+  border:2px solid var(--border);border-radius:999px;padding:5px 12px;
+  background:var(--surface-2);white-space:nowrap;
+}
+.conn-pill .led{inline-size:11px;block-size:11px;border-radius:50%;background:var(--border-strong);flex:none}
+.conn-pill.on{display:inline-flex;color:#06381b;background:var(--green-soft);border-color:var(--green)}
+.conn-pill.on .led{background:var(--green)}
+
+
+.lang{position:relative;flex:none;order:2}
+.lang-btn{
+  display:flex;align-items:center;gap:10px;min-block-size:54px;padding:6px 12px;
+  font:inherit;color:var(--text);cursor:pointer;text-align:start;
+  border:3px solid var(--border-strong);border-radius:14px;background:var(--surface-2);
+}
+
+.lang-txt{display:flex;flex-direction:column;line-height:1.2}
+.lang-cap{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.lang-name{font-size:1rem;font-weight:800;min-inline-size:5.2em}
+.lang-chev{inline-size:20px;block-size:20px;flex:none}
+
+.flag{inline-size:30px;block-size:20px;flex:none;border-radius:3px;background:center/cover no-repeat;box-shadow:0 0 0 1px rgba(12,16,23,.35)}
+.flag-de{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Cpath fill='%23000' d='M0 0h5v1H0z'/%3E%3Cpath fill='%23D00' d='M0 1h5v1H0z'/%3E%3Cpath fill='%23FFCE00' d='M0 2h5v1H0z'/%3E%3C/svg%3E")}
+.flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
+.flag-ar{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cpath fill='%23007A3D' d='M0 0h900v200H0z'/%3E%3Cpath fill='%23fff' d='M0 200h900v200H0z'/%3E%3Cpath d='M0 400h900v200H0z'/%3E%3Cg fill='%23CE1126'%3E%3Cpath transform='translate(225 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(450 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(675 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3C/g%3E%3C/svg%3E")}
+
+
+.home-link{
+  order:4;flex:1 1 100%;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-block-size:56px;padding:10px 18px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  color:var(--text);font-size:1rem;font-weight:800;text-decoration:none;
+}
+.home-link svg{inline-size:24px;block-size:24px;flex:none}
+/* Der Pfeil zeigt im arabischen Satz in die andere Richtung. */
+
+html[dir="rtl"] .home-link svg{transform:scaleX(-1)}
+
+.conn-timer{
+  direction:ltr;font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
+  font-size:.95rem;font-weight:800;line-height:1.2;color:var(--text);
+  background:var(--surface);border:2px solid var(--border-strong);border-radius:8px;
+  padding:2px 9px;flex:none;
+}
+.conn-timer[hidden]{display:none}
+.conn-timer.warn{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.conn-timer.danger{background:var(--red);border-color:#6d0a20;color:#fff;animation:pulse 1.1s steps(1) infinite}
+@keyframes pulse{50%{opacity:.55}}
+
+
+/* ============================== Uebersicht ============================== */
+.gauge-card{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:22px;
+  padding:22px 18px;text-align:center;box-shadow:var(--shadow);margin-block-end:16px;
+}
+.gauge-label{font-size:1.1rem;font-weight:800;color:var(--dim)}
+.gauge-value{
+  direction:ltr;font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
+  font-size:clamp(3.4rem,17vw,4.8rem);font-weight:800;line-height:1.05;color:var(--text);
+}
+.gauge-unit{font-size:1.5rem;font-weight:800;color:var(--dim)}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:430px){.stat-row{grid-template-columns:1fr}}
+.stat{
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
+  padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);
+}
+.stat-ico{inline-size:52px;block-size:52px;border-radius:14px;flex:none;display:grid;place-items:center;border:2px solid}
+.stat-ico.temp{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.stat-ico.batt{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.stat-ico svg{inline-size:28px;block-size:28px}
+.stat b{
+  direction:ltr;display:block;font-family:ui-monospace,Consolas,monospace;
+  font-size:1.7rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums;
+}
+.stat span{font-size:.95rem;font-weight:700;color:var(--dim)}
+
+
+.home-ble-title{font-size:1.1rem;font-weight:800;color:var(--dim);margin-block:18px 10px}
+.stat .ble-line{display:block}
+
+
+/* ============================= untere Leiste ============================= */
+.tabbar{
+  position:fixed;inset-inline:0;bottom:0;z-index:20;display:none;
+  background:var(--surface);border-top:3px solid var(--border-strong);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar.show{display:block}
+.tabbar ul{list-style:none;display:flex;max-width:640px;margin:0 auto}
+.tabbar li{flex:1}
+.tabbar button{
+  inline-size:100%;block-size:var(--nav-h);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--dim);font-size:.82rem;font-weight:800;position:relative;
+}
+.tabbar button svg{inline-size:28px;block-size:28px}
+/* Fuenf Reiter auf 360px: lange Woerter brechen an den weichen Trennstellen
+   (­ in den Texten) um, statt aus dem Reiter zu laufen. */
+.tabbar button span{max-inline-size:100%;padding-inline:3px;text-align:center;line-height:1.15;overflow-wrap:break-word}
+.tabbar button[aria-current="page"]{color:var(--text);background:var(--accent-soft)}
+.tabbar button[aria-current="page"]::before{
+  content:"";position:absolute;top:0;inline-size:100%;block-size:5px;background:var(--accent-edge);
+}
+/* Netzwerk ist Fachmann-Werkzeug: abgesetzt, ruhiger, ausdruecklich beschriftet */
+.tab-adv{border-inline-start:3px dashed var(--border)}
+.tab-adv button{color:#4d576b;background:var(--surface-2)}
+.tab-adv button svg{opacity:.85}
+.tab-adv button[aria-current="page"]{background:var(--accent-soft);color:var(--text)}
+.adv-tag{
+  display:block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:#4d576b;line-height:1.1;
+}
+
+
+main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
+
+/* ---- nur fuer die Vorschau ---- */
+html,body{overflow:hidden;block-size:910px}
+body{min-height:0;pointer-events:none;user-select:none}
+main{padding-block-end:0}
+.tabbar{display:block}
+.conn-pill{display:inline-flex}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+        <ellipse cx="24" cy="18" rx="10" ry="3"/>
+        <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+      </svg>
+    </span>
+    <span data-i18n="brand">TanenBase</span>
+  </div>
+  <div class="conn-pill on">
+    <span class="led" aria-hidden="true"></span>
+    <span data-i18n="pillOn">Verbunden</span>
+    <span class="conn-timer" id="idleTime">2:38</span>
+  </div>
+  <div class="lang">
+    <span class="lang-btn">
+      <span class="flag flag-de" id="flag" aria-hidden="true"></span>
+      <span class="lang-txt"><span class="lang-cap" lang="en">Language</span><span class="lang-name" id="langName">Deutsch</span></span>
+      <svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </span>
+  </div>
+  <span class="home-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    <span data-i18n="home">Zur Startseite</span>
+  </span>
+</header>
+
+<main>
+  <div class="gauge-card">
+    <div class="gauge-label" data-i18n="weight">Gewicht</div>
+    <div class="gauge-value" id="liveW">41,36</div>
+    <div class="gauge-unit" data-i18n="unitKg">kg</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-ico temp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg></span>
+      <div><b id="liveT">21,4</b><span data-i18n="temperature">Temperatur (°C)</span></div>
+    </div>
+    <div class="stat">
+      <span class="stat-ico batt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2"/></svg></span>
+      <div><b id="liveB">4,62</b><span data-i18n="battery">Batterie (Volt)</span></div>
+    </div>
+  </div>
+
+  <h3 class="home-ble-title" data-i18n="bleSensors">Bluetooth-Sensoren</h3>
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-ico temp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg></span>
+      <div><b id="bleT">34,8 °C</b><span class="ble-line" id="bleH">61 % Feuchte</span><span class="ble-line" id="bleR">Sensor 1 · Im Bienenstock</span></div>
+    </div>
+  </div>
+</main>
+
+<nav class="tabbar">
+  <ul>
+    <li><button type="button" tabindex="-1" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 1 18 0"/><path d="M12 12l3.5-3.5"/><path d="M2 12h2M20 12h2"/></svg>
+      <span data-i18n="navHome">Über&shy;sicht</span></button></li>
+    <li><button type="button" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.4"/><circle cx="15" cy="17" r="2.4"/></svg>
+      <span data-i18n="navCal">Waage</span></button></li>
+    <li><button type="button" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.07-.4.1-.8.1-1.2z"/></svg>
+      <span data-i18n="navSet">Einstel&shy;lungen</span></button></li>
+    <li><button type="button" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14.76V5a2 2 0 0 1 4 0v9.76a4 4 0 1 1-4 0z"/><path d="M16.5 7.5a3.5 3.5 0 0 1 0 5"/><path d="M19 5a7 7 0 0 1 0 10"/></svg>
+      <span data-i18n="navExt">Erwei&shy;tert</span></button></li>
+    <li class="tab-adv"><button type="button" tabindex="-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9a7 7 0 0 1 14 0"/><path d="M8 9a4 4 0 0 1 8 0"/><circle cx="12" cy="11" r="1.6"/><path d="M12 13v8"/></svg>
+      <span data-i18n="navNet">Netzwerk</span><small class="adv-tag" data-i18n="advTag">Fachleute</small></button></li>
+  </ul>
+</nav>
+
+<script>
+'use strict';
+/* Texte wie in setup/index.html */
+const I18N = {
+  de: { _dir:'ltr', _locale:'de-DE', _name:'Deutsch',
+    brand:'TanenBase', pillOn:'Verbunden', home:'Zur Startseite',
+    weight:'Gewicht', unitKg:'kg', temperature:'Temperatur (°C)', battery:'Batterie (Volt)',
+    bleSensors:'Bluetooth-Sensoren', bleHum:'% Feuchte', sensor:'Sensor', roleIn:'Im Bienenstock',
+    navHome:'Über­sicht', navCal:'Waage', navSet:'Einstel­lungen', navExt:'Erwei­tert', navNet:'Netzwerk', advTag:'Fachleute' },
+  en: { _dir:'ltr', _locale:'en-US', _name:'English',
+    brand:'TanenBase', pillOn:'Connected', home:'Back to the home page',
+    weight:'Weight', unitKg:'kg', temperature:'Temperature (°C)', battery:'Battery (volts)',
+    bleSensors:'Bluetooth sensors', bleHum:'% humidity', sensor:'Sensor', roleIn:'Inside the hive',
+    navHome:'Overview', navCal:'Scale', navSet:'Settings', navExt:'Extended', navNet:'Network', advTag:'Experts' },
+  ar: { _dir:'rtl', _locale:'ar-EG-u-nu-latn', _name:'العربية',
+    brand:'قاعدة طنين', pillOn:'متصل', home:'العودة إلى الصفحة الرئيسية',
+    weight:'الوزن', unitKg:'كجم', temperature:'الحرارة (°م)', battery:'البطارية (فولت)',
+    bleSensors:'حساسات البلوتوث', bleHum:'% رطوبة', sensor:'حساس', roleIn:'داخل الخلية',
+    navHome:'الرئيسية', navCal:'الميزان', navSet:'الإعدادات', navExt:'متقدم', navNet:'الشبكة', advTag:'للفنيين' }
+};
+let lang = 'de';
+const t = k => I18N[lang][k];
+function fmt(n, d) {
+  try { return n.toLocaleString(I18N[lang]._locale, { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  catch (e) { return n.toFixed(d); }
+}
+const $ = id => document.getElementById(id);
+
+/* Beispielwerte: ein Volk mit gut 41 kg, Brutnest bei knapp 35 °C.
+   Sie schwanken leicht, wie bei einer echten Station. */
+const v = { w: 41.36, t: 21.4, b: 4.62, bt: 34.8, bh: 61 };
+function render() {
+  $('liveW').textContent = fmt(v.w, 2);
+  $('liveT').textContent = fmt(v.t, 1);
+  $('liveB').textContent = fmt(v.b, 2);
+  $('bleT').textContent = fmt(v.bt, 1) + ' °C';
+  $('bleH').textContent = v.bh + ' ' + t('bleHum');
+  $('bleR').textContent = t('sensor') + ' 1 · ' + t('roleIn');
+}
+function drift(x, base, step, span) {
+  const n = x + (Math.random() - .5) * 2 * step;
+  return Math.min(base + span, Math.max(base - span, n));
+}
+setInterval(() => {
+  v.w = drift(v.w, 41.36, .01, .03);
+  v.t = drift(v.t, 21.4, .1, .2);
+  v.bt = drift(v.bt, 34.8, .1, .2);
+  v.bh = Math.round(drift(v.bh, 61, 1, 1));
+  render();
+}, 4000);
+
+/* Rest-Zeit wie auf der echten Seite: 3:00, gelb ab 1:00, rot ab 0:30.
+   Bei 0:00 faengt die Vorschau wieder bei 3:00 an. */
+const SETUP_S = 180, WARN_S = 30;
+let left = 158;
+function tick() {
+  const el = $('idleTime');
+  el.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+  el.classList.toggle('warn', left <= 60 && left > WARN_S);
+  el.classList.toggle('danger', left <= WARN_S);
+  left = left > 0 ? left - 1 : SETUP_S;
+}
+tick();
+setInterval(tick, 1000);
+
+/* Sprache: folgt der Startseite (gleicher Speicher-Schluessel, dazu Aufruf
+   von aussen beim Umschalten). */
+function setLang(next) {
+  if (!I18N[next]) next = 'de';
+  lang = next;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = I18N[lang]._dir;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  $('flag').className = 'flag flag-' + lang;
+  $('langName').textContent = I18N[lang]._name;
+  $('langName').lang = lang;
+  render();
+}
+window.tbDemoLang = setLang;
+let start = 'de';
+try { start = localStorage.getItem('tb3-lang') || 'de'; } catch (e) {}
+setLang(start);
+</script>
+</body>
+</html>
