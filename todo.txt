@@ -1,1 +1,3 @@
-change  lorawan sucess  notification in german setup page to (LoRaWAN-Funktest: Erfolgreich)  
+1-change  lorawan sucess  notification in german setup page to (LoRaWAN-Funktest: Erfolgreich)
+2- add to BLE setup TanenBase Firmware   Ver.No user can see it in network tab 
+3- relase 0.1.0 
