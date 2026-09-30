@@ -13,7 +13,7 @@
 | 7 | NAU7802 gain setting | 128x (default for load cell) |
 | 8 | NAU7802 sample rate | 10 SPS (lowest power) |
 | 9 | DS18B20 resolution | 12-bit (default) |
-| 10 | Max LoRaWAN join retries before sleep | 8 attempts with exponential backoff (Zephyr built-in) |
+| 10 | Max LoRaWAN join retries before sleep | One attempt per wake, DR3→DR0, then SF12 backoff 1/2/4/8 h — see [LORAWAN.md](LORAWAN.md) §3 |
 | 11 | Watchdog timeout | 120 seconds (production only) |
 | 12 | NVS partition size | 4KB |
 

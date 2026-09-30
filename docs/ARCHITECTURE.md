@@ -191,7 +191,7 @@ Single-pass design — `fsm_run()` checks wake reason, executes one pass, ends i
 
 ### LoRaWAN
 - Class A, OTAA, EU868, TTN
-- Built-in Zephyr join retry (no custom retry logic)
+- Join ladder DR3→DR0 + SF12 backoff, ADR, confirmed probes, link-health ladder, MAC answers kept across System OFF — all scenarios in [LORAWAN.md](LORAWAN.md)
 - Big-endian payload encoding
 - Downlink handled in TRANSMISSION state — FPort selects config field, one field per downlink:
   - **10** tx_interval (uint32 BE sec) · **11** ms_interval (uint32 BE sec, ≥60)
