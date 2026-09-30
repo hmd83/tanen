@@ -271,7 +271,15 @@ figure{margin:0}
   padding:5px;background:#0c1017;border-radius:22px;
   box-shadow:0 4px 0 rgba(12,16,23,.12),0 16px 34px rgba(12,16,23,.30);
 }
-.hero-phone img{inline-size:100%;border-radius:17px}
+/* Vorschau der Einrichtungsseite (phone-demo.html): gezeichnet mit
+   420 x 910 px wie auf einem echten Handy, per Skript in den Rahmen
+   eingepasst und mittig gesetzt. */
+.phone-demo{position:relative;overflow:hidden;background:#eaeef5}
+.phone-demo iframe{
+  position:absolute;top:0;left:0;inline-size:420px;block-size:910px;border:0;
+  transform-origin:0 0;pointer-events:none;
+}
+.hero-phone-screen{aspect-ratio:420/910;border-radius:17px}
 .shot{
   border:3px solid var(--border-strong);border-radius:var(--r);overflow:hidden;
   background:var(--surface-2);box-shadow:var(--shadow);
@@ -352,12 +360,14 @@ html[dir="rtl"] .stat b{text-align:right}
 .ble-shots{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .ble-shots .shot{display:flex;flex-direction:column}
 .ble-shots .shot img{aspect-ratio:460/996;object-fit:contain;max-block-size:560px;background:var(--surface-2)}
+.ble-shots .ble-demo{aspect-ratio:420/910;max-block-size:560px}
 /* Nebeneinander bestimmt die Karte die Hoehe: contain:size nimmt den Bildern
    den Einfluss auf die Zeilenhoehe, danach fuellen sie genau diese Hoehe. */
 @media (min-width:980px){
   .ble{align-items:stretch}
   .ble-shots{contain:size}
   .ble-shots .shot img{flex:1 1 0;min-block-size:0;max-block-size:none;aspect-ratio:auto;object-fit:cover}
+  .ble-shots .ble-demo{flex:1 1 0;min-block-size:0;max-block-size:none;aspect-ratio:auto}
 }
 
 /* ======================= Auswerteplattformen ======================= */
@@ -544,8 +554,11 @@ footer p{font-size:.98rem;color:var(--dim)}
         <div class="hero-photo">
           <img src="media/bees-hive.jpg" width="1280" height="853" alt="Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese" data-i18n-alt="heroAlt" fetchpriority="high" decoding="async">
         </div>
-        <div class="hero-phone">
-          <img src="media/setup-page.jpg" width="443" height="795" alt="Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C" data-i18n-alt="heroPhoneAlt" decoding="async">
+        <div class="hero-phone" role="img" aria-label="Handy mit der Einrichtungsseite: Gewicht 41,36 kg, Temperatur 21,4 °C, ein Bluetooth-Sensor im Bienenstock mit 34,8 °C" data-i18n-al="heroPhoneAlt">
+          <!-- Nachbildung der Uebersicht der Einrichtungsseite, Beispielwerte -->
+          <div class="hero-phone-screen phone-demo">
+            <iframe src="phone-demo.html" width="420" height="910" title="Vorschau der Einrichtungsseite" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
+          </div>
         </div>
       </figure>
     </div>
@@ -645,7 +658,9 @@ footer p{font-size:.98rem;color:var(--dim)}
           <img src="media/ble-sensor-label.jpg" width="460" height="996" loading="lazy" decoding="async" alt="Weißer SwitchBot-Sensor mit Tanen-Aufkleber: QR-Code, Bluetooth-Adresse und Tanen.eu" data-i18n-alt="bleCap1Alt">
         </figure>
         <figure class="shot">
-          <img src="media/ble-sensors-screen.jpg" width="460" height="997" loading="lazy" decoding="async" alt="Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen" data-i18n-alt="bleCap2Alt">
+          <div class="phone-demo ble-demo" role="img" aria-label="Handy mit der Einrichtungsseite: ein Bluetooth-Sensor im Bienenstock mit 34,8 °C und 61 % Feuchte" data-i18n-al="bleCap2Alt">
+            <iframe src="phone-demo.html" width="420" height="910" title="Vorschau der Einrichtungsseite" aria-hidden="true" tabindex="-1" scrolling="no" loading="lazy"></iframe>
+          </div>
         </figure>
       </div>
     </div>
@@ -912,7 +927,7 @@ footer p{font-size:.98rem;color:var(--dim)}
       <!-- Nachweis fuer das Startbild. Es stammt nicht aus dem Projekt,
            steht aber nur hier, nicht ueber dem Bild selbst. -->
       <span><span data-i18n="photoBy">Foto</span>: <a href="https://pixabay.com/users/xiserge-15871962/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">xiSerge</a> / <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">Pixabay</a></span>
-      <span>&copy; 2026 TanenBase</span>
+      <span>&copy; 2026 TanenBase <span data-i18n="byLine">von</span> <a href="https://linkedin.com/in/hussein-daj-787196202/" rel="noopener" target="_blank">Hussein Daj</a></span>
     </div>
   </div>
 </footer>
@@ -944,8 +959,9 @@ de: {
   heroBtn3:'Station einrichten',
   heroNote:'Apache-Lizenz 2.0 — kostenlos nutzbar, auch gewerblich. Fragen an info@tanen.eu',
   heroAlt:'Bienen fliegen vor dem Flugloch ihres Stocks, dahinter eine grüne Wiese',
-  heroPhoneAlt:'Handy mit der Einrichtungsseite: Gewicht 1,67 kg, Temperatur 23,0 °C',
+  heroPhoneAlt:'Handy mit der Einrichtungsseite: Gewicht 41,36 kg, Temperatur 21,4 °C, ein Bluetooth-Sensor im Bienenstock mit 34,8 °C',
   photoBy:'Foto',
+  byLine:'von',
   stat1:'Stromaufnahme im Ruhezustand',
   statY:'Jahre',
   stat2:'mit drei AAA-Lithiumzellen (rechnerisch)',
@@ -1049,7 +1065,7 @@ de: {
   b1b:'Der Außen-Sensor liefert die echte Außentemperatur',
   b1c:'Temperatur und Feuchte kommen auch bei BEEP und beelogger an',
   bleCap1Alt:'Weißer SwitchBot-Sensor mit Tanen-Aufkleber: QR-Code, Bluetooth-Adresse und Tanen.eu',
-  bleCap2Alt:'Handy mit der Einrichtungsseite und drei Bluetooth-Sensoren: 25,0 °C und 26,0 °C im Bienenstock, 24,6 °C außen',
+  bleCap2Alt:'Handy mit der Einrichtungsseite: ein Bluetooth-Sensor im Bienenstock mit 34,8 °C und 61 % Feuchte',
   t12L:'Bluetooth-Sensoren (optional)',
   t12V:'bis zu 3 × SwitchBot Outdoor Meter: Temperatur und Luftfeuchte, 2 im Stock, 1 außen',
   t10L:'Rechner', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
@@ -1084,8 +1100,9 @@ en: {
   heroBtn3:'Set up a station',
   heroNote:'Apache License 2.0 — free to use, commercially as well. Questions to info@tanen.eu',
   heroAlt:'Bees flying in front of the entrance of their hive, green meadow behind',
-  heroPhoneAlt:'Phone showing the setup page: weight 1.67 kg, temperature 23.0 °C',
+  heroPhoneAlt:'Phone showing the setup page: weight 41.36 kg, temperature 21.4 °C, one Bluetooth sensor inside the hive at 34.8 °C',
   photoBy:'Photo',
+  byLine:'by',
   stat1:'current draw while asleep',
   statY:'years',
   stat2:'on three AAA lithium cells (calculated)',
@@ -1189,7 +1206,7 @@ en: {
   b1b:'The outside sensor gives the true outside temperature',
   b1c:'Temperature and humidity also reach BEEP and beelogger',
   bleCap1Alt:'White SwitchBot sensor with a Tanen label showing a QR code, its Bluetooth address and Tanen.eu',
-  bleCap2Alt:'Phone showing the setup page with three Bluetooth sensors: 25.0 °C and 26.0 °C inside the hive, 24.6 °C outside',
+  bleCap2Alt:'Phone showing the setup page: one Bluetooth sensor inside the hive at 34.8 °C and 61 % humidity',
   t12L:'Bluetooth sensors (optional)',
   t12V:'up to 3 × SwitchBot Outdoor Meter: temperature and humidity, 2 inside the hive, 1 outside',
   t10L:'Processor', t10V:'Nordic nRF54LM20A, Zephyr / nRF Connect SDK',
@@ -1224,8 +1241,9 @@ ar: {
   heroBtn3:'إعداد المحطة',
   heroNote:'رخصة Apache 2.0 — مجاني للجميع، حتى للاستعمال التجاري. للأسئلة: info@tanen.eu',
   heroAlt:'نحل يطير أمام مدخل خليته، ومن خلفه مرج أخضر',
-  heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 1.67 كغ، الحرارة 23.0 °م',
+  heroPhoneAlt:'هاتف يعرض صفحة الإعداد: الوزن 41.36 كغ، الحرارة 21.4 °م، وحساس بلوتوث داخل الخلية عند 34.8 °م',
   photoBy:'صورة',
+  byLine:'من إعداد',
   stat1:'استهلاك التيار أثناء السكون',
   statY:'سنة',
   stat2:'بثلاث بطاريات ليثيوم AAA (حسابياً)',
@@ -1329,7 +1347,7 @@ ar: {
   b1b:'الحساس الخارجي يعطي الحرارة الخارجية الحقيقية',
   b1c:'الحرارة والرطوبة تصلان أيضاً إلى BEEP وbeelogger',
   bleCap1Alt:'حساس SwitchBot أبيض عليه ملصق Tanen برمز QR وعنوان بلوتوث وTanen.eu',
-  bleCap2Alt:'هاتف يعرض صفحة الإعداد بثلاثة حساسات بلوتوث: 25.0 °م و26.0 °م داخل الخلية و24.6 °م خارجها',
+  bleCap2Alt:'هاتف يعرض صفحة الإعداد: حساس بلوتوث داخل الخلية عند 34.8 °م ورطوبة 61 %',
   t12L:'حساسات البلوتوث (اختيارية)',
   t12V:'حتى 3 × SwitchBot Outdoor Meter: الحرارة والرطوبة، 2 داخل الخلية و1 خارجها',
   t10L:'المعالج', t10V:'Nordic nRF54LM20A، Zephyr / nRF Connect SDK',
@@ -1373,7 +1391,26 @@ function applyLang(next){
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
 
   syncLangPicker(lang);
+  document.querySelectorAll('.phone-demo iframe').forEach(f => {
+    try { if (f.contentWindow.tbDemoLang) f.contentWindow.tbDemoLang(lang); } catch (e) {}
+  });
 }
+
+/* Vorschau der Einrichtungsseite: ganz in den Rahmen einpassen, mittig */
+document.querySelectorAll('.phone-demo').forEach(box => {
+  const frame = box.querySelector('iframe');
+  const fit = () => {
+    const w = box.clientWidth, h = box.clientHeight;
+    const k = Math.min(w / 420, h / 910);
+    frame.style.transform = 'translate(' + (w - 420 * k) / 2 + 'px,' + (h - 910 * k) / 2 + 'px) scale(' + k + ')';
+  };
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(box);
+  else addEventListener('resize', fit);
+  frame.addEventListener('load', () => {
+    try { frame.contentWindow.tbDemoLang(lang); } catch (e) {}
+  });
+});
 
 /* Flagge und Name im Knopf, Markierung in der Liste auf die aktuelle Sprache */
 function syncLangPicker(code){
