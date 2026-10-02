@@ -481,8 +481,9 @@ speichern"**:
 
 | Auswahl | Wann |
 |---|---|
-| **Bosche H40A-C3-0150** | Die Zelle aus dem Bausatz. ⭐ Voreingestellt. Sie ist als einzige vermessen — nur sie rechnet die Temperatur wirklich heraus. |
-| **Steinberg SBS-PF-150**, **Zemic L6E / L6E3**, **TAL220 / TAL220B**, **Flintec PC / SB** | Diese Zellen sind **noch nicht vermessen**. Sie laufen vorerst **ohne** Temperatur-Ausgleich — die Station merkt sich aber, welche Zelle bei Ihnen verbaut ist. Kommt später eine Messung dazu, genügt ein Firmware-Update. |
+| **Bosche H40A-C3-0150** | Die Zelle aus dem Bausatz. ⭐ Voreingestellt. Vermessen — sie rechnet die Temperatur heraus. |
+| **Steinberg SBS-PF-150** | Ebenfalls vermessen, eine Woche im Freien. Rechnet die Temperatur mit aktueller Firmware heraus — eine ältere Firmware lässt sie noch ohne Ausgleich laufen, ein Update genügt. |
+| **Zemic L6E / L6E3**, **TAL220 / TAL220B**, **Flintec PC / SB** | Diese Zellen sind **noch nicht vermessen**. Sie laufen vorerst **ohne** Temperatur-Ausgleich — die Station merkt sich aber, welche Zelle bei Ihnen verbaut ist. Kommt später eine Messung dazu, genügt ein Firmware-Update. |
 | **Andere / unbekannt** | Jede andere Zelle, ohne Temperatur-Ausgleich. |
 | **Eigene Messwerte** | Sie haben Ihre Waage selbst über mehrere Tage vermessen und kennen die Abweichung in Gramm je °C. |
 

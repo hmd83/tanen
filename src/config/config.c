@@ -48,19 +48,18 @@ BUILD_ASSERT(CONFIG_TANENBASE_LC_DEFAULT_PROFILE >= 0 &&
  * tau is the probe-to-cell-body transport lag, a property of the frame and of
  * where the DS18B20 sits, not of the cell: the optimum is broad (15-40 min all
  * within 1 g on the reference unit), so every characterised profile carries the
- * same 1500 s. The gain is what differs, and only the H40A's is measured. */
+ * same 1500 s. The gain is what differs, and only the H40A's and the
+ * SBS-PF-150's are measured. */
 static const struct {
 	int32_t  gain_mg_per_k;
 	uint32_t tau_s;
 } lc_profiles[LC_PROFILE_COUNT] = {
 	[LC_PROFILE_GENERIC] = { 0,     1500 },
 	[LC_PROFILE_H40A]    = { 17734, 1500 },
-	/* Steinberg SBS-PF-150: same 150 kg single-point aluminium class as the
-	 * H40A, but never run through the 40 h thermal sweep. Shipping the H40A
-	 * number here would be a guess that silently ADDS error if this cell
-	 * drifts the other way, so it ships uncorrected — measure the frame and
-	 * enter the result as LC_PROFILE_CUSTOM. */
-	[LC_PROFILE_SBS_PF]  = { 0,     1500 },
+	/* Steinberg SBS-PF-150: fitted from a 114 h production week at gain 0,
+	 * -10.681 g/K, sigma 45 -> 21 g (docs/load_cells/SBS-PF-150/). Not yet
+	 * field-validated with the correction active. */
+	[LC_PROFILE_SBS_PF]  = { 10681, 1500 },
 	/* Custom carries the build defaults only as the starting point a unit
 	 * runs before the setup page stores anything — config_get_lc() takes
 	 * this profile's constants from the record, never from here. */

@@ -74,7 +74,7 @@ int config_set_tempcomp_state(const tempcomp_state_t *st);
  * docs/load_cells/README.md. */
 #define LC_PROFILE_GENERIC  0  /* unknown cell: no correction */
 #define LC_PROFILE_H40A     1  /* Bosche H40A-C3-0150, measured */
-#define LC_PROFILE_SBS_PF   2  /* Steinberg SBS-PF-150, not characterised yet */
+#define LC_PROFILE_SBS_PF   2  /* Steinberg SBS-PF-150, measured */
 #define LC_PROFILE_CUSTOM   3  /* own measurement: gain/tau come from the record */
 /* Named but not characterised — they behave like GENERIC until someone
  * measures one. The label still earns its place: it records what is bolted

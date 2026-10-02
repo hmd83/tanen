@@ -8,6 +8,16 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Changed
+- **Steinberg SBS-PF-150 characterised — load-cell profile 2 now corrects**
+  (2026-10-02): **10681 mg/K · 25 min**, fitted from a 114 h production week
+  on a 10 kg dead weight at gain 0 (11.5–29 °C). σ 45 → 21 g, hold-out `k`
+  stable to 2 %. Units already set to the SBS-PF-150 pick it up with the
+  firmware update; the tare stays valid. Not yet field-validated with the
+  correction active. The run also shows a midday residual dip the probe does
+  not see (sun on the frame) and ends in rain that takes the water load 280 g
+  below its baseline — re-weigh it before trusting that unit. Report:
+  [`docs/load_cells/SBS-PF-150/`](docs/load_cells/SBS-PF-150/); setup page
+  shows a measured-cell hint for it
 - **Power budget: TX with Extended Mode measured at 139 mC** (2026-09-13, PPK2:
   11.13 s, 12.49 mA avg, 77.78 mA peak) — the BLE scan adds 76 mC to the 63 mC
   uplink. Lifetimes recomputed with BLE sensors: 4.6 → **3.3 y** at 15 min / 2 h,

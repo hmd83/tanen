@@ -939,6 +939,7 @@ const I18N = {
     lcUnknown: 'Profil {id} (dieser Seite unbekannt)',
     lcHintOff: 'Ohne Temperatur-Ausgleich. Das Gewicht schwankt dann mit der Tageswärme — bei einer 150-kg-Zelle sind das schnell 300 Gramm.',
     lcHintH40A: 'Die Zelle im TanenBase-Bausatz. Ihre Werte stammen aus einer 40-Stunden-Messreihe am Referenzgerät.',
+    lcHintSBS: 'Ihre Werte stammen aus einer einwöchigen Messreihe im Freien mit festem Gewicht. Ältere Firmware rechnet für diese Zelle noch ohne Ausgleich — ein Update genügt.',
     lcHintRaw: 'Diese Zelle ist noch nicht vermessen. Sie läuft vorerst ohne Ausgleich — die Station merkt sich aber, welche Zelle verbaut ist. Eigene Werte tragen Sie unter „Eigene Messwerte“ ein.',
     lcHintCustom: 'Werte aus einer eigenen Messreihe. Sie gelten für Zelle und Gestell zusammen.',
     lcGain: 'Abweichung (Gramm je °C)', lcTau: 'Nachlauf (Minuten)',
@@ -1060,6 +1061,7 @@ const I18N = {
     lcUnknown: 'Profile {id} (unknown to this page)',
     lcHintOff: 'No temperature correction. The weight then moves with the daily warmth — on a 150 kg cell that is easily 300 grams.',
     lcHintH40A: 'The cell in the TanenBase kit. Its values come from a 40-hour measurement run on the reference unit.',
+    lcHintSBS: 'Its values come from a one-week outdoor run on a fixed weight. Older firmware still runs this cell without correction — an update is all it takes.',
     lcHintRaw: 'This cell has not been measured yet. For now it runs without correction — but the station remembers which cell is fitted. Enter your own numbers under “Own measured values”.',
     lcHintCustom: 'Values from your own measurement run. They cover the cell and its frame together.',
     lcGain: 'Drift (grams per °C)', lcTau: 'Lag (minutes)',
@@ -1179,6 +1181,7 @@ const I18N = {
     lcUnknown: 'الملف {id} (غير معروف لهذه الصفحة)',
     lcHintOff: 'بدون تصحيح حراري. عندها يتغيّر الوزن مع حرارة النهار — في خلية 150 كغ قد يبلغ ذلك 300 غرام.',
     lcHintH40A: 'الخلية الموجودة في طقم TanenBase. قيمها مأخوذة من سلسلة قياس استمرّت 40 ساعة على الجهاز المرجعي.',
+    lcHintSBS: 'قيمها مأخوذة من سلسلة قياس استمرّت أسبوعاً في الهواء الطلق بوزن ثابت. البرامج الثابتة الأقدم تشغّل هذه الخلية بدون تصحيح — يكفي التحديث.',
     lcHintRaw: 'لم تُقَس هذه الخلية بعد. تعمل حالياً بدون تصحيح — لكن المحطة تحفظ أي خلية مركّبة. أدخل قيمك تحت «قيم من قياسك».',
     lcHintCustom: 'قيم من سلسلة قياس خاصة بك. تشمل الخلية والحامل معاً.',
     lcGain: 'الانحراف (غرام لكل °م)', lcTau: 'التأخّر (دقائق)',
@@ -1740,7 +1743,7 @@ const LC_GAIN_MAX_G = 200;      /* Firmware: LC_GAIN_MAX_MG_PER_K */
 const LC_TAU_MAX_MIN = 1440;    /* Firmware: LC_TAU_MAX_S */
 /* Erklaerung je Zelle. Alle noch nicht vermessenen teilen sich einen Text —
    und ein Profil, das diese Seite noch nicht kennt, bekommt ihn auch. */
-const LC_HINT = { 0: 'lcHintOff', 1: 'lcHintH40A', 3: 'lcHintCustom' };
+const LC_HINT = { 0: 'lcHintOff', 1: 'lcHintH40A', 2: 'lcHintSBS', 3: 'lcHintCustom' };
 let lcActive = null;            /* zuletzt gelesene, gueltige Werte */
 
 function renderLc() {

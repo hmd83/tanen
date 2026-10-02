@@ -16,7 +16,7 @@ and are per unit regardless of the profile.
 |---:|---|---:|---:|---|
 | 0 | Generic / unknown | 0 mg/K | 1500 s | No correction. The weight follows the daily temperature — ≈350 g p-p on the reference frame. |
 | 1 | Bosche **H40A-C3-0150** | 17734 mg/K | 1500 s | **Measured**, 40 h sweep + 144 h field validation → [`H40A-C3-0150/`](H40A-C3-0150/) |
-| 2 | Steinberg **SBS-PF-150** | 0 mg/K | 1500 s | **Not characterised** — field run planned. |
+| 2 | Steinberg **SBS-PF-150** | 10681 mg/K | 1500 s | **Measured**, 114 h production week; field validation pending → [`SBS-PF-150/`](SBS-PF-150/) |
 | 3 | Custom | from the stored record | from the stored record | Your own measured gain and lag, entered on the setup page. |
 | 4 | **Zemic L6E / L6E3** | 0 mg/K | 1500 s | **Not characterised.** |
 | 5 | **TAL220 / TAL220B** | 0 mg/K | 1500 s | **Not characterised.** |
@@ -57,7 +57,9 @@ measured.
 
 The reference sweep was a bench run with a separate logger. You do not need one:
 a station already reports raw weight and probe temperature, which is the whole
-input to the fit. This is the route planned for the SBS-PF-150.
+input to the fit. This is how the SBS-PF-150 was characterised
+([`SBS-PF-150/`](SBS-PF-150/) — its script is the one to copy, it handles
+uplink gaps and a fit window).
 
 1. **Put the cell on a profile with gain 0** — its own named profile, or
    generic. This matters: the fit needs the **uncorrected** weight. A run
