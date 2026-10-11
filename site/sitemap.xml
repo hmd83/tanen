@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://tanen.eu/</loc>
+    <lastmod>2026-10-11</lastmod>
+    <image:image><image:loc>https://tanen.eu/media/wintersdorf-stockwaage.jpg</image:loc></image:image>
+    <image:image><image:loc>https://tanen.eu/media/wintersdorf-sbs-pf-150.jpg</image:loc></image:image>
+    <image:image><image:loc>https://tanen.eu/media/buehl-hive.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://tanen.eu/datenschutz.html</loc>
+    <lastmod>2026-10-11</lastmod>
+  </url>
+  <url>
+    <loc>https://tanen.eu/impressum.html</loc>
+    <lastmod>2026-10-11</lastmod>
+  </url>
+  <url>
+    <loc>https://tanen.eu/setup/</loc>
+    <lastmod>2026-10-11</lastmod>
+  </url>
+</urlset>

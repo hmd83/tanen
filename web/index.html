@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-702QF9X4ZK"></script>
+<!-- Google Analytics erst nach Einwilligung (Hinweisleiste unten auf der
+     Startseite). Ohne "granted" wird gtag.js gar nicht geladen - kein Cookie,
+     keine Verbindung zu Google. Die Wahl gilt auch fuer setup/ (gleiche Adresse). -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-702QF9X4ZK');
+  var TB_CONSENT = 'tb-consent', TB_GA = 'G-702QF9X4ZK';
+  function tbLoadGA(){
+    if (window.tbGA) return;
+    window.tbGA = true;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + TB_GA;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', TB_GA);
+  }
+  try { if (localStorage.getItem(TB_CONSENT) === 'granted') tbLoadGA(); } catch (e) {}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
