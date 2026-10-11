@@ -34,10 +34,16 @@ LOG_MODULE_REGISTER(config, LOG_LEVEL_DBG);
 #define ZMS_EXT_CONFIG_ID             20  /* Extended Mode BLE sensor slots */
 #define ZMS_LC_CONFIG_ID              21  /* load-cell profile (tempcomp constants) */
 #define ZMS_MAC_CMDS_ID               22  /* pending LoRaMAC answers (RAM-only in the MAC) */
+#define ZMS_LORA_MODE_ID              23  /* OTAA/ABP + fixed DR (lora_mode_t) */
+#define ZMS_DEV_ADDR_ID               24  /* ABP DevAddr */
+#define ZMS_NWK_SKEY_ID               25  /* ABP NwkSKey */
+#define ZMS_APP_SKEY_ID               26  /* ABP AppSKey */
+#define ZMS_ABP_FCNT_ID               27  /* ABP FCntUp high-water mark */
 
 /* ext_config_t is the ZMS record and the GATT value — no padding allowed */
 BUILD_ASSERT(sizeof(ext_config_t) == 2 + EXT_SLOTS * 8);
 BUILD_ASSERT(sizeof(lc_config_t) == 10);
+BUILD_ASSERT(sizeof(lora_mode_t) == 2);
 /* Kconfig carries its own range, but the two live in different files */
 BUILD_ASSERT(CONFIG_TANENBASE_LC_DEFAULT_PROFILE >= 0 &&
 	     CONFIG_TANENBASE_LC_DEFAULT_PROFILE < LC_PROFILE_COUNT);
@@ -79,6 +85,10 @@ static bool zms_ready;
 static uint8_t dev_eui[8];
 static uint8_t join_eui[8];
 static uint8_t app_key[16];
+static lora_mode_t lora_mode;
+static uint8_t dev_addr[4];
+static uint8_t nwk_skey[16];
+static uint8_t app_skey[16];
 static int32_t zero_offset;
 static int32_t scale_factor;
 static uint32_t tx_interval;
@@ -210,6 +220,21 @@ int config_init(void)
 	if (!zms_load(ZMS_APP_KEY_ID, app_key, sizeof(app_key))) {
 		hexstr_to_bytes(CONFIG_TANENBASE_APP_KEY, app_key, 16);
 	}
+	if (!zms_load(ZMS_LORA_MODE_ID, &lora_mode, sizeof(lora_mode)) ||
+	    config_lora_mode_validate(&lora_mode)) {
+		lora_mode.mode = IS_ENABLED(CONFIG_TANENBASE_LORA_ABP) ? LORA_MODE_ABP
+								     : LORA_MODE_OTAA;
+		lora_mode.dr = LORA_DR_ADR;
+	}
+	if (!zms_load(ZMS_DEV_ADDR_ID, dev_addr, sizeof(dev_addr))) {
+		hexstr_to_bytes(CONFIG_TANENBASE_DEV_ADDR, dev_addr, 4);
+	}
+	if (!zms_load(ZMS_NWK_SKEY_ID, nwk_skey, sizeof(nwk_skey))) {
+		hexstr_to_bytes(CONFIG_TANENBASE_NWK_SKEY, nwk_skey, 16);
+	}
+	if (!zms_load(ZMS_APP_SKEY_ID, app_skey, sizeof(app_skey))) {
+		hexstr_to_bytes(CONFIG_TANENBASE_APP_SKEY, app_skey, 16);
+	}
 
 	/* Load calibration with defaults */
 	if (!zms_load(ZMS_ZERO_OFFSET_ID, &zero_offset, sizeof(zero_offset))) {
@@ -272,9 +297,10 @@ int config_init(void)
 		lc_cfg.tau_s = lc_profiles[lc_cfg.id].tau_s;
 	}
 
-	LOG_INF("Config loaded (tx_int=%us ms_int=%us wt=%u tt=%u cnt=%u lc=%u)",
+	LOG_INF("Config loaded (tx_int=%us ms_int=%us wt=%u tt=%u cnt=%u lc=%u lora=%s)",
 		tx_interval, ms_interval, anomaly_weight_threshold,
-		anomaly_temp_threshold, measurement_count, lc_cfg.id);
+		anomaly_temp_threshold, measurement_count, lc_cfg.id,
+		lora_mode.mode == LORA_MODE_ABP ? "ABP" : "OTAA");
 	return 0;
 }
 
@@ -299,6 +325,100 @@ int config_set_app_key(const uint8_t buf[16])
 {
 	memcpy(app_key, buf, 16);
 	return zms_store(ZMS_APP_KEY_ID, app_key, 16);
+}
+
+/* Activation mode and ABP credentials */
+int config_lora_mode_validate(const lora_mode_t *m)
+{
+	if (m->mode > LORA_MODE_ABP) {
+		return -EINVAL;
+	}
+	if (m->dr != LORA_DR_ADR && m->dr > LORA_DR_MAX) {
+		return -EINVAL;
+	}
+	return 0;
+}
+
+int config_get_lora_mode(lora_mode_t *m) { *m = lora_mode; return 0; }
+int config_set_lora_mode(const lora_mode_t *m)
+{
+	int rc = config_lora_mode_validate(m);
+
+	if (rc) {
+		return rc;
+	}
+	lora_mode = *m;
+	return zms_store(ZMS_LORA_MODE_ID, &lora_mode, sizeof(lora_mode));
+}
+
+int config_get_dev_addr(uint8_t buf[4])  { memcpy(buf, dev_addr, 4);  return 0; }
+int config_get_nwk_skey(uint8_t buf[16]) { memcpy(buf, nwk_skey, 16); return 0; }
+int config_get_app_skey(uint8_t buf[16]) { memcpy(buf, app_skey, 16); return 0; }
+
+int config_set_dev_addr(const uint8_t buf[4])
+{
+	memcpy(dev_addr, buf, 4);
+	return zms_store(ZMS_DEV_ADDR_ID, dev_addr, 4);
+}
+
+int config_set_nwk_skey(const uint8_t buf[16])
+{
+	memcpy(nwk_skey, buf, 16);
+	return zms_store(ZMS_NWK_SKEY_ID, nwk_skey, 16);
+}
+
+int config_set_app_skey(const uint8_t buf[16])
+{
+	memcpy(app_skey, buf, 16);
+	return zms_store(ZMS_APP_SKEY_ID, app_skey, 16);
+}
+
+static bool all_zero(const uint8_t *p, size_t len)
+{
+	while (len--) {
+		if (*p++) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool config_abp_ready(void)
+{
+	return !all_zero(dev_addr, sizeof(dev_addr)) &&
+	       !all_zero(nwk_skey, sizeof(nwk_skey)) &&
+	       !all_zero(app_skey, sizeof(app_skey));
+}
+
+/* ABP FCntUp high-water mark — not cached (read once per activation). Only
+ * ever moves up for the same DevAddr, so a stale save can't rewind it. */
+typedef struct {
+	uint32_t dev_addr;
+	uint32_t fcnt_up;
+} abp_fcnt_t;
+
+int config_get_abp_fcnt(uint32_t addr, uint32_t *fcnt_up)
+{
+	abp_fcnt_t r;
+
+	*fcnt_up = 0;
+	if (zms_load(ZMS_ABP_FCNT_ID, &r, sizeof(r)) && r.dev_addr == addr) {
+		*fcnt_up = r.fcnt_up;
+	}
+	return 0;
+}
+
+int config_set_abp_fcnt(uint32_t addr, uint32_t fcnt_up)
+{
+	abp_fcnt_t r;
+
+	if (zms_load(ZMS_ABP_FCNT_ID, &r, sizeof(r)) && r.dev_addr == addr &&
+	    r.fcnt_up >= fcnt_up) {
+		return 0;
+	}
+	r.dev_addr = addr;
+	r.fcnt_up = fcnt_up;
+	return zms_store(ZMS_ABP_FCNT_ID, &r, sizeof(r));
 }
 
 /* DevNonce: LoRaWAN 1.0.4/1.1 requires monotonic increasing per DevEUI.

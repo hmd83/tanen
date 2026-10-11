@@ -853,19 +853,52 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="card">
       <h3 data-i18n="credentials">Zugangsdaten</h3>
+      <!-- Anmeldeart: nur sichtbar, wenn die Firmware das Merkmal kennt -->
+      <div class="field" id="actField" hidden>
+        <span class="lbl-plain" id="actLbl" data-i18n="actLabel">Anmeldung im Funknetz</span>
+        <div class="seg" role="group" aria-labelledby="actLbl">
+          <button type="button" id="actOtaa" aria-pressed="true">OTAA</button>
+          <button type="button" id="actAbp" aria-pressed="false">ABP</button>
+        </div>
+        <p class="hint" id="actHint" data-i18n="actHintOtaa"></p>
+      </div>
       <div class="field"><label for="devEui">DevEUI</label><input id="devEui" maxlength="16" autocomplete="off" spellcheck="false" data-i18n-ph="ph16" placeholder="16 Zeichen"></div>
-      <div class="field"><label for="joinEui">JoinEUI</label><input id="joinEui" maxlength="16" autocomplete="off" spellcheck="false" data-i18n-ph="ph16" placeholder="16 Zeichen"></div>
-      <div class="field">
-        <label for="appKey">AppKey</label>
-        <input id="appKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
-        <p class="hint" data-i18n="appKeyHint">Wird nur geschrieben — nie vom Gerät zurückgelesen.</p>
+      <div id="otaaFields">
+        <div class="field"><label for="joinEui">JoinEUI</label><input id="joinEui" maxlength="16" autocomplete="off" spellcheck="false" data-i18n-ph="ph16" placeholder="16 Zeichen"></div>
+        <div class="field">
+          <label for="appKey">AppKey</label>
+          <input id="appKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
+          <p class="hint" data-i18n="appKeyHint">Wird nur geschrieben — nie vom Gerät zurückgelesen.</p>
+        </div>
+      </div>
+      <div id="abpFields" hidden>
+        <div class="field"><label for="devAddr">DevAddr</label><input id="devAddr" maxlength="8" autocomplete="off" spellcheck="false" data-i18n-ph="ph8" placeholder="8 Zeichen"></div>
+        <div class="field"><label for="nwkSKey">NwkSKey</label><input id="nwkSKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen"></div>
+        <div class="field">
+          <label for="appSKey">AppSKey</label>
+          <input id="appSKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
+          <p class="hint" data-i18n="sKeyHint">Schlüssel werden nur geschrieben — nie vom Gerät zurückgelesen. Leer lassen, um die gespeicherten zu behalten.</p>
+        </div>
+        <div class="field">
+          <label for="loraDr" data-i18n="drLabel">Funk-Stufe</label>
+          <select id="loraDr">
+            <option value="255" data-i18n="drAdr">Automatisch (ADR)</option>
+            <option value="5" data-i18n="dr5">SF7 – schnell, kurze Reichweite</option>
+            <option value="4">SF8</option>
+            <option value="3">SF9</option>
+            <option value="2">SF10</option>
+            <option value="1">SF11</option>
+            <option value="0" data-i18n="dr0">SF12 – langsam, größte Reichweite</option>
+          </select>
+          <p class="hint" data-i18n="drHint">Automatisch braucht Antworten vom Netz. Kommen keine an, eine feste Stufe wählen — die kleinste SF, bei der die Daten in TTN sicher ankommen.</p>
+        </div>
       </div>
       <button class="btn btn-save btn-block" id="saveNetBtn" data-i18n="saveNet">Zugangsdaten speichern</button>
     </div>
 
     <div class="card danger">
       <h3 data-i18n="session">Funk-Sitzung</h3>
-      <p class="card-sub" data-i18n="sessionHint">Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.</p>
+      <p class="card-sub" id="sessionHint" data-i18n="sessionHint">Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.</p>
       <button class="btn btn-danger btn-block" data-cmd="3" data-i18n="clearSession">Sitzung löschen</button>
     </div>
   </section>
@@ -968,6 +1001,17 @@ const I18N = {
     session: 'Funk-Sitzung',
     sessionHint: 'Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.',
     clearSession: 'Sitzung löschen',
+    actLabel: 'Anmeldung im Funknetz',
+    actHintOtaa: 'OTAA: Die Station meldet sich selbst an. Dafür muss das Netz antworten können.',
+    actHintAbp: 'ABP: Feste Adresse und Schlüssel, keine Anmeldung. Die Station sendet sofort — auch wenn Antworten vom Netz nicht ankommen. Das Gerät in TTN als ABP anlegen.',
+    ph8: '8 Zeichen',
+    sKeyHint: 'Schlüssel werden nur geschrieben — nie vom Gerät zurückgelesen. Leer lassen, um die gespeicherten zu behalten.',
+    drLabel: 'Funk-Stufe', drAdr: 'Automatisch (ADR)',
+    dr5: 'SF7 – schnell, kurze Reichweite', dr0: 'SF12 – langsam, größte Reichweite',
+    drHint: 'Automatisch braucht Antworten vom Netz. Kommen keine an, eine feste Stufe wählen — die kleinste SF, bei der die Daten in TTN sicher ankommen.',
+    sessionHintAbp: 'Nach dem Löschen beginnt die Station beim nächsten Senden eine neue Sitzung mit denselben Schlüsseln. Der Zähler läuft weiter.',
+    stAbpAddr: 'Bitte die DevAddr eintragen (8 Zeichen, nicht 0).',
+    stAbpKeys: 'Für ABP bitte NwkSKey und AppSKey eintragen.',
     idleTitle: 'Einrichtungs-Modus endet in',
     /* Meldungen */
     stNoBluetooth: 'Dieser Browser kann kein Bluetooth. Bitte Chrome oder Edge benutzen.',
@@ -1090,6 +1134,17 @@ const I18N = {
     session: 'Radio session',
     sessionHint: 'After clearing, the station rejoins the radio network on its next transmission.',
     clearSession: 'Clear session',
+    actLabel: 'Network activation',
+    actHintOtaa: 'OTAA: the station joins by itself. This needs the network to be able to answer.',
+    actHintAbp: 'ABP: fixed address and keys, no join. The station sends straight away, even where replies from the network do not arrive. Register the device in TTN as ABP.',
+    ph8: '8 characters',
+    sKeyHint: 'Keys are written only — never read back from the device. Leave empty to keep the stored ones.',
+    drLabel: 'Data rate', drAdr: 'Automatic (ADR)',
+    dr5: 'SF7 – fast, short range', dr0: 'SF12 – slow, longest range',
+    drHint: 'Automatic needs replies from the network. If none arrive, pick a fixed rate — the lowest SF at which data reliably shows up in TTN.',
+    sessionHintAbp: 'After clearing, the station starts a new session with the same keys on its next transmission. The frame counter carries on.',
+    stAbpAddr: 'Please enter the DevAddr (8 characters, not 0).',
+    stAbpKeys: 'For ABP, please enter NwkSKey and AppSKey.',
     idleTitle: 'Setup mode ends in',
     stNoBluetooth: 'This browser cannot use Bluetooth. Please use Chrome or Edge.',
     stRequesting: 'Looking for the device …',
@@ -1210,6 +1265,17 @@ const I18N = {
     session: 'جلسة الشبكة',
     sessionHint: 'بعد المسح تنضم المحطة للشبكة من جديد عند أول إرسال.',
     clearSession: 'مسح الجلسة',
+    actLabel: 'طريقة الانضمام للشبكة',
+    actHintOtaa: 'OTAA: تنضم المحطة للشبكة بنفسها، ويلزم أن تصلها ردود الشبكة.',
+    actHintAbp: 'ABP: عنوان ومفاتيح ثابتة بدون انضمام. ترسل المحطة فورًا حتى لو لم تصلها ردود الشبكة. سجّل الجهاز في TTN بطريقة ABP.',
+    ph8: '8 خانات',
+    sKeyHint: 'المفاتيح للكتابة فقط ولا تُقرأ من الجهاز أبدًا. اتركها فارغة للإبقاء على المحفوظة.',
+    drLabel: 'معدل البيانات', drAdr: 'تلقائي (ADR)',
+    dr5: 'SF7 – سريع، مدى قصير', dr0: 'SF12 – بطيء، أبعد مدى',
+    drHint: 'التلقائي يحتاج ردود الشبكة. إن لم تصل، اختر معدلًا ثابتًا: أصغر SF تصل به البيانات إلى TTN بثبات.',
+    sessionHintAbp: 'بعد المسح تبدأ المحطة جلسة جديدة بنفس المفاتيح عند أول إرسال، ويستمر العدّاد.',
+    stAbpAddr: 'أدخل DevAddr (8 خانات، ليست صفرًا).',
+    stAbpKeys: 'لـ ABP أدخل NwkSKey و AppSKey.',
     idleTitle: 'ينتهي وضع الإعداد خلال',
     stNoBluetooth: 'هذا المتصفح لا يدعم البلوتوث. استخدم Chrome أو Edge.',
     stRequesting: 'جارٍ البحث عن الجهاز …',
@@ -1388,6 +1454,10 @@ function setConnected(on) {
     document.getElementById('tabExt').hidden = true;
     lcActive = null;
     document.getElementById('lcCard').hidden = true;
+    devMode = null;
+    netMode = MODE_OTAA;
+    document.getElementById('actField').hidden = true;
+    renderNet();
     renderExt();
   }
 }
@@ -1479,6 +1549,10 @@ const CHARS = {
   extConfig:   { uuid: chr(0xE), len: 26, type: 'ext' },
   extLive:     { uuid: chr(0xF), len: 18, type: 'notify' },
   lcProfile:   { uuid: chr(0x10), len: 10, type: 'lc' },
+  loraMode:    { uuid: chr(0x11), len: 2,  type: 'mode' },
+  devAddr:     { uuid: chr(0x12), len: 4,  type: 'hex', group: 'abp' },
+  nwkSKey:     { uuid: chr(0x13), len: 16, type: 'hex', group: 'abp', writeOnly: true },
+  appSKey:     { uuid: chr(0x14), len: 16, type: 'hex', group: 'abp', writeOnly: true },
 };
 
 const SEC_PER_MIN = 60;
@@ -1561,11 +1635,14 @@ async function doConnect() {
     document.getElementById('tabExt').hidden = !extSupported;
     /* Ebenso die Waegezelle: aeltere Firmware kennt nur die eine Zelle */
     document.getElementById('lcCard').hidden = !charMap.lcProfile;
+    /* Ebenso ABP: aeltere Firmware kennt nur OTAA */
+    document.getElementById('actField').hidden = !charMap.loraMode;
 
     setConnected(true);
     toast('stConnected', 'ok', { name: device.name || 'TanenBase' });
     await readAll(true);
     await readLc();
+    await readMode();
     await readExt();
   } catch (e) {
     btn.disabled = false;
@@ -1610,7 +1687,7 @@ function onLiveSensor(event) {
 async function readAll(silent) {
   try {
     for (const [key, def] of Object.entries(CHARS)) {
-      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || def.type === 'ext' || def.type === 'lc' || !charMap[key]) continue;
+      if (def.writeOnly || def.type === 'cmd' || def.type === 'notify' || def.type === 'ext' || def.type === 'lc' || def.type === 'mode' || !charMap[key]) continue;
       const val = await charMap[key].readValue();
       const el = document.getElementById(def.el || key);
       if (!el) continue;
@@ -1666,9 +1743,10 @@ function validateTiming() {
   return true;
 }
 
-/* schreibt nur die Merkmale eines Bildschirms (net | set) */
-async function writeGroup(group) {
-  if (group === 'set' && !validateTiming()) return;
+/* schreibt nur die Merkmale eines Bildschirms (net | abp | set).
+   quiet: keine Erfolgsmeldung - saveNet() meldet selbst. true = alles geschrieben. */
+async function writeGroup(group, quiet) {
+  if (group === 'set' && !validateTiming()) return false;
   try {
     for (const [key, def] of Object.entries(CHARS)) {
       if (def.group !== group || !charMap[key]) continue;
@@ -1678,8 +1756,8 @@ async function writeGroup(group) {
       let buf;
       if (def.type === 'hex') {
         const hex = el.value.replace(/\s/g, '');
-        if (hex.length !== def.len * 2) { toast('stHexLen', 'err', { field: key, n: def.len * 2 }); return; }
-        if (!/^[0-9a-fA-F]+$/.test(hex)) { toast('stHexBad', 'err', { field: key }); return; }
+        if (hex.length !== def.len * 2) { toast('stHexLen', 'err', { field: key, n: def.len * 2 }); return false; }
+        if (!/^[0-9a-fA-F]+$/.test(hex)) { toast('stHexBad', 'err', { field: key }); return false; }
         buf = hexToBytes(hex).buffer;
       } else if (def.type === 'u32') {
         buf = new ArrayBuffer(4);
@@ -1694,10 +1772,95 @@ async function writeGroup(group) {
       }
       await charMap[key].writeValueWithResponse(new DataView(buf));
     }
-    toast('stSaved', 'ok');
+    if (!quiet) toast('stSaved', 'ok');
+    return true;
   } catch (e) {
     toast('stWriteErr', 'err', { msg: e.message });
+    return false;
   }
+}
+
+/* =============================== Netzwerk ===============================
+   LoraMode (2 Bytes) ist lora_mode_t der Firmware: [Anmeldeart][Funk-Stufe].
+   Anmeldeart 0 = OTAA (Join), 1 = ABP (feste Adresse und Schluessel, kein
+   Join - sendet auch, wenn keine Antwort vom Netz ankommt). Funk-Stufe
+   255 = automatisch (ADR), sonst feste DR 0-5; gilt nur bei ABP.
+   ABP nimmt die Firmware erst an, wenn DevAddr und beide Schluessel
+   gespeichert sind - darum schreibt saveNet() sie zuerst. Eine alte
+   Sitzung, die nicht mehr passt, verwirft die Station selbst.             */
+const MODE_OTAA = 0, MODE_ABP = 1, DR_ADR = 255;
+let netMode = MODE_OTAA;        /* Auswahl auf der Seite */
+let devMode = null;             /* zuletzt vom Geraet gelesen */
+
+/* Text samt Schluessel tauschen, damit ein Sprachwechsel ihn mitnimmt */
+function setI18n(id, key) {
+  const el = document.getElementById(id);
+  el.dataset.i18n = key;
+  el.textContent = t(key);
+}
+
+function renderNet() {
+  const abp = netMode === MODE_ABP;
+  document.getElementById('actOtaa').setAttribute('aria-pressed', abp ? 'false' : 'true');
+  document.getElementById('actAbp').setAttribute('aria-pressed', abp ? 'true' : 'false');
+  document.getElementById('otaaFields').hidden = abp;
+  document.getElementById('abpFields').hidden = !abp;
+  setI18n('actHint', abp ? 'actHintAbp' : 'actHintOtaa');
+  setI18n('sessionHint', abp ? 'sessionHintAbp' : 'sessionHint');
+}
+
+function setNetMode(m) {
+  netMode = m;
+  renderNet();
+}
+
+async function readMode() {
+  if (!charMap.loraMode) return;
+  try {
+    const v = await charMap.loraMode.readValue();
+    if (v.byteLength < 2) return;
+    devMode = { mode: v.getUint8(0), dr: v.getUint8(1) };
+    netMode = devMode.mode === MODE_ABP ? MODE_ABP : MODE_OTAA;
+    const sel = document.getElementById('loraDr');
+    sel.value = String(devMode.dr);
+    if (sel.value !== String(devMode.dr)) sel.value = String(DR_ADR);
+    renderNet();
+  } catch (e) {
+    toast('stReadErr', 'err', { msg: e.message });
+  }
+}
+
+async function saveNet() {
+  if (!charMap.loraMode) { await writeGroup('net'); return; }
+  const abp = netMode === MODE_ABP;
+  ['devAddr', 'nwkSKey', 'appSKey'].forEach(id => document.getElementById(id).classList.remove('bad'));
+
+  if (abp) {
+    const addr = document.getElementById('devAddr');
+    if (/^0*$/.test(addr.value.replace(/\s/g, ''))) {
+      addr.classList.add('bad'); toast('stAbpAddr', 'err'); addr.focus(); return;
+    }
+    /* Erst beim Wechsel auf ABP muessen die Schluessel dabei sein - danach
+       behaelt ein leeres Feld die gespeicherten. */
+    if (!devMode || devMode.mode !== MODE_ABP) {
+      for (const id of ['nwkSKey', 'appSKey']) {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.classList.add('bad'); toast('stAbpKeys', 'err'); el.focus(); return; }
+      }
+    }
+  }
+
+  if (!await writeGroup('net', true)) return;
+  if (abp && !await writeGroup('abp', true)) return;
+  try {
+    const dr = parseInt(document.getElementById('loraDr').value, 10);
+    await charMap.loraMode.writeValueWithResponse(new Uint8Array([netMode, dr]));
+  } catch (e) {
+    toast('stWriteErr', 'err', { msg: e.message });
+    return;
+  }
+  await readMode();
+  toast('stSaved', 'ok');
 }
 
 async function doCalibrate() {
@@ -2275,7 +2438,9 @@ function initExt() {
 document.getElementById('connectBtn').addEventListener('click', doConnect);
 document.getElementById('disconnectBtn').addEventListener('click', doDisconnect);
 document.getElementById('refreshBtn').addEventListener('click', () => readAll());
-document.getElementById('saveNetBtn').addEventListener('click', () => writeGroup('net'));
+document.getElementById('saveNetBtn').addEventListener('click', saveNet);
+document.getElementById('actOtaa').addEventListener('click', () => setNetMode(MODE_OTAA));
+document.getElementById('actAbp').addEventListener('click', () => setNetMode(MODE_ABP));
 document.getElementById('saveSetBtn').addEventListener('click', () => writeGroup('set'));
 document.getElementById('tareBtn').addEventListener('click', () => sendCmd(0x02));
 document.getElementById('calibrateBtn').addEventListener('click', doCalibrate);
@@ -2287,7 +2452,7 @@ document.querySelectorAll('[data-cmd]').forEach(btn =>
   btn.addEventListener('click', () => sendCmd(parseInt(btn.dataset.cmd, 10))));
 document.querySelectorAll('.tabbar button[data-view]').forEach(btn =>
   btn.addEventListener('click', () => showView(btn.dataset.view)));
-['txMin', 'msMin'].forEach(id =>
+['txMin', 'msMin', 'devAddr', 'nwkSKey', 'appSKey'].forEach(id =>
   document.getElementById(id).addEventListener('input', e => e.target.classList.remove('bad')));
 langPicker(applyLang);
 

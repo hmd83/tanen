@@ -4,8 +4,10 @@ How a TanenBase node joins, sends, adapts its data rate, notices a lost link
 and recovers, and why each rule exists. Everything here lives in
 [`src/drivers/lora.c`](../src/drivers/lora.c) unless noted.
 
-Class A, OTAA, EU868, The Things Network (TTN), LoRaMac-node via Zephyr's
-`lorawan` API.
+Class A, EU868, The Things Network (TTN), LoRaMac-node via Zephyr's
+`lorawan` API. Activation is **OTAA** by default; **ABP** (§13) is selectable
+per node for sites where downlinks, and with them OTAA joins, do not get
+through.
 
 ---
 
@@ -24,6 +26,9 @@ What is persisted, and where:
 | 16 | Link state (`link_state_t`) | every uplink / join attempt | probe counter, no-ACK count, pinned DR, join failures, join backoff |
 | 17 | TX pending | end of transmitting wake | retry a failed uplink on the next wake |
 | 22 | Pending MAC answers | only when the MAC has answers queued | see §5 |
+| 23 | Activation (`lora_mode_t`) | setup page | OTAA/ABP, fixed DR (§13) |
+| 24–26 | ABP DevAddr, NwkSKey, AppSKey | setup page | §13 |
+| 27 | ABP FCntUp high-water mark | after every transmitting ABP wake | §13.3 |
 
 The radio is only started on wakes that transmit. Measure-only wakes never
 touch it.
@@ -35,7 +40,9 @@ touch it.
 1. FSM decides to transmit (heartbeat, anomaly, or a pending retry) and calls
    `lora_init()`.
 2. `lora_init()` starts the MAC once per boot, then **restores the session**
-   from ZMS. No session → OTAA join (§3).
+   from ZMS. No session → OTAA join (§3) or ABP activation (§13). A stored
+   session that no longer matches the configured activation (mode switched,
+   new DevAddr or keys) is discarded first.
 3. `apply_link_policy()` sets NbTrans = 1 and either ADR on (healthy) or ADR
    off with a pinned DR (degraded, §7).
 4. Pending MAC answers from the previous wake are re-queued (§5).
@@ -182,6 +189,8 @@ stateDiagram-v2
   not thrown away early.
 - **Rejoin:** after **8 consecutive no-ACK probes** (step-downs included) the
   session is cleared and the next transmitting wake joins again (§3).
+  **Not in ABP:** there is no join to fall back on and the session cannot go
+  stale, so an ABP node stays at the floor and keeps probing (§13.4).
 - **Recover:** any ACKed probe clears the failure count, removes the pin and
   switches ADR back on **at the current DR**. TTN then raises the DR as far as
   the measured SNR allows. The node does not jump back up on its own, which
@@ -280,7 +289,7 @@ wake.
 | Action | Effect |
 |---|---|
 | **LoRa test** | Joins if needed and sends one frame in a dedicated thread. Marks the wake *manual*: the SF12 join backoff and the fair-use skip are bypassed, because the installer is standing next to the node. |
-| **Clear Session** | Deletes the stored session. The next transmit joins from scratch (DR3). |
+| **Clear Session** | Deletes the stored session. The next transmit joins from scratch (DR3); in ABP it re-activates with the same keys and the frame counter carries on (§13.3). |
 
 ---
 
@@ -350,6 +359,12 @@ If you touch LoRaMac internals from app code, compare the `-D` flags of
 | `SF12 fair use: routine uplink skipped` | §8.8 |
 | `Persisting pending MAC answers:` / `Re-queued …` | §5 |
 | `Datarate changed: DR_5` on the first uplink of a wake | cosmetic: Zephyr resets its RAM copy of the DR at boot |
+| `Session restored (ABP), DevAddr: …` | normal ABP wake |
+| `No saved session, activating via ABP` / `ABP activated, DevAddr …, next FCnt N` | §13.3 |
+| `ABP: DevAddr/NwkSKey/AppSKey not set` | ABP selected without credentials; nothing is sent, TX stays pending |
+| `Stored session does not match the ABP config, discarded` | mode or credentials changed; a fresh activation follows |
+| `Link policy: ABP fixed DR2 (SF10), ADR off` | fixed data rate (§13.4) |
+| `ABP: no downlink for N probes, staying at DR0` | ABP at the ladder floor; no rejoin (§13.4) |
 
 Enable `LOG_DBG` in `lora.c` to also get the channel table
 (`ch[joined|restored|save] mask=0x00ff f/100k=8681 8683 8685 8671 …`).
@@ -369,3 +384,118 @@ Enable `LOG_DBG` in `lora.c` to also get the channel table
 
 Decoding `f_opts` of a LinkADRReq, e.g. `03 52 ff00 01`: `03` = LinkADRReq,
 `5` = DR5, `2` = TX power index 2, `ff00` = channels 0–7, `01` = NbTrans 1.
+
+---
+
+## 13. ABP: activation without a join
+
+### 13.1 Why
+
+OTAA needs a working **downlink** before the first data frame: the
+JoinAccept. At a site where uplinks reach a gateway but downlinks do not
+(gateway far away, busy shared gateway, asymmetric link, gateway backhaul too
+slow for RX1), the node never joins and never sends any data, while each
+failed attempt costs an SF12 JoinRequest (§3).
+
+With **ABP** (Activation By Personalization) the node is given its DevAddr and
+session keys up front. There is no join. It sends from the first wake, and
+**no part of the data path waits for a downlink.** Downlinks still work when
+they get through (ADR, MAC commands, FPort 10–13 config), but none are needed.
+
+| | OTAA | ABP |
+|---|---|---|
+| First data frame | after a JoinAccept (downlink) | first transmitting wake |
+| Keys | derived per join | fixed, entered at setup |
+| Session lost on the network side | rejoin after ~32 h (§8.7) | cannot happen; keys are fixed |
+| Frame counter | resets with each join | must survive everything (§13.3) |
+| Channels at start | 8 (CFList from the JoinAccept) | 3 (868.1/.3/.5) until TTN adds more |
+
+### 13.2 Setting it up
+
+**In TTN** (Console → *Register end device* → *Enter end device specifics
+manually*):
+
+| Field | Value |
+|---|---|
+| Frequency plan | Europe 863-870 MHz (SF9 for RX2 - recommended) |
+| LoRaWAN version | **LoRaWAN Specification 1.0.3** (Zephyr's ABP path uses 1.0.3) |
+| Regional Parameters version | RP001 Regional Parameters 1.0.3 revision A |
+| Activation mode (advanced settings) | **Activation by personalization (ABP)** |
+| Network defaults / advanced MAC settings | leave the defaults. Do **not** enter factory preset frequencies (see below) |
+| Frame counter width | 32 bit (default) |
+| Resets frame counters | **off**: the node never reuses a frame counter |
+| DevEUI | the node's DevEUI (setup page, Network tab) |
+| Device address, AppSKey, NwkSKey | *Generate*, then copy into the setup page |
+
+**On the node** (setup page → *Network*, specialists only):
+
+1. Select **ABP**.
+2. Enter **DevAddr** (8 hex characters), **NwkSKey** and **AppSKey** (32 hex
+   characters each), as TTN shows them (MSB first).
+3. Pick the **data rate**: *Automatic (ADR)* or a fixed SF (§13.4).
+4. *Save access data*. The page writes DevAddr and both keys first, then the
+   mode; the firmware refuses ABP while any of the three is missing.
+5. *Send radio test* (Overview). The frame should appear in TTN's live data
+   within seconds.
+
+Keys are write-only, like the AppKey. Leaving a key field empty on a later save
+keeps the stored key. Switching back to OTAA keeps the ABP keys stored, so
+switching to ABP again needs no re-entry.
+
+For factory builds the same values can be seeded from `prj_credentials.conf`
+(`CONFIG_TANENBASE_LORA_ABP`, `_DEV_ADDR`, `_NWK_SKEY`, `_APP_SKEY`). A value
+stored over BLE always wins.
+
+### 13.3 Session, frame counter, mode switches
+
+- **Session.** Saved and restored exactly as in OTAA (§1, §2): keys, frame
+  counters, DR, channel table, RX parameters. TTN's MAC commands that do land
+  (LinkADRReq, NewChannelReq, RXParamSetupReq, RXTimingSetupReq) change it
+  like any other session, and their answers survive sleep (§5).
+- **Start values.** The MAC keeps the LoRaWAN band defaults: channels
+  868.1/868.3/868.5, RX1 delay 1 s, RX2 869.525 MHz at DR0 (SF12). These are
+  exactly what TTN assumes for an ABP device with default MAC settings, so both
+  sides agree without a single downlink. Whenever a downlink gets through, TTN
+  moves the node to its frequency plan's values (e.g. all 8 channels, RX2 at
+  SF9); the answers are sticky and repeated until TTN has them. Entering *factory preset
+  frequencies* in TTN would break this: TTN would then send channel masks for
+  channels the node does not have, and the node would NACK every LinkADRReq
+  (§11 shows what that looks like).
+- **Frame counter.** TTN drops any ABP frame whose FCnt is not above the last
+  one it saw. The session blob holds the counter, but a session can be lost
+  (*Clear Session*, a firmware update that changes the session layout). So
+  every transmitting ABP wake also writes the counter, keyed by DevAddr, to
+  ZMS id 27. A fresh activation continues from there. A new DevAddr is a new
+  TTN device and starts at 0.
+- **Mode or credential change.** On the next transmitting wake, a stored
+  session whose activation type, DevAddr or session keys differ from the
+  configuration is discarded. ABP then activates fresh; OTAA joins.
+  Switching an ABP node back to OTAA therefore costs one join (§3).
+- **Clear Session** in ABP resets the MAC state (channels, DR, RX parameters)
+  but keeps the keys and continues the frame counter. If TTN had already moved
+  the node to its own RX parameters, also use *Reset session and MAC state*
+  on the device in TTN, so both sides return to the band defaults.
+
+### 13.4 Data rate: ADR or fixed
+
+| Setting | Behaviour |
+|---|---|
+| **Automatic (ADR)** | As OTAA: starts at DR3 (SF9), ADR on, a confirmed probe every 4th uplink, step-down ladder (§7). At the floor it **does not rejoin**: it stays at DR0 and keeps probing; the first ACK switches ADR back on. |
+| **Fixed SF7…SF12** | ADR off, DR pinned every wake. **No probes, no confirmed frames at all** (a weight anomaly is sent unconfirmed too), no ladder. Nothing waits for, or spends, a downlink. |
+
+Choose **fixed** where downlinks do not work: ADR and the ladder both depend
+on downlinks, and without them the ladder walks the node to SF12 (≈1.5 s per
+frame). Pick the **lowest SF at which the node's frames reliably appear in
+TTN**. Check a few heartbeats in the live data; a margin of ~5 dB SNR above
+the SF's demodulation floor is comfortable (SF7 −7.5 dB, SF9 −12.5 dB, SF12
+−20 dB). A fixed SF12 is subject to the fair-use skip of §8.8 like any other
+DR0 uplink.
+
+### 13.5 What ABP does not fix
+
+- **Uplink range.** If the uplinks do not reach a gateway at SF12, nothing on
+  the node helps. ABP only removes the dependency on the downlink.
+- **Downlink config (FPort 10–13).** It still needs a downlink. A command
+  queued in TTN goes out after whichever uplink first gets a downlink through.
+- **Security.** Fixed keys and a counter kept by the node are weaker than
+  OTAA's per-join keys. Never set *Resets frame counters* in TTN.
