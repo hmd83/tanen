@@ -18,6 +18,44 @@ int config_set_app_key(const uint8_t buf[16]);
 /* Monotonic DevNonce (LoRaWAN 1.0.4) — increments + persists per join attempt */
 int config_get_dev_nonce(uint16_t *nonce);
 
+/* Activation. OTAA needs a JoinAccept, i.e. a working downlink, before the
+ * first data frame; ABP is personalised with a fixed DevAddr and session keys
+ * and sends from the first wake, so it keeps reporting where downlinks fail. */
+#define LORA_MODE_OTAA  0
+#define LORA_MODE_ABP   1
+#define LORA_DR_ADR     0xFF  /* network-tuned data rate (ADR) */
+#define LORA_DR_MAX     5     /* EU868 DR5 = SF7/125 kHz */
+
+/* ZMS record and GATT value byte for byte. */
+typedef struct __packed {
+	uint8_t mode;  /* LORA_MODE_* */
+	uint8_t dr;    /* LORA_DR_ADR, or a fixed DR0..LORA_DR_MAX — ABP only:
+			* a fixed DR needs no downlink, OTAA needs one anyway */
+} lora_mode_t;
+
+int config_get_lora_mode(lora_mode_t *m);
+int config_set_lora_mode(const lora_mode_t *m);
+/* 0 if storable: known mode and a DR in range. Says nothing about whether
+ * ABP credentials are present — see config_abp_ready(). */
+int config_lora_mode_validate(const lora_mode_t *m);
+
+/* ABP credentials. DevAddr is MSB first, as TTN prints it. */
+int config_get_dev_addr(uint8_t buf[4]);
+int config_set_dev_addr(const uint8_t buf[4]);
+int config_get_nwk_skey(uint8_t buf[16]);
+int config_set_nwk_skey(const uint8_t buf[16]);
+int config_get_app_skey(uint8_t buf[16]);
+int config_set_app_skey(const uint8_t buf[16]);
+/* DevAddr and both session keys set (non-zero) — ABP can activate. */
+bool config_abp_ready(void);
+
+/* ABP uplink frame counter, kept apart from the session blob. TTN drops an
+ * ABP frame whose FCnt is not above the last one it saw, so a session that is
+ * cleared (BLE, layout change on update) must not restart the count at 0.
+ * Tied to the DevAddr: a new address is a new TTN device and starts at 0. */
+int config_get_abp_fcnt(uint32_t dev_addr, uint32_t *fcnt_up);
+int config_set_abp_fcnt(uint32_t dev_addr, uint32_t fcnt_up);
+
 /* LoRaWAN session persistence via ZMS */
 int config_session_save(const void *data, size_t len);
 int config_session_load(void *data, size_t len);
@@ -74,7 +112,7 @@ int config_set_tempcomp_state(const tempcomp_state_t *st);
  * docs/load_cells/README.md. */
 #define LC_PROFILE_GENERIC  0  /* unknown cell: no correction */
 #define LC_PROFILE_H40A     1  /* Bosche H40A-C3-0150, measured */
-#define LC_PROFILE_SBS_PF   2  /* Steinberg SBS-PF-150, not characterised yet */
+#define LC_PROFILE_SBS_PF   2  /* Steinberg SBS-PF-150, measured */
 #define LC_PROFILE_CUSTOM   3  /* own measurement: gain/tau come from the record */
 /* Named but not characterised — they behave like GENERIC until someone
  * measures one. The label still earns its place: it records what is bolted

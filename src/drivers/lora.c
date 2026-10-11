@@ -91,6 +91,8 @@ BUILD_ASSERT(PROBE_EVERY_N_UPLINKS % 2 == 0 && PROBE_EVERY_N_DEGRADED % 2 == 0,
 #define DR_TO_SF(dr)  (12 - (dr))
 
 static bool joined;
+/* Activation config this boot's session was set up with (lora_init). */
+static lora_mode_t mode;
 /* Set when the recovery ladder clears the session for a forced rejoin, so the
  * end-of-cycle save in the FSM does not resurrect the dead session. RAM-only:
  * valid for this wake, which is all that is needed before System OFF. */
@@ -101,6 +103,13 @@ static bool manual;
 void lora_set_manual(bool on)
 {
 	manual = on;
+}
+
+/* ABP with a fixed DR: no ADR, no probes, no ladder. Nothing on this path
+ * waits for a downlink, which is the point of choosing it. */
+static bool fixed_dr(void)
+{
+	return mode.mode == LORA_MODE_ABP && mode.dr != LORA_DR_ADR;
 }
 
 static void downlink_cb(uint8_t port, uint8_t flags, int16_t rssi, int8_t snr,
@@ -237,6 +246,60 @@ static void log_channels(const char *tag)
 		g2->ChannelsMask[0], f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
 }
 
+#ifdef SOFT_SE
+static bool se_key_is(const SecureElementNvmData_t *se, KeyIdentifier_t id,
+		      const uint8_t key[16])
+{
+	for (int i = 0; i < NUM_OF_KEYS; i++) {
+		if (se->KeyList[i].KeyID == id) {
+			return !memcmp(se->KeyList[i].KeyValue, key, 16);
+		}
+	}
+	return false;
+}
+#endif
+
+/* Does the stored session belong to the configured activation? Switching
+ * OTAA<->ABP or entering new ABP credentials leaves the old session in flash;
+ * restoring it would keep sending under the old identity forever (an ABP
+ * session never expires the way a dead OTAA one eventually rejoins). */
+static bool session_matches(const LoRaMacNvmData_t *s)
+{
+	if (mode.mode != LORA_MODE_ABP) {
+		return s->MacGroup2.NetworkActivation == ACTIVATION_TYPE_OTAA;
+	}
+	if (s->MacGroup2.NetworkActivation != ACTIVATION_TYPE_ABP) {
+		return false;
+	}
+
+	uint8_t addr[4];
+
+	config_get_dev_addr(addr);
+	if (s->MacGroup2.DevAddr != sys_get_be32(addr)) {
+		return false;
+	}
+#ifdef SOFT_SE
+	uint8_t nwk[16], app[16];
+	bool same;
+
+	config_get_nwk_skey(nwk);
+	config_get_app_skey(app);
+	same = se_key_is(&s->SecureElement, F_NWK_S_INT_KEY, nwk) &&
+	       se_key_is(&s->SecureElement, APP_S_KEY, app);
+	memset(nwk, 0, sizeof(nwk));
+	memset(app, 0, sizeof(app));
+	return same;
+#else
+	return true;
+#endif
+}
+
+/* Staging copy: the blob is checked before it replaces the MAC's live
+ * context, so a rejected one leaves the freshly initialised defaults intact
+ * (loading straight into the live struct left half an old session behind on
+ * a size mismatch). Static: 1120 B is too much for the callers' stacks. */
+static LoRaMacNvmData_t nvm_stage;
+
 static int session_restore(void)
 {
 	MibRequestConfirm_t mib_req;
@@ -247,22 +310,29 @@ static int session_restore(void)
 		return -EIO;
 	}
 
-	LoRaMacNvmData_t *nvm = mib_req.Param.Contexts;
-	int ret = config_session_load(nvm, sizeof(*nvm));
+	int ret = config_session_load(&nvm_stage, sizeof(nvm_stage));
 	if (ret) {
 		return ret;
 	}
-	/* Data written directly to internal struct — no SET needed */
 
-	/* Verify we have a valid DevAddr */
-	mib_req.Type = MIB_DEV_ADDR;
-	LoRaMacMibGetRequestConfirm(&mib_req);
-	if (mib_req.Param.DevAddr == 0) {
+	if (nvm_stage.MacGroup2.DevAddr == 0) {
 		LOG_WRN("Restored session has no DevAddr");
 		return -EINVAL;
 	}
+	if (!session_matches(&nvm_stage)) {
+		LOG_WRN("Stored session does not match the %s config, discarded",
+			mode.mode == LORA_MODE_ABP ? "ABP" : "OTAA");
+		config_session_clear();
+		config_mac_cmds_save(NULL, 0);
+		return -EINVAL;
+	}
 
-	LOG_INF("Session restored, DevAddr: %08x", mib_req.Param.DevAddr);
+	/* Data written directly to internal struct — no SET needed */
+	memcpy(mib_req.Param.Contexts, &nvm_stage, sizeof(nvm_stage));
+
+	LOG_INF("Session restored (%s), DevAddr: %08x",
+		mode.mode == LORA_MODE_ABP ? "ABP" : "OTAA",
+		nvm_stage.MacGroup2.DevAddr);
 	return 0;
 }
 
@@ -292,7 +362,14 @@ static void apply_link_policy(bool fresh_join, int8_t join_dr)
 	 * up-to-8x retransmit burst (battery). Restore clobbers this → set here. */
 	lorawan_set_conf_msg_tries(1);
 
-	if (st.forced_dr >= 0) {
+	if (fixed_dr()) {
+		/* Installer's choice, re-applied every wake: the restored blob may
+		 * carry a DR from an earlier ADR session. */
+		lorawan_enable_adr(false);
+		int rc = lorawan_set_datarate((enum lorawan_datarate)mode.dr);
+		LOG_INF("Link policy: ABP fixed DR%d (SF%d), ADR off rc=%d",
+			mode.dr, DR_TO_SF(mode.dr), rc);
+	} else if (st.forced_dr >= 0) {
 		/* Degraded: ADR off (set_datarate needs ADR off) + pinned low DR. */
 		lorawan_enable_adr(false);
 		int rc = lorawan_set_datarate((enum lorawan_datarate)st.forced_dr);
@@ -300,7 +377,8 @@ static void apply_link_policy(bool fresh_join, int8_t join_dr)
 			st.forced_dr, DR_TO_SF(st.forced_dr), rc);
 	} else if (fresh_join) {
 		/* Start where the join actually closed, then let ADR tune UP from
-		 * there. Jumping to HEALTHY_DR here threw away the one piece of
+		 * there (ABP has no join: join_dr is -1, it starts at HEALTHY_DR).
+		 * Jumping to HEALTHY_DR here threw away the one piece of
 		 * measured link knowledge we have: a join that needed SF12 will not
 		 * carry a data uplink at SF9, so the first frame was always lost and
 		 * the recovery ladder fired on a healthy session. */
@@ -376,6 +454,60 @@ static int otaa_join(uint8_t join_dr)
 	return 0;
 }
 
+/* ABP "join": no radio traffic, the MAC is simply handed the session. The
+ * MAC keeps its band defaults (3 channels, RX1 1 s, RX2 869.525 MHz DR0),
+ * which is what TTN assumes for an ABP device it was told nothing about. TTN
+ * moves them to its own values (RXParamSetupReq, NewChannelReq, ...) whenever
+ * a downlink does get through; until then both sides agree. */
+static int abp_activate(void)
+{
+	uint8_t dev_eui[8], join_eui[8], addr[4], nwk_skey[16], app_skey[16];
+
+	if (!config_abp_ready()) {
+		LOG_ERR("ABP: DevAddr/NwkSKey/AppSKey not set");
+		return -EINVAL;
+	}
+	config_get_dev_eui(dev_eui);
+	config_get_join_eui(join_eui);
+	config_get_dev_addr(addr);
+	config_get_nwk_skey(nwk_skey);
+	config_get_app_skey(app_skey);
+
+	uint32_t dev_addr = sys_get_be32(addr);
+	struct lorawan_join_config jcfg = {
+		.mode    = LORAWAN_ACT_ABP,
+		.dev_eui = dev_eui,
+		.abp = {
+			.dev_addr = dev_addr,
+			.app_skey = app_skey,
+			.nwk_skey = nwk_skey,
+			.app_eui  = join_eui,
+		},
+	};
+
+	int ret = lorawan_join(&jcfg);
+	memset(nwk_skey, 0, sizeof(nwk_skey));
+	memset(app_skey, 0, sizeof(app_skey));
+	if (ret) {
+		LOG_ERR("ABP activation failed: %d", ret);
+		return ret;
+	}
+
+	/* The MAC zeroed FCntUp at start. Carry on above the last frame sent
+	 * with this DevAddr, or TTN drops every frame until the count passes it. */
+	uint32_t fcnt = 0;
+	MibRequestConfirm_t mib_req = { .Type = MIB_NVM_CTXS };
+
+	config_get_abp_fcnt(dev_addr, &fcnt);
+	if (LoRaMacMibGetRequestConfirm(&mib_req) != LORAMAC_STATUS_OK) {
+		return -EIO;
+	}
+	mib_req.Param.Contexts->Crypto.FCntList.FCntUp = fcnt;
+
+	LOG_INF("ABP activated, DevAddr %08x, next FCnt %u", dev_addr, fcnt + 1);
+	return 0;
+}
+
 int lora_init(void)
 {
 	/* SETUP's BLE LoRa test and the FSM's TRANSMISSION can both run in one
@@ -418,6 +550,8 @@ int lora_init(void)
 		started = true;
 	}
 
+	config_get_lora_mode(&mode);
+
 	/* Try restoring saved session first. DR/ADR/NbTrans policy is applied
 	 * AFTER restore so the restored blob does not clobber it. */
 	ret = session_restore();
@@ -429,10 +563,30 @@ int lora_init(void)
 		return 0;
 	}
 
-	LOG_INF("No saved session, joining via OTAA");
-
 	link_state_t st;
 	config_get_link_state(&st);
+
+	if (mode.mode == LORA_MODE_ABP) {
+		LOG_INF("No saved session, activating via ABP");
+		ret = abp_activate();
+		if (ret) {
+			return ret;
+		}
+		/* A fresh session starts healthy, as after a join. */
+		st.join_fail = 0;
+		st.join_wait = 0;
+		st.link_fail = 0;
+		st.forced_dr = -1;
+		config_set_link_state(&st);
+		config_mac_cmds_save(NULL, 0);
+
+		apply_link_policy(true, -1);
+		log_channels("abp");
+		joined = true;
+		return 0;
+	}
+
+	LOG_INF("No saved session, joining via OTAA");
 
 	/* Drop join DR one step per prior failed join (clamp DR0) so a far/maint.
 	 * gateway is eventually reachable. One attempt per wake keeps it power-safe.
@@ -505,6 +659,10 @@ int lora_session_save(void)
 	LoRaMacNvmData_t *nvm = mib_req.Param.Contexts;
 	int ret = config_session_save(nvm, sizeof(*nvm));
 
+	if (nvm->MacGroup2.NetworkActivation == ACTIVATION_TYPE_ABP) {
+		config_set_abp_fcnt(nvm->MacGroup2.DevAddr,
+				    nvm->Crypto.FCntList.FCntUp);
+	}
 	mac_cmds_save();
 	return ret;
 }
@@ -551,7 +709,13 @@ static void link_health_update(link_state_t *st, bool ack)
 	 * last resort, and LINK_FAIL_REJOIN makes it days away, not minutes. */
 	LOG_WRN("DR floor: probe no-ACK (%u/%u)", st->link_fail, LINK_FAIL_REJOIN);
 
-	if (st->link_fail >= LINK_FAIL_REJOIN) {
+	if (st->link_fail >= LINK_FAIL_REJOIN && mode.mode == LORA_MODE_ABP) {
+		/* No join to fall back on, and none needed: the keys are fixed,
+		 * so the session cannot have gone stale on the network side.
+		 * Keep probing at the floor; the first ACK restores ADR. */
+		LOG_WRN("ABP: no downlink for %u probes, staying at DR%d",
+			st->link_fail, st->forced_dr);
+	} else if (st->link_fail >= LINK_FAIL_REJOIN) {
 		LOG_ERR("No downlink for %u probes at DR%d — OTAA rejoin next boot",
 			st->link_fail, st->forced_dr);
 		config_session_clear();
@@ -580,15 +744,18 @@ int lora_send(const uint8_t *data, size_t len, bool important)
 	bool degraded = (st.forced_dr >= 0);
 	uint16_t cadence = degraded ? PROBE_EVERY_N_DEGRADED : PROBE_EVERY_N_UPLINKS;
 	bool probe = (st.uplink_count % cadence == 0);
-	bool confirmed = important || probe;
+	/* Fixed DR: nothing would act on an ACK, so never ask for one. Each
+	 * confirmed frame costs a downlink from TTN's 10/day fair use. */
+	bool confirmed = !fixed_dr() && (important || probe);
 
 	/* SF12 fair use: drop every other routine uplink. Probes fall on
 	 * multiples of 4 — always even — so the odd ones skipped are never
-	 * probes and the ladder keeps its cadence. */
+	 * probes and the ladder keeps its cadence. `important` is checked on its
+	 * own: with a fixed ABP DR it goes unconfirmed but must still go. */
 	uint32_t tx_int;
 
 	config_get_tx_interval(&tx_int);
-	if (!confirmed && !manual && (st.uplink_count & 1) &&
+	if (!confirmed && !important && !manual && (st.uplink_count & 1) &&
 	    tx_int < DR0_MIN_TX_INTERVAL_S && current_dr() == LORAWAN_DR_0) {
 		config_set_link_state(&st);
 		LOG_INF("SF12 fair use: routine uplink skipped");

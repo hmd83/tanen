@@ -1,32 +1,76 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-702QF9X4ZK"></script>
+<!-- Google Analytics erst nach Einwilligung (Hinweisleiste unten auf der
+     Startseite). Ohne "granted" wird gtag.js gar nicht geladen - kein Cookie,
+     keine Verbindung zu Google. Die Wahl gilt auch fuer setup/ (gleiche Adresse). -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-702QF9X4ZK');
+  var TB_CONSENT = 'tb-consent', TB_GA = 'G-702QF9X4ZK';
+  function tbLoadGA(){
+    if (window.tbGA) return;
+    window.tbGA = true;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + TB_GA;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', TB_GA);
+  }
+  try { if (localStorage.getItem(TB_CONSENT) === 'granted') tbLoadGA(); } catch (e) {}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ffffff">
-<meta name="description" id="metaDesc" content="TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.">
+<meta name="description" id="metaDesc" content="TanenBase ist eine offene Stockwaage (Bienenwaage, engl. hive scale): sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0. Im Einsatz in Rastatt-Wintersdorf und Bühl.">
+<meta name="author" content="Hussein Daj">
+<meta name="keywords" content="Stockwaage, Bienenwaage, Beutenwaage, hive scale, beehive scale, open source hive scale, LoRaWAN Stockwaage, LoRaWAN hive scale, BEEP, beelogger, The Things Network, re@di, Rastatt, Wintersdorf, Bühl, Hussein Daj, TanenBase">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="canonical" href="https://tanen.eu/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tanen.eu/">
 <meta property="og:site_name" content="TanenBase">
-<meta property="og:title" content="TanenBase - offene Stockwaage fuer Imkerinnen und Imker">
-<meta property="og:description" content="Gewicht und Temperatur des Bienenstocks, per Funk, jahrelang mit einer Batterie. Offener Quellcode, offene Baudaten, kein Abo.">
-<meta property="og:image" content="https://tanen.eu/media/platform.jpeg">
+<meta property="og:title" content="TanenBase - offene Stockwaage (Open-Source Hive Scale) mit LoRaWAN">
+<meta property="og:description" content="Gewicht und Temperatur des Bienenstocks, per Funk, jahrelang mit einer Batterie. Offener Quellcode, offene Baudaten, kein Abo. Entwickelt von Hussein Daj.">
+<meta property="og:image" content="https://tanen.eu/media/wintersdorf-sbs-pf-150.jpg">
 <meta property="og:locale" content="de_DE">
 <meta property="og:locale:alternate" content="en_GB">
 <meta property="og:locale:alternate" content="ar">
-<title>TanenBase - Offene Stockwaage</title>
+<meta name="twitter:card" content="summary_large_image">
+<title>TanenBase - Offene Stockwaage &amp; Open-Source Hive Scale mit LoRaWAN</title>
+<!-- Strukturierte Daten fuer Suchmaschinen: wer das Projekt macht und was
+     es ist. Nur Angaben, die auch sichtbar auf der Seite stehen. -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebSite","@id":"https://tanen.eu/#website","url":"https://tanen.eu/",
+      "name":"TanenBase","alternateName":["TanenBase Stockwaage","TanenBase hive scale"],
+      "inLanguage":["de","en","ar"],
+      "publisher":{"@id":"https://tanen.eu/#hussein-daj"}
+    },
+    {
+      "@type":"Person","@id":"https://tanen.eu/#hussein-daj","name":"Hussein Daj",
+      "url":"https://tanen.eu/","sameAs":["https://www.linkedin.com/in/hussein-daj-787196202/","https://github.com/hmd83"],
+      "knowsAbout":["hive scale","Stockwaage","LoRaWAN","beekeeping technology","embedded firmware"]
+    },
+    {
+      "@type":"SoftwareSourceCode","@id":"https://tanen.eu/#tanenbase","name":"TanenBase",
+      "description":"Open-source LoRaWAN hive scale (Stockwaage): weighs the beehive, measures temperature, runs for years on one battery. Data to BEEP and beelogger over The Things Network.",
+      "keywords":"hive scale, beehive scale, Stockwaage, Bienenwaage, LoRaWAN, BEEP, beelogger",
+      "codeRepository":"https://github.com/hmd83/tanen","license":"https://www.apache.org/licenses/LICENSE-2.0",
+      "programmingLanguage":"C","author":{"@id":"https://tanen.eu/#hussein-daj"},
+      "subjectOf":[
+        {"@type":"BlogPosting","url":"https://www.seeedstudio.com/blog/2026/08/04/monthly-wrap-up-for-july-2026-edge-ai-beyond-the-blueprint/","publisher":{"@type":"Organization","name":"Seeed Studio"}},
+        {"@type":"SocialMediaPosting","url":"https://www.linkedin.com/feed/update/urn:li:activity:7488926474700283904/"}
+      ]
+    }
+  ]
+}
+</script>
 <style>
 /* =========================================================================
    tanen.eu - Startseite.
@@ -155,7 +199,7 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .nav{flex:1 1 100%;order:3}
 .nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px}
 .nav a{
-  display:inline-flex;align-items:center;min-block-size:52px;padding:8px 18px;
+  display:inline-flex;align-items:center;min-block-size:52px;padding:8px 15px;
   border:2px solid var(--border);border-radius:12px;background:var(--surface-2);
   color:var(--text);font-size:.98rem;font-weight:700;text-decoration:none;
 }
@@ -304,6 +348,9 @@ figure{margin:0}
   font-variant-numeric:tabular-nums;font-size:1.85rem;font-weight:800;line-height:1.15;
 }
 html[dir="rtl"] .stat b{text-align:right}
+/* Schmale Handys (unter 400px): "~4,5 Jahre" in voller Groesse schob die
+   Kachel ueber den Rand und die Seite liess sich seitlich schieben. */
+@media (max-width:400px){.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stat{padding:16px 14px}.stat b{font-size:1.5rem}}
 /* Die Einheit steht in der Fliesstext-Schrift: in der Ziffernschrift mit
    fester Zeichenbreite reisst sonst eine Luecke zwischen Zahl und Einheit. */
 .stat .u{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:.72em;margin-inline-start:.18em}
@@ -385,6 +432,7 @@ html[dir="rtl"] .stat b{text-align:right}
 .plat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
 .plat .card .btn{margin-block-start:auto}
 .plat .card ul+.btn{margin-block-start:22px}
+.plat .card>p:last-of-type{margin-block-end:22px}
 /* Die Plattformnamen bleiben in jeder Sprache lateinisch geschrieben. */
 .plat-name{direction:ltr;unicode-bidi:isolate}
 .plat-note{margin-block-start:24px;color:var(--dim);max-inline-size:72ch}
@@ -431,6 +479,15 @@ html[dir="rtl"] td{direction:rtl}
 .case-dash h4{font-size:1.2rem;font-weight:800;margin:0 0 4px}
 .case-dash p{margin:0;color:var(--dim)}
 @media (max-width:759px){.case-dash .btn{inline-size:100%}}
+.case-dash .btn-row{gap:12px}
+@media (max-width:759px){.case-dash .btn-row{inline-size:100%}}
+.thanks{background:var(--accent-soft);border-color:var(--accent-edge);flex-wrap:nowrap}
+.thanks .card-ico{margin:0;flex:none}
+.thanks>div{flex:1 1 auto}
+.thanks .btn{flex:none;white-space:nowrap}
+@media (max-width:759px){.thanks{flex-wrap:wrap}}
+.sub-head{margin-block:52px 24px;max-inline-size:60ch;scroll-margin-block-start:var(--stick)}
+.sub-head p{color:var(--dim);font-size:1.08rem}
 
 /* ================================ Kontakt ================================ */
 .contact{
@@ -463,6 +520,24 @@ footer p{font-size:.98rem;color:var(--dim)}
   display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;
   font-size:.95rem;color:var(--dim);
 }
+/* ======================= Einwilligung (Cookies) =======================
+   Leiste am unteren Rand. Beide Knoepfe gleich gross und gleich gestaltet:
+   Ablehnen darf nicht schwerer sein als Zustimmen. */
+.consent{
+  position:fixed;inset-inline:0;inset-block-end:0;z-index:50;
+  background:var(--surface);border-block-start:3px solid var(--border-strong);
+  box-shadow:0 -8px 26px rgba(12,16,23,.18);
+  padding-block:18px calc(18px + env(safe-area-inset-bottom));
+  max-block-size:80dvh;overflow-y:auto;
+}
+.consent[hidden]{display:none}
+.consent-in{display:grid;gap:14px 28px;align-items:center}
+@media (min-width:900px){.consent-in{grid-template-columns:1fr auto}}
+.consent h2{font-size:1.2rem;margin-block-end:6px}
+.consent p{font-size:1rem;color:var(--dim)}
+.consent .btn{min-block-size:60px;font-size:1rem;min-inline-size:170px}
+@media (max-width:779px){.consent .btn{flex:1 1 0;min-inline-size:0}}
+.linkbtn{font:inherit;font-size:.95rem;color:var(--blue);text-decoration:underline;text-underline-offset:3px;min-block-size:48px;padding:0}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -493,6 +568,7 @@ footer p{font-size:.98rem;color:var(--dim)}
     <div class="menu" id="menu">
     <nav class="nav" data-i18n-al="navLabel" aria-label="Hauptbereiche">
       <ul>
+        <li><a href="#praxis" data-i18n="navPraxis">Praxis</a></li>
         <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
         <li><a href="#ble" data-i18n="navBle">Sensoren</a></li>
         <li><a href="#data" data-i18n="navData">Plattformen</a></li>
@@ -530,6 +606,7 @@ footer p{font-size:.98rem;color:var(--dim)}
   <div class="wrap">
     <div class="hero-grid">
       <div>
+        <span class="kicker" data-i18n="heroKicker">Open-Source-Stockwaage · LoRaWAN</span>
         <h1 data-i18n="heroTitle">Ihr Bienenstock meldet sich von selbst.</h1>
         <p class="lead" data-i18n="heroLead">TanenBase wiegt den Stock, misst die Temperatur und schickt die Werte per Funk zu Ihnen.</p>
         <p class="lead lead-2" data-i18n="heroLead2">Ein Batteriesatz reicht für Jahre. Kein Abo, keine Gebühr, kein Hersteller, der das Gerät eines Tages abschaltet.</p>
@@ -574,8 +651,160 @@ footer p{font-size:.98rem;color:var(--dim)}
   </div>
 </section>
 
+<!-- ============================== PRAXIS ==============================
+     Gleich nach dem Start: echte Staende mit Live-Daten ueberzeugen mehr
+     als jede Beschreibung. -->
+<section class="band" id="praxis">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-i18n="mediaTitle">Aus der Praxis</h2>
+      <p data-i18n="mediaLead">Keine Zeichnungen, sondern Aufnahmen der Geräte, mit denen die Zahlen auf dieser Seite gemessen wurden.</p>
+    </div>
+
+    <div class="gallery">
+      <figure class="shot">
+        <img src="media/loadcell.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wägezelle zwischen zwei Stahlplatten verschraubt" data-i18n-alt="cap2Alt">
+        <figcaption data-i18n="cap2">Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.</figcaption>
+      </figure>
+      <figure class="shot portrait">
+        <img src="media/enclosure.jpg" width="702" height="1000" loading="lazy" decoding="async" alt="Geöffnetes Gehäuse mit Platine, Funkmodul und Antenne" data-i18n-alt="cap3Alt">
+        <figcaption data-i18n="cap3">Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.</figcaption>
+      </figure>
+    </div>
+
+    <div class="sec-head" style="margin-block:52px 24px" id="buehl">
+      <h3 class="case-title" data-i18n="caseTitle">Im Einsatz: Bienenstand in Bühl (Baden)</h3>
+      <p data-i18n="caseLead">Ein TanenBase unter einem Bienenstock in Bühl. Die Station funkt per LoRaWAN an ein Gateway auf der Burg Windeck, rund 4 km entfernt, und schickt jede Stunde einen Messwert.</p>
+    </div>
+
+    <ul class="case-facts">
+      <li><b data-i18n="cf1V">≈ 4 km</b><span data-i18n="cf1L">Funkstrecke zum Gateway (3,6 km Luftlinie)</span></li>
+      <li><b data-i18n="cf2V">1 × pro Stunde</b><span data-i18n="cf2L">Sendeintervall der Messwerte</span></li>
+      <li><b data-i18n="cf3V">LoRaWAN</b><span data-i18n="cf3L">Kerlink iStation, Burg Windeck, 378 m ü. NN</span></li>
+    </ul>
+
+    <div class="gallery case-gallery">
+      <figure class="shot portrait">
+        <img src="media/buehl-hive.jpg" width="693" height="1500" loading="lazy" decoding="async" alt="Bienenstock auf der Wiegeplattform, darunter das Gehäuse der Station mit rotem Knopf" data-i18n-alt="case1Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/buehl-gateway.webp" width="1119" height="709" loading="lazy" decoding="async" alt="Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway" data-i18n-alt="case2Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/buehl-map.webp" width="813" height="759" loading="lazy" decoding="async" alt="Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand" data-i18n-alt="case3Alt">
+      </figure>
+    </div>
+
+    <div class="case-dash">
+      <div>
+        <h4 data-i18n="caseDashTitle">Live-Daten des Bienenstands Bühl</h4>
+        <p data-i18n="caseDash">Gewicht und Temperatur dieses Stocks, öffentlich bei beelogger und BEEP.</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn" href="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+          <span data-i18n="dashBeelogger">beelogger</span>
+        </a>
+        <a class="btn btn-outline" href="https://dashboard.beep.nl/TKSQFS" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+          <span data-i18n="dashBeep">BEEP</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Dank an den Verein, der TanenBase als erster eingesetzt hat -->
+    <div class="case-dash thanks">
+      <span class="card-ico ico-acc" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0112 7.3a4.3 4.3 0 017.5 2.5C19.5 15.4 12 20 12 20z"/></svg>
+      </span>
+      <div>
+        <h4 data-i18n="thxTitle">Danke, Bezirks-Imkerverein Bühl e.V.!</h4>
+        <p data-i18n="thxD">Der Verein hat TanenBase als einer der Ersten eingesetzt und dem Projekt damit den Weg aus der Werkstatt an den Bienenstand geebnet.</p>
+      </div>
+      <a class="btn btn-outline" href="https://imker-buehl.de/" target="_blank" rel="noopener">
+        <span data-i18n="thxL">imker-buehl.de öffnen</span>
+      </a>
+    </div>
+
+    <!-- Zweiter Stand, gleich aufgebaut wie Buehl: Kennzahlen, Bilder ohne
+         Unterschrift, Live-Daten. -->
+    <div class="sec-head" style="margin-block:52px 24px" id="wintersdorf">
+      <h3 class="case-title" data-i18n="wdTitle">Im Einsatz: Bienenstand in Wintersdorf, 76437 Rastatt</h3>
+      <p data-i18n="wdLead">Ein Bienenvolk am Feldrand von Wintersdorf steht auf einer TanenBase-Stockwaage mit der Wiegeplattform Steinberg SBS-PF-150. Die Station funkt rund einen Kilometer weit zum re@di-Gateway im Ortskern.</p>
+    </div>
+
+    <ul class="case-facts">
+      <li><b data-i18n="wf1V">≈ 1 km</b><span data-i18n="wf1L">Funkstrecke zum re@di-Gateway rastatt-0009</span></li>
+      <li><b>SBS-PF-150</b><span data-i18n="wf2L">Wiegeplattform von Steinberg, bis 150 kg, mit eigener Temperaturkorrektur</span></li>
+      <li><b data-i18n="wf3V">alle 15 min</b><span data-i18n="wf3L">Messintervall</span></li>
+    </ul>
+
+    <div class="gallery case-gallery">
+      <figure class="shot portrait">
+        <img src="media/wintersdorf-stockwaage.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Blaue Bienenbeute auf der TanenBase-Stockwaage am Feldrand in Wintersdorf, Bienen am Flugloch" data-i18n-alt="wd1Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/wintersdorf-sbs-pf-150.jpg" width="1200" height="900" loading="lazy" decoding="async" alt="Wiegeplattform Steinberg SBS-PF-150 unter der Beute, davor das Gehäuse der Station mit Temperaturfühler" data-i18n-alt="wd2Alt">
+      </figure>
+      <figure class="shot">
+        <img src="media/wintersdorf-karte.jpg" width="542" height="646" loading="lazy" decoding="async" alt="Karte von Wintersdorf mit rotem Pfeil über rund 1 km vom Bienenstand zum Gateway rastatt-0009" data-i18n-alt="wd3Alt">
+      </figure>
+    </div>
+
+    <div class="case-dash">
+      <div>
+        <h4 data-i18n="wdDashTitle">Live-Daten des Bienenstands Wintersdorf</h4>
+        <p data-i18n="caseDash">Gewicht und Temperatur dieses Stocks, öffentlich bei beelogger und BEEP.</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn" href="https://community.beelogger.de/tanen/beelogger2/beelogger_show.php" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+          <span data-i18n="dashBeelogger">beelogger</span>
+        </a>
+        <a class="btn btn-outline" href="https://dashboard.beep.nl/XQG4I4" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+          <span data-i18n="dashBeep">BEEP</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Beide Staende laufen ueber dasselbe kommunale Funknetz -->
+    <div class="case-dash">
+      <div>
+        <h4><span class="plat-name">re@di — regional.digital</span></h4>
+        <p data-i18n="readiD">Bühl und Wintersdorf funken über das LoRaWAN-Netz von re@di, dem Verbund der Städte Baden-Baden, Bretten, Bruchsal, Bühl, Ettlingen, Gaggenau, Rastatt, Rheinstetten und Stutensee. Die Gateways stehen allen offen — ohne eigenes Empfangsgerät und ohne Mobilfunkvertrag.</p>
+      </div>
+      <a class="btn btn-outline" href="https://readi.de/" target="_blank" rel="noopener">
+        <span data-i18n="readiL">readi.de öffnen</span>
+      </a>
+    </div>
+
+    <!-- Wer ueber das Projekt berichtet hat -->
+    <div class="sub-head">
+      <h2 data-i18n="pressTitle">Darüber wird berichtet</h2>
+    </div>
+    <div class="plat">
+      <article class="card">
+        <h3><span class="plat-name">Seeed Studio</span></h3>
+        <p data-i18n="press1D">Seeed Studio stellt TanenBase in seinem Monatsrückblick für Juli 2026 vor: „Edge AI Beyond the Blueprint“.</p>
+        <a class="btn btn-outline" href="https://www.seeedstudio.com/blog/2026/08/04/monthly-wrap-up-for-july-2026-edge-ai-beyond-the-blueprint/" target="_blank" rel="noopener">
+          <span data-i18n="press1L">Beitrag bei Seeed Studio lesen</span>
+        </a>
+      </article>
+      <article class="card">
+        <h3><span class="plat-name">LinkedIn</span></h3>
+        <p data-i18n="press2D">Die Projektvorstellung von TanenBase auf LinkedIn.</p>
+        <a class="btn btn-outline" href="https://www.linkedin.com/feed/update/urn:li:activity:7488926474700283904/" target="_blank" rel="noopener">
+          <span data-i18n="press2L">Beitrag auf LinkedIn ansehen</span>
+        </a>
+      </article>
+    </div>
+
+  </div>
+</section>
+
 <!-- =============================== MERKMALE =============================== -->
-<section class="band" id="features">
+<section class="band band-white" id="features">
   <div class="wrap">
     <div class="sec-head">
       <h2 data-i18n="featTitle">Was das Gerät kann</h2>
@@ -758,60 +987,10 @@ footer p{font-size:.98rem;color:var(--dim)}
   </div>
 </section>
 
-<!-- ============================ BILDER / TECHNIK ============================ -->
+<!-- =============================== TECHNIK =============================== -->
 <section class="band band-white" id="tech">
   <div class="wrap">
-    <div class="sec-head">
-      <h2 data-i18n="mediaTitle">Aus der Praxis</h2>
-      <p data-i18n="mediaLead">Keine Zeichnungen, sondern Aufnahmen der Geräte, mit denen die Zahlen auf dieser Seite gemessen wurden.</p>
-    </div>
-
-    <div class="gallery">
-      <figure class="shot">
-        <img src="media/loadcell.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Wägezelle zwischen zwei Stahlplatten verschraubt" data-i18n-alt="cap2Alt">
-        <figcaption data-i18n="cap2">Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.</figcaption>
-      </figure>
-      <figure class="shot portrait">
-        <img src="media/enclosure.jpg" width="702" height="1000" loading="lazy" decoding="async" alt="Geöffnetes Gehäuse mit Platine, Funkmodul und Antenne" data-i18n-alt="cap3Alt">
-        <figcaption data-i18n="cap3">Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.</figcaption>
-      </figure>
-    </div>
-
-    <div class="sec-head" style="margin-block:52px 24px" id="buehl">
-      <h3 class="case-title" data-i18n="caseTitle">Im Einsatz: Bienenstand in Bühl (Baden)</h3>
-      <p data-i18n="caseLead">Ein TanenBase unter einem Bienenstock in Bühl. Die Station funkt per LoRaWAN an ein Gateway auf der Burg Windeck, rund 4 km entfernt, und schickt jede Stunde einen Messwert.</p>
-    </div>
-
-    <ul class="case-facts">
-      <li><b data-i18n="cf1V">≈ 4 km</b><span data-i18n="cf1L">Funkstrecke zum Gateway (3,6 km Luftlinie)</span></li>
-      <li><b data-i18n="cf2V">1 × pro Stunde</b><span data-i18n="cf2L">Sendeintervall der Messwerte</span></li>
-      <li><b data-i18n="cf3V">LoRaWAN</b><span data-i18n="cf3L">Kerlink iStation, Burg Windeck, 378 m ü. NN</span></li>
-    </ul>
-
-    <div class="gallery case-gallery">
-      <figure class="shot portrait">
-        <img src="media/buehl-hive.jpg" width="693" height="1500" loading="lazy" decoding="async" alt="Bienenstock auf der Wiegeplattform, darunter das Gehäuse der Station mit rotem Knopf" data-i18n-alt="case1Alt">
-      </figure>
-      <figure class="shot">
-        <img src="media/buehl-gateway.webp" width="1119" height="709" loading="lazy" decoding="async" alt="Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway" data-i18n-alt="case2Alt">
-      </figure>
-      <figure class="shot">
-        <img src="media/buehl-map.webp" width="813" height="759" loading="lazy" decoding="async" alt="Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand" data-i18n-alt="case3Alt">
-      </figure>
-    </div>
-
-    <div class="case-dash">
-      <div>
-        <h4 data-i18n="caseDashTitle">Live-Daten des Bienenstands Bühl</h4>
-        <p data-i18n="caseDash">Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.</p>
-      </div>
-      <a class="btn" href="https://community.beelogger.de/tanen/beelogger1/beelogger_show.php" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
-        <span data-i18n="caseDashLink">Live-Daten ansehen</span>
-      </a>
-    </div>
-
-    <div class="sec-head" style="margin-block:52px 24px">
+    <div class="sec-head" id="techspec">
       <h2 data-i18n="techTitle">Technische Angaben</h2>
       <p data-i18n="techLead">Für alle, die es genau wissen wollen. Für den täglichen Gebrauch müssen Sie hier nichts verstehen.</p>
     </div>
@@ -896,12 +1075,13 @@ footer p{font-size:.98rem;color:var(--dim)}
     <div class="foot-grid">
       <div>
         <h4>TanenBase</h4>
-        <p data-i18n="footAbout">Offene Stockwaage für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.</p>
+        <p data-i18n="footAbout">Offene Stockwaage (Bienenwaage, engl. hive scale) für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.</p>
       </div>
       <div>
         <h4 data-i18n="footNav">Bereiche</h4>
         <ul>
-          <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
+          <li><a href="#praxis" data-i18n="navPraxis">Praxis</a></li>
+        <li><a href="#features" data-i18n="navFeat">Was es kann</a></li>
         <li><a href="#ble" data-i18n="navBle">Sensoren</a></li>
           <li><a href="#data" data-i18n="navData">Plattformen</a></li>
           <li><a href="#why" data-i18n="navWhy">Warum</a></li>
@@ -927,10 +1107,28 @@ footer p{font-size:.98rem;color:var(--dim)}
       <!-- Nachweis fuer das Startbild. Es stammt nicht aus dem Projekt,
            steht aber nur hier, nicht ueber dem Bild selbst. -->
       <span><span data-i18n="photoBy">Foto</span>: <a href="https://pixabay.com/users/xiserge-15871962/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">xiSerge</a> / <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7996596" rel="noopener">Pixabay</a></span>
+      <span><span data-i18n="mapBy">Karte Wintersdorf</span>: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a></span>
+      <span><a href="impressum.html" data-i18n="footImprint">Impressum</a> · <a href="datenschutz.html" data-i18n="footPrivacy">Datenschutz</a> · <button type="button" class="linkbtn" id="consentOpen" data-i18n="footCookies">Cookie-Einstellungen</button></span>
       <span>&copy; 2026 TanenBase <span data-i18n="byLine">von</span> <a href="https://linkedin.com/in/hussein-daj-787196202/" rel="noopener" target="_blank">Hussein Daj</a></span>
     </div>
   </div>
 </footer>
+
+<!-- Einwilligung fuer Google Analytics. Erscheint, bis eine Wahl gespeichert
+     ist; ueber "Cookie-Einstellungen" in der Fusszeile jederzeit wieder. -->
+<div class="consent" id="consent" role="region" aria-labelledby="consentTitle" hidden>
+  <div class="wrap consent-in">
+    <div>
+      <h2 id="consentTitle" data-i18n="ckTitle">Darf diese Seite Besuche zählen?</h2>
+      <p><span data-i18n="ckText">Mit Ihrer Zustimmung nutzen wir Google Analytics, um zu sehen, welche Inhalte gelesen werden. Dabei setzt Google Cookies und Daten können in die USA übertragen werden. Ohne Zustimmung wird nichts geladen — die Seite funktioniert genauso.</span>
+        <a href="datenschutz.html" data-i18n="ckMore">Datenschutzerklärung</a></p>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-outline" data-consent="granted" data-i18n="ckYes">Akzeptieren</button>
+      <button type="button" class="btn btn-outline" data-consent="denied" data-i18n="ckNo">Ablehnen</button>
+    </div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -943,8 +1141,8 @@ const I18N = {
 /* ------------------------------- Deutsch ------------------------------- */
 de: {
   _dir:'ltr',
-  pageTitle:'TanenBase — Offene Stockwaage',
-  metaDesc:'TanenBase ist eine offene Stockwaage: sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0.',
+  pageTitle:'TanenBase — Offene Stockwaage & Open-Source Hive Scale mit LoRaWAN',
+  metaDesc:'TanenBase ist eine offene Stockwaage (Bienenwaage, engl. hive scale): sie wiegt den Bienenstock, misst die Temperatur und funkt die Werte per LoRaWAN. Jahrelange Batterielaufzeit, kein Abo, Apache-2.0. Im Einsatz in Bühl und Rastatt-Wintersdorf.',
   skip:'Zum Inhalt springen',
   brandSub:'Offene Stockwaage',
   navLabel:'Hauptbereiche', menu:'Menü',
@@ -1036,9 +1234,43 @@ de: {
   case1Alt:'Bienenstock auf der Wiegeplattform, darunter das Gehäuse der Station mit rotem Knopf',
   case2Alt:'Burg Windeck über Weinbergen, Pfeil auf den Turm mit dem Gateway',
   case3Alt:'Karte von Bühl mit roter Linie über 3,6 km vom Gateway zum Bienenstand',
-  caseDash:'Gewicht und Temperatur dieses Stocks, stündlich aktualisiert im beelogger-Dashboard.',
+  caseDash:'Gewicht und Temperatur dieses Stocks, öffentlich bei beelogger und BEEP.',
   caseDashLink:'Live-Daten ansehen',
   caseDashTitle:'Live-Daten des Bienenstands Bühl',
+  thxTitle:'Danke, Bezirks-Imkerverein Bühl e.V.!',
+  thxD:'Der Verein hat TanenBase als einer der Ersten eingesetzt und dem Projekt damit den Weg aus der Werkstatt an den Bienenstand geebnet.',
+  thxL:'imker-buehl.de öffnen',
+  ckTitle:'Darf diese Seite Besuche zählen?',
+  ckText:'Mit Ihrer Zustimmung nutzen wir Google Analytics, um zu sehen, welche Inhalte gelesen werden. Dabei setzt Google Cookies und Daten können in die USA übertragen werden. Ohne Zustimmung wird nichts geladen — die Seite funktioniert genauso.',
+  ckMore:'Datenschutzerklärung',
+  ckYes:'Akzeptieren',
+  ckNo:'Ablehnen',
+  footImprint:'Impressum',
+  footPrivacy:'Datenschutz',
+  footCookies:'Cookie-Einstellungen',
+  mapBy:'Karte Wintersdorf',
+  press2L:'Beitrag auf LinkedIn ansehen',
+  press2D:'Die Projektvorstellung von TanenBase auf LinkedIn.',
+  press1L:'Beitrag bei Seeed Studio lesen',
+  press1D:'Seeed Studio stellt TanenBase in seinem Monatsrückblick für Juli 2026 vor: „Edge AI Beyond the Blueprint“.',
+  pressTitle:'Darüber wird berichtet',
+  readiL:'readi.de öffnen',
+  readiD:'Bühl und Wintersdorf funken über das LoRaWAN-Netz von re@di, dem Verbund der Städte Baden-Baden, Bretten, Bruchsal, Bühl, Ettlingen, Gaggenau, Rastatt, Rheinstetten und Stutensee. Die Gateways stehen allen offen — ohne eigenes Empfangsgerät und ohne Mobilfunkvertrag.',
+  wdDashTitle:'Live-Daten des Bienenstands Wintersdorf',
+  wd3Alt:'Karte von Wintersdorf mit rotem Pfeil über rund 1 km vom Bienenstand zum Gateway rastatt-0009',
+  wd2Alt:'Wiegeplattform Steinberg SBS-PF-150 unter der Beute, davor das Gehäuse der Station mit Temperaturfühler',
+  wd1Alt:'Blaue Bienenbeute auf der TanenBase-Stockwaage am Feldrand in Wintersdorf, Bienen am Flugloch',
+  wf3L:'Messintervall',
+  wf3V:'alle 15 min',
+  wf2L:'Wiegeplattform von Steinberg, bis 150 kg, mit eigener Temperaturkorrektur',
+  wf1L:'Funkstrecke zum re@di-Gateway rastatt-0009',
+  wf1V:'≈ 1 km',
+  wdLead:'Ein Bienenvolk am Feldrand von Wintersdorf steht auf einer TanenBase-Stockwaage mit der Wiegeplattform Steinberg SBS-PF-150. Die Station funkt rund einen Kilometer weit zum re@di-Gateway im Ortskern.',
+  wdTitle:'Im Einsatz: Bienenstand in Wintersdorf, 76437 Rastatt',
+  dashBeep:'BEEP',
+  dashBeelogger:'beelogger',
+  navPraxis:'Praxis',
+  heroKicker:'Open-Source-Stockwaage · LoRaWAN',
   cap2:'Die Wägezelle zwischen zwei Stahlplatten — genau dieses Bauteil wurde über sechs Tage im Freien gegen ein bekanntes Gewicht geprüft.',
   cap2Alt:'Wägezelle zwischen zwei Stahlplatten verschraubt',
   cap3:'Der Aufbau im Gehäuse: Rechner, Funkmodul mit Antenne und der Verstärker der Wägezelle. Alle Teile sind einzeln erhältlich.',
@@ -1076,7 +1308,7 @@ de: {
   ctaBtn:'E-Mail schreiben',
   ctaGit:'Bauanleitung ansehen',
 
-  footAbout:'Offene Stockwaage für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.',
+  footAbout:'Offene Stockwaage (Bienenwaage, engl. hive scale) für Gewicht und Temperatur. Entwickelt für den Dauerbetrieb am Stand, nicht für die Vitrine.',
   footNav:'Bereiche', footContact:'Kontakt', footRepo:'Projekt auf GitHub',
   footLic:'Apache-Lizenz 2.0 — nutzen, ändern, weitergeben, auch gewerblich.'
 },
@@ -1084,8 +1316,8 @@ de: {
 /* ------------------------------- English ------------------------------- */
 en: {
   _dir:'ltr',
-  pageTitle:'TanenBase — Open Hive Scale',
-  metaDesc:'TanenBase is an open hive scale: it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0.',
+  pageTitle:'TanenBase — Open-Source LoRaWAN Hive Scale',
+  metaDesc:'TanenBase is an open-source hive scale (beehive scale): it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0. In service in Bühl and Rastatt-Wintersdorf, Germany.',
   skip:'Skip to content',
   brandSub:'Open hive scale',
   navLabel:'Main sections', menu:'Menu',
@@ -1177,9 +1409,43 @@ en: {
   case1Alt:'Beehive on the weighing platform with the station enclosure and its red button underneath',
   case2Alt:'Windeck Castle above vineyards, arrow pointing at the tower carrying the gateway',
   case3Alt:'Map of Bühl with a red 3.6 km line from the gateway to the apiary',
-  caseDash:'Weight and temperature of this hive, updated hourly on the beelogger dashboard.',
+  caseDash:'Weight and temperature of this hive, public on beelogger and BEEP.',
   caseDashLink:'View live data',
   caseDashTitle:'Live data from the Bühl apiary',
+  thxTitle:'Thank you, Bezirks-Imkerverein Bühl e.V.!',
+  thxD:'The Bühl beekeepers’ association was one of the first to put TanenBase to work, taking the project out of the workshop and into the apiary.',
+  thxL:'Open imker-buehl.de',
+  ckTitle:'May this site count visits?',
+  ckText:'With your consent we use Google Analytics to see which content gets read. Google sets cookies, and data may be transferred to the USA. Without consent nothing is loaded — the site works exactly the same.',
+  ckMore:'Privacy policy',
+  ckYes:'Accept',
+  ckNo:'Decline',
+  footImprint:'Legal notice',
+  footPrivacy:'Privacy',
+  footCookies:'Cookie settings',
+  mapBy:'Wintersdorf map',
+  press2L:'View the post on LinkedIn',
+  press2D:'The TanenBase project presentation on LinkedIn.',
+  press1L:'Read the Seeed Studio post',
+  press1D:'Seeed Studio features TanenBase in its monthly wrap-up for July 2026: “Edge AI Beyond the Blueprint”.',
+  pressTitle:'In the press',
+  readiL:'Open readi.de',
+  readiD:'Bühl and Wintersdorf transmit over the LoRaWAN network of re@di, the alliance of the towns Baden-Baden, Bretten, Bruchsal, Bühl, Ettlingen, Gaggenau, Rastatt, Rheinstetten and Stutensee. The gateways are open to everyone — no receiver of your own, no mobile contract.',
+  wdDashTitle:'Live data from the Wintersdorf apiary',
+  wd3Alt:'Map of Wintersdorf with a red arrow over about 1 km from the apiary to gateway rastatt-0009',
+  wd2Alt:'Steinberg SBS-PF-150 weighing platform under the hive, the station enclosure with its temperature probe in front',
+  wd1Alt:'Blue beehive on the TanenBase hive scale at the edge of a field in Wintersdorf, bees at the entrance',
+  wf3L:'Measurement interval',
+  wf3V:'every 15 min',
+  wf2L:'Steinberg weighing platform, up to 150 kg, with its own temperature correction',
+  wf1L:'Radio link to re@di gateway rastatt-0009',
+  wf1V:'≈ 1 km',
+  wdLead:'A colony at the edge of the fields in Wintersdorf stands on a TanenBase hive scale built on the Steinberg SBS-PF-150 weighing platform. The station talks to the re@di gateway in the village centre, about one kilometre away.',
+  wdTitle:'In use: apiary in Wintersdorf, 76437 Rastatt',
+  dashBeep:'BEEP',
+  dashBeelogger:'beelogger',
+  navPraxis:'In use',
+  heroKicker:'Open-source hive scale · LoRaWAN',
   cap2:'The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.',
   cap2Alt:'Load cell bolted between two steel plates',
   cap3:'The build inside the enclosure: processor, radio module with its antenna, and the load-cell amplifier. Every part is available separately.',
@@ -1217,7 +1483,7 @@ en: {
   ctaBtn:'Send an email',
   ctaGit:'View the build guide',
 
-  footAbout:'Open hive scale for weight and temperature. Built for permanent service in the apiary, not for a display case.',
+  footAbout:'Open-source hive scale for weight and temperature. Built for permanent service in the apiary, not for a display case.',
   footNav:'Sections', footContact:'Contact', footRepo:'Project on GitHub',
   footLic:'Apache License 2.0 — use it, change it, pass it on, commercially as well.'
 },
@@ -1318,9 +1584,43 @@ ar: {
   case1Alt:'خلية نحل فوق منصة الوزن وتحتها علبة المحطة بزر أحمر',
   case2Alt:'قلعة فيندك فوق كروم العنب وسهم يشير إلى البرج الذي عليه البوابة',
   case3Alt:'خريطة بول وعليها خط أحمر بطول 3.6 كم من البوابة إلى المنحل',
-  caseDash:'وزن هذه الخلية وحرارتها، تُحدَّث كل ساعة على لوحة beelogger.',
+  caseDash:'وزن هذه الخلية وحرارتها، منشوران على beelogger وBEEP.',
   caseDashLink:'عرض البيانات المباشرة',
   caseDashTitle:'البيانات المباشرة لمنحل بول',
+  thxTitle:'شكراً لجمعية النحالين في بول ⁨Bezirks-Imkerverein Bühl e.V.⁩!',
+  thxD:'كانت الجمعية من أوائل من استخدموا TanenBase، فنقلت المشروع من الورشة إلى المنحل.',
+  thxL:'فتح imker-buehl.de',
+  ckTitle:'هل تسمح لهذا الموقع بعدّ الزيارات؟',
+  ckText:'بموافقتك نستخدم Google Analytics لمعرفة المحتوى الذي يُقرأ. تضع Google ملفات تعريف الارتباط (كوكيز) وقد تُنقل البيانات إلى الولايات المتحدة. بدون موافقتك لا يُحمَّل شيء، ويعمل الموقع بالشكل نفسه.',
+  ckMore:'سياسة الخصوصية',
+  ckYes:'موافق',
+  ckNo:'رفض',
+  footImprint:'بيانات الناشر',
+  footPrivacy:'الخصوصية',
+  footCookies:'إعدادات الكوكيز',
+  mapBy:'خريطة فينترسدورف',
+  press2L:'شاهد المنشور على LinkedIn',
+  press2D:'تقديم مشروع TanenBase على LinkedIn.',
+  press1L:'اقرأ المقال على Seeed Studio',
+  press1D:'Seeed Studio تعرض TanenBase في ملخصها الشهري لشهر تموز 2026: ‏“Edge AI Beyond the Blueprint”.',
+  pressTitle:'كتبوا عنا',
+  readiL:'فتح readi.de',
+  readiD:'منحلا بول وفينترسدورف يرسلان عبر شبكة LoRaWAN التابعة لـ re@di، وهي تحالف مدن بادن-بادن وبريتن وبروخزال وبول وإتلينغن وغاغيناو وراشتات وراينشتيتن وشتوتنزي. البوابات مفتوحة للجميع، بلا جهاز استقبال خاص ولا عقد اتصالات.',
+  wdDashTitle:'البيانات المباشرة لمنحل فينترسدورف',
+  wd3Alt:'خريطة فينترسدورف وعليها سهم أحمر بطول كيلومتر تقريباً من المنحل إلى البوابة rastatt-0009',
+  wd2Alt:'منصة الوزن Steinberg SBS-PF-150 تحت الخلية، وأمامها علبة المحطة مع مجس الحرارة',
+  wd1Alt:'خلية نحل زرقاء فوق ميزان TanenBase على طرف حقل في فينترسدورف، والنحل عند المدخل',
+  wf3L:'فاصل القياس',
+  wf3V:'كل 15 دقيقة',
+  wf2L:'منصة وزن من Steinberg حتى 150 كغ، مع تصحيح حراري خاص بها',
+  wf1L:'مسافة الاتصال اللاسلكي إلى بوابة re@di ‏rastatt-0009',
+  wf1V:'≈ 1 كم',
+  wdLead:'طائفة نحل على طرف الحقول في فينترسدورف تقف على ميزان TanenBase المبني على منصة الوزن Steinberg SBS-PF-150. ترسل المحطة إلى بوابة re@di في وسط القرية على بعد كيلومتر تقريباً.',
+  wdTitle:'في الميدان: منحل في فينترسدورف، 76437 راشتات',
+  dashBeep:'BEEP',
+  dashBeelogger:'beelogger',
+  navPraxis:'في الميدان',
+  heroKicker:'ميزان خلايا مفتوح المصدر · LoRaWAN',
   cap2:'حساس الوزن بين صفيحتين فولاذيتين. هذه القطعة نفسها اختُبرت ستة أيام في الهواء الطلق بوزن معروف.',
   cap2Alt:'حساس وزن مثبت ببراغٍ بين صفيحتين فولاذيتين',
   cap3:'داخل العلبة: المعالج، وحدة الإرسال مع هوائيها، ومضخّم حساس الوزن. كل قطعة تُشترى منفردة.',
@@ -1467,6 +1767,36 @@ langPicker(applyLang);
   let start = null;
   try { start = localStorage.getItem(LANG_STORE) || localStorage.getItem(LANG_STORE_OLD); } catch (e) {}
   applyLang(I18N[start] ? start : 'de');
+})();
+
+/* ============================ Einwilligung ============================
+   "granted" laedt Google Analytics sofort. Wer seine Zustimmung zurueckzieht,
+   bekommt die _ga-Cookies geloescht und die Seite neu geladen, damit das
+   bereits geladene gtag.js nicht weiterlaeuft. */
+(function consent(){
+  const box = document.getElementById('consent');
+  let choice = null;
+  try { choice = localStorage.getItem(TB_CONSENT); } catch (e) {}
+  if (choice !== 'granted' && choice !== 'denied') box.hidden = false;
+
+  box.querySelectorAll('[data-consent]').forEach(b => b.addEventListener('click', () => {
+    const was = choice;
+    choice = b.dataset.consent;
+    try { localStorage.setItem(TB_CONSENT, choice); } catch (e) {}
+    box.hidden = true;
+    if (choice === 'granted') { tbLoadGA(); return; }
+    if (was === 'granted') {
+      document.cookie.split(';').map(c => c.split('=')[0].trim()).filter(n => /^_ga/.test(n)).forEach(n => {
+        ['', '; domain=tanen.eu', '; domain=.tanen.eu'].forEach(d => { document.cookie = n + '=; Max-Age=0; path=/' + d; });
+      });
+      location.reload();
+    }
+  }));
+
+  document.getElementById('consentOpen').addEventListener('click', () => {
+    box.hidden = false;
+    box.querySelector('button').focus();
+  });
 })();
 
 /* ============================ Menue (Handy) ============================ */

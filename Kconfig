@@ -18,6 +18,27 @@ config TANENBASE_APP_KEY
 	string "LoRaWAN AppKey (32 hex chars) — keep in prj_credentials.conf, never commit"
 	default "00000000000000000000000000000000"
 
+config TANENBASE_LORA_ABP
+	bool "Activate by personalisation (ABP) instead of OTAA"
+	help
+	  Seeds the activation mode of a unit whose ZMS holds none; the
+	  setup page's Network tab overrides it. ABP sends from the first
+	  wake with a fixed DevAddr and session keys and never needs a
+	  downlink — for sites where JoinAccepts do not get through.
+	  Register the device in TTN as ABP, MAC v1.0.3 (docs/LORAWAN.md §13).
+
+config TANENBASE_DEV_ADDR
+	string "ABP DevAddr (8 hex chars, MSB first as TTN prints it)"
+	default "00000000"
+
+config TANENBASE_NWK_SKEY
+	string "ABP NwkSKey (32 hex chars) — keep in prj_credentials.conf, never commit"
+	default "00000000000000000000000000000000"
+
+config TANENBASE_APP_SKEY
+	string "ABP AppSKey (32 hex chars) — keep in prj_credentials.conf, never commit"
+	default "00000000000000000000000000000000"
+
 config TANENBASE_DEBUG_LOOP_INTERVAL
 	int "Debug loop delay when System OFF is skipped (seconds)"
 	default 180

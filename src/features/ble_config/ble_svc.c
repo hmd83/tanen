@@ -145,6 +145,84 @@ static ssize_t write_app_key(struct bt_conn *conn, const struct bt_gatt_attr *at
     return len;
 }
 
+/* LoraMode — activation + data rate (R/W, 2 bytes = lora_mode_t). ABP is
+ * refused until DevAddr and both session keys are stored, so the page writes
+ * those first: a node switched to ABP without them could never transmit.
+ * Changing mode or ABP credentials needs no session clear here — lora_init()
+ * discards a stored session that does not match the config. */
+static ssize_t read_lora_mode(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                              void *buf, uint16_t len, uint16_t offset)
+{
+    lora_mode_t m;
+    config_get_lora_mode(&m);
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, &m, sizeof(m));
+}
+
+static ssize_t write_lora_mode(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                               const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    lora_mode_t m;
+
+    if (offset != 0 || len != sizeof(m)) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    memcpy(&m, buf, sizeof(m));
+    if (config_lora_mode_validate(&m) ||
+        (m.mode == LORA_MODE_ABP && !config_abp_ready())) {
+        return BT_GATT_ERR(BT_ATT_ERR_VALUE_NOT_ALLOWED);
+    }
+    if (config_set_lora_mode(&m)) {
+        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+    }
+    LOG_INF("LoraMode written via BLE: %s, DR %d (-1 = ADR)",
+            m.mode == LORA_MODE_ABP ? "ABP" : "OTAA",
+            m.dr == LORA_DR_ADR ? -1 : m.dr);
+    return len;
+}
+
+/* DevAddr (R/W, 4 bytes, MSB first as TTN prints it) — ABP */
+static ssize_t read_dev_addr(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                             void *buf, uint16_t len, uint16_t offset)
+{
+    uint8_t val[4];
+    config_get_dev_addr(val);
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, val, sizeof(val));
+}
+
+static ssize_t write_dev_addr(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                              const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    if (len != 4) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    config_set_dev_addr(buf);
+    LOG_INF("DevAddr written via BLE");
+    return len;
+}
+
+/* NwkSKey / AppSKey (W only, 16 bytes — never readable, like AppKey) — ABP */
+static ssize_t write_nwk_skey(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                              const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    if (len != 16) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    config_set_nwk_skey(buf);
+    LOG_INF("NwkSKey written via BLE");
+    return len;
+}
+
+static ssize_t write_app_skey(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                              const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+    if (len != 16) {
+        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+    }
+    config_set_app_skey(buf);
+    LOG_INF("AppSKey written via BLE");
+    return len;
+}
+
 /* ZeroOffset (R/W, int32 LE) */
 static ssize_t read_zero_offset(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                 void *buf, uint16_t len, uint16_t offset)
@@ -558,6 +636,30 @@ BT_GATT_SERVICE_DEFINE(tanen_svc,
         BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE,
         BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
         read_lc_config, write_lc_config, NULL),
+
+    /* LoraMode — OTAA/ABP + fixed DR (R/W) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x0011),
+        BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+        read_lora_mode, write_lora_mode, NULL),
+
+    /* DevAddr — ABP (R/W) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x0012),
+        BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+        read_dev_addr, write_dev_addr, NULL),
+
+    /* NwkSKey — ABP (W only — never readable) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x0013),
+        BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_WRITE,
+        NULL, write_nwk_skey, NULL),
+
+    /* AppSKey — ABP (W only — never readable) */
+    BT_GATT_CHARACTERISTIC(TANEN_CHAR_UUID(0x0014),
+        BT_GATT_CHRC_WRITE,
+        BT_GATT_PERM_WRITE,
+        NULL, write_app_skey, NULL),
 );
 
 /* ---- Advertising ---- */

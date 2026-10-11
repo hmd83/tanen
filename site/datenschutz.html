@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Datenschutzerklärung von tanen.eu (TanenBase, offene Stockwaage): Server-Logfiles, Google Analytics nur mit Einwilligung, Ihre Rechte.">
+<meta name="author" content="Hussein Daj">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="canonical" href="https://tanen.eu/datenschutz.html">
+<title>Datenschutzerklärung - TanenBase</title>
+<style>
+/* Gleiche Regeln wie die Startseite: Fliesstext ab 18px, Bedienelemente
+   mindestens 60px hoch. Diese Seite laedt nichts von fremden Servern -
+   auch kein Google Analytics, unabhaengig von der Einwilligung. */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;--surface:#ffffff;--surface-2:#e4eaf4;
+  --border:#8f9cb5;--border-strong:#4a5568;
+  --text:#0c1017;--dim:#39445a;
+  --accent:#f0a500;--accent-ink:#231800;--accent-edge:#a06d00;--accent-soft:#fff4dc;
+  --green:#0a6b33;--green-soft:#e2f3e8;--blue:#0f4c96;
+  --r:18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{color:var(--blue);text-underline-offset:3px;overflow-wrap:anywhere}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-inline-size:820px;margin-inline:auto;padding-inline:20px}
+header{background:var(--surface);border-block-end:3px solid var(--border-strong);padding-block:12px}
+.brand{display:inline-flex;align-items:center;gap:12px;min-block-size:56px;font-weight:800;font-size:1.3rem;color:var(--text);text-decoration:none}
+.brand-mark{inline-size:48px;block-size:48px;border-radius:13px;background:var(--accent);border:3px solid var(--accent-edge);display:grid;place-items:center;color:var(--accent-ink)}
+.brand-mark svg{inline-size:30px;block-size:30px}
+main{padding-block:44px 64px}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.15;margin-block-end:10px;hyphens:auto;overflow-wrap:break-word}
+.stand{color:var(--dim);margin-block-end:30px}
+section{background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);padding:24px;margin-block-end:18px}
+h2{font-size:1.3rem;line-height:1.3;margin-block-end:10px}
+h3{font-size:1.08rem;margin-block:16px 6px}
+p,li{font-size:1rem}
+p+p{margin-block-start:10px}
+ul{padding-inline-start:1.3em;margin-block:8px}
+li+li{margin-block-start:4px}
+address{font-style:normal}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.95em;background:var(--surface-2);padding:1px 6px;border-radius:6px}
+.status{margin-block:14px;padding:14px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface-2);font-weight:700}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;min-block-size:60px;min-inline-size:170px;padding:12px 24px;
+  font:inherit;font-weight:800;color:var(--text);background:var(--surface);cursor:pointer;
+  border:3px solid var(--border-strong);border-radius:14px;text-decoration:none;
+}
+.btn:hover{background:var(--surface-2)}
+.back{margin-block-start:28px}
+footer{background:var(--surface);border-block-start:3px solid var(--border-strong);padding-block:26px;color:var(--dim);font-size:.95rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="./">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+          <ellipse cx="24" cy="18" rx="10" ry="3"/>
+          <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+        </svg>
+      </span>
+      TanenBase
+    </a>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Datenschutzerklärung</h1>
+  <p class="stand">Stand: Oktober 2026 · <span lang="en">This privacy policy is provided in German.</span></p>
+
+  <section>
+    <h2>1. Verantwortlicher</h2>
+    <p>Verantwortlich für die Datenverarbeitung auf tanen.eu (Startseite und Einrichtungsseite <code>tanen.eu/setup/</code>) ist:</p>
+    <!-- Zustelladresse ueber Postflex (c/o), keine Wohnanschrift. Gleiche
+         Angaben wie im Impressum. -->
+    <address>
+      Hussein Daj<br>
+      c/o POSTFLEX PFX-786-050<br>
+      Emsdettener Straße 10<br>
+      48268 Greven<br>
+      E-Mail: <a href="mailto:info@tanen.eu">info@tanen.eu</a>
+    </address>
+  </section>
+
+  <section>
+    <h2>2. Das Wichtigste in Kürze</h2>
+    <ul>
+      <li>Ohne Ihre Einwilligung setzt diese Website keine Cookies und lädt nichts von fremden Servern. Schriften, Bilder und Skripte liegen auf tanen.eu.</li>
+      <li>Google Analytics wird nur geladen, wenn Sie in der Hinweisleiste auf „Akzeptieren“ klicken. Sie können das jederzeit widerrufen (Abschnitt 5).</li>
+      <li>Die Einrichtungsseite spricht per Bluetooth direkt mit Ihrer Station. Was Sie dort eingeben, bleibt in Ihrem Browser und auf dem Gerät.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. Hosting und Server-Logfiles</h2>
+    <p>Beim Aufruf der Website speichert der Server unseres Hosting-Anbieters automatisch Angaben, die Ihr Browser übermittelt:</p>
+    <ul>
+      <li>IP-Adresse,</li>
+      <li>Datum und Uhrzeit des Abrufs,</li>
+      <li>aufgerufene Seite oder Datei, übertragene Datenmenge, Statuscode,</li>
+      <li>die zuvor besuchte Seite (Referrer),</li>
+      <li>Browser und Betriebssystem.</li>
+    </ul>
+    <p>Diese Daten werden ausschließlich benötigt, um die Website auszuliefern, ihre Sicherheit zu gewährleisten und Störungen zu beheben. Sie werden nicht mit anderen Daten zusammengeführt und nach Ablauf der Speicherfrist des Hosting-Anbieters gelöscht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt im sicheren und fehlerfreien Betrieb der Website.</p>
+  </section>
+
+  <section>
+    <h2>4. Speicherung im Browser</h2>
+    <p>Die Website legt im lokalen Speicher Ihres Browsers (<code>localStorage</code>) nur Folgendes ab, und nur auf Ihrem Gerät:</p>
+    <ul>
+      <li><code>tb3-lang</code> — die gewählte Sprache (Deutsch, Englisch oder Arabisch), gilt für Start- und Einrichtungsseite,</li>
+      <li><code>tb-consent</code> — Ihre Entscheidung zu Google Analytics („granted“ oder „denied“).</li>
+    </ul>
+    <p>Diese Einträge werden nicht an uns übertragen. Sie sind für die von Ihnen gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Sie können sie jederzeit über die Browser-Einstellungen löschen.</p>
+  </section>
+
+  <section id="analytics">
+    <h2>5. Google Analytics (nur mit Einwilligung)</h2>
+    <p>Wenn Sie zustimmen, nutzen wir Google Analytics 4, einen Webanalysedienst der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland („Google“). Damit sehen wir, welche Seiten wie oft aufgerufen werden, und können die Website verbessern.</p>
+    <h3>Welche Daten?</h3>
+    <p>Google Analytics setzt die Cookies <code>_ga</code> und <code>_ga_&lt;ID&gt;</code> (Laufzeit bis zu 2 Jahre) und erfasst Nutzungsdaten wie aufgerufene Seiten, Verweildauer, Herkunft des Besuchs, Gerätetyp, Browser und den ungefähren Standort. Ihre IP-Adresse wird von Google Analytics 4 nicht gespeichert. Die Daten werden unter einer pseudonymen Kennung verarbeitet, nicht unter Ihrem Namen.</p>
+    <h3>Übermittlung in die USA</h3>
+    <p>Google kann Daten an die Google LLC in den USA übermitteln. Die Google LLC ist nach dem EU-US Data Privacy Framework zertifiziert; für diese Übermittlung besteht ein Angemessenheitsbeschluss der EU-Kommission (Art. 45 DSGVO).</p>
+    <h3>Rechtsgrundlage, Dauer, Widerruf</h3>
+    <p>Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Ohne Einwilligung wird das Skript von Google gar nicht geladen. Die erfassten Ereignisdaten werden nach der in Google Analytics eingestellten Aufbewahrungsdauer gelöscht, spätestens nach 14 Monaten.</p>
+    <p>Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen — hier oder über „Cookie-Einstellungen“ am Ende der Startseite. Beim Widerruf löschen wir die Google-Analytics-Cookies dieser Website in Ihrem Browser.</p>
+
+    <p class="status" id="consentStatus" aria-live="polite">Ihre aktuelle Entscheidung: keine gespeichert.</p>
+    <div class="btn-row">
+      <button type="button" class="btn" data-consent="granted">Zustimmen</button>
+      <button type="button" class="btn" data-consent="denied">Ablehnen / Widerrufen</button>
+    </div>
+    <p style="margin-block-start:14px">Mehr dazu bei Google: <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a></p>
+  </section>
+
+  <section>
+    <h2>6. Einrichtungsseite und Bluetooth</h2>
+    <p>Die Einrichtungsseite unter <code>tanen.eu/setup/</code> verbindet sich über Web Bluetooth direkt aus Ihrem Browser mit Ihrer TanenBase-Station. Messwerte, Einstellungen und LoRaWAN-Schlüssel laufen nur zwischen Browser und Gerät; sie werden nicht an tanen.eu oder Dritte übertragen. Auch das Lesen von QR-Codes mit der Kamera geschieht vollständig in Ihrem Browser.</p>
+    <p>Für Google Analytics gilt auf der Einrichtungsseite dieselbe Entscheidung wie auf der Startseite.</p>
+  </section>
+
+  <section>
+    <h2>7. Messdaten der Stockwaage</h2>
+    <p>Ihre Station sendet Messwerte per LoRaWAN an das Netz und die Plattformen, die Sie selbst einrichten (zum Beispiel The Things Network, BEEP oder beelogger). Diese Übertragung läuft nicht über tanen.eu; für sie gelten die Datenschutzerklärungen der jeweiligen Anbieter.</p>
+  </section>
+
+  <section>
+    <h2>8. Kontakt per E-Mail</h2>
+    <p>Wenn Sie uns an info@tanen.eu schreiben, verarbeiten wir Ihre Adresse und Ihre Nachricht, um Ihre Anfrage zu beantworten (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Die Daten werden gelöscht, sobald die Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
+  </section>
+
+  <section>
+    <h2>9. Links zu anderen Websites</h2>
+    <p>Die Seite verlinkt unter anderem auf BEEP, beelogger, re@di, den Bezirks-Imkerverein Bühl, Seeed Studio, LinkedIn, GitHub und OpenStreetMap. Daten werden an diese Anbieter erst übertragen, wenn Sie einen Link anklicken. Ab dann gilt die Datenschutzerklärung des jeweiligen Anbieters.</p>
+  </section>
+
+  <section>
+    <h2>10. Ihre Rechte</h2>
+    <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21). Eine erteilte Einwilligung können Sie jederzeit widerrufen (Art. 7 Abs. 3). Eine E-Mail an <a href="mailto:info@tanen.eu">info@tanen.eu</a> genügt.</p>
+    <p>Sie können sich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart, <a href="https://www.baden-wuerttemberg.datenschutz.de" rel="noopener">baden-wuerttemberg.datenschutz.de</a>.</p>
+  </section>
+
+  <p class="back"><a class="btn" href="./">Zurück zur Startseite</a></p>
+</main>
+
+<footer>
+  <div class="wrap">&copy; 2026 TanenBase von Hussein Daj · <a href="impressum.html">Impressum</a></div>
+</footer>
+
+<script>
+'use strict';
+/* Einwilligung aendern - dieselbe Ablage wie auf der Startseite
+   (localStorage "tb-consent"). Beim Widerruf gehen die _ga-Cookies. */
+(function(){
+  const KEY = 'tb-consent';
+  const out = document.getElementById('consentStatus');
+  const TEXT = { granted:'Ihre aktuelle Entscheidung: Google Analytics erlaubt.',
+                 denied:'Ihre aktuelle Entscheidung: Google Analytics abgelehnt.' };
+  function show(v){ out.textContent = TEXT[v] || 'Ihre aktuelle Entscheidung: keine gespeichert.'; }
+  let v = null;
+  try { v = localStorage.getItem(KEY); } catch (e) {}
+  show(v);
+  document.querySelectorAll('[data-consent]').forEach(b => b.addEventListener('click', () => {
+    v = b.dataset.consent;
+    try { localStorage.setItem(KEY, v); } catch (e) {}
+    if (v === 'denied') {
+      document.cookie.split(';').map(c => c.split('=')[0].trim()).filter(n => /^_ga/.test(n)).forEach(n => {
+        ['', '; domain=tanen.eu', '; domain=.tanen.eu'].forEach(d => { document.cookie = n + '=; Max-Age=0; path=/' + d; });
+      });
+    }
+    show(v);
+  }));
+})();
+</script>
+</body>
+</html>

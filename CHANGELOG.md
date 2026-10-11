@@ -7,7 +7,19 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-10-11 — Extended Mode, load-cell profiles, ABP
+
 ### Changed
+- **Steinberg SBS-PF-150 characterised — load-cell profile 2 now corrects**
+  (2026-10-02): **10681 mg/K · 25 min**, fitted from a 114 h production week
+  on a 10 kg dead weight at gain 0 (11.5–29 °C). σ 45 → 21 g, hold-out `k`
+  stable to 2 %. Units already set to the SBS-PF-150 pick it up with the
+  firmware update; the tare stays valid. Not yet field-validated with the
+  correction active. The run also shows a midday residual dip the probe does
+  not see (sun on the frame) and ends in rain that takes the water load 280 g
+  below its baseline — re-weigh it before trusting that unit. Report:
+  [`docs/load_cells/SBS-PF-150/`](docs/load_cells/SBS-PF-150/); setup page
+  shows a measured-cell hint for it
 - **Power budget: TX with Extended Mode measured at 139 mC** (2026-09-13, PPK2:
   11.13 s, 12.49 mA avg, 77.78 mA peak) — the BLE scan adds 76 mC to the 63 mC
   uplink. Lifetimes recomputed with BLE sensors: 4.6 → **3.3 y** at 15 min / 2 h,
@@ -65,6 +77,20 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   before SETUP returns. Pre-dates Extended Mode; found testing it on a bare board
 
 ### Added
+- **ABP activation, selectable per node in the setup page** (2026-10-06). For
+  field sites where downlinks fail, so OTAA nodes never get a JoinAccept and
+  send nothing. *Network* tab: OTAA | ABP, DevAddr, NwkSKey, AppSKey
+  (write-only) and a data rate: ADR, or a fixed SF7–SF12 that sends only
+  unconfirmed frames and needs no downlink at all. New GATT characteristics
+  `0x0011` LoraMode, `0x0012` DevAddr, `0x0013` NwkSKey, `0x0014` AppSKey;
+  ZMS ids 23–27. The MAC starts on band defaults (3 channels, RX1 1 s, RX2
+  SF12), which TTN assumes for ABP. The uplink frame counter is kept per
+  DevAddr outside the session blob, so a cleared session never reuses a
+  count. A stored session that no longer matches the configured mode or
+  credentials is discarded on restore, which also stops a size-mismatched
+  blob from leaving half an old session in the live MAC context. ABP never
+  rejoins; at the ladder floor it keeps probing. Older pages and firmware
+  interoperate (OTAA only). TTN setup: `docs/LORAWAN.md` §13
 - **Load-cell profiles — the firmware is no longer tied to the H40A**
   (2026-09-20). Which cell is fitted is now a runtime setting, picked on the
   setup page (*Waage → Wägezelle*) and stored in ZMS id 21: generic (no

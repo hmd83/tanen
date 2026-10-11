@@ -131,14 +131,16 @@ is 8× outside the OIML R60 envelope the cell is certified to.*
 `k` is a property of the **cell plus its mount**, not of the cell alone —
 re-characterise after any mechanical change. Which cell is fitted is therefore a
 **runtime setting**, not a build flag: the setup page offers a generic cell (no
-correction), the measured H40A-C3-0150, four named-but-uncharacterised cells
-(Steinberg SBS-PF-150, Zemic L6E, TAL220, Flintec PC/SB — they run uncorrected
-but the unit records which is fitted), or your own measured gain and lag, and
-the correction picks its constants up from there.
+correction), the measured H40A-C3-0150 and Steinberg SBS-PF-150, three
+named-but-uncharacterised cells (Zemic L6E, TAL220, Flintec PC/SB — they run
+uncorrected but the unit records which is fitted), or your own measured gain
+and lag, and the correction picks its constants up from there.
 Profile table and how to characterise a cell:
 [`docs/load_cells/`](docs/load_cells/). Method, data, hold-out validation and
 the (unflattering) hardware conclusions for the reference cell:
-[`docs/load_cells/H40A-C3-0150/`](docs/load_cells/H40A-C3-0150/).
+[`docs/load_cells/H40A-C3-0150/`](docs/load_cells/H40A-C3-0150/); the
+SBS-PF-150, fitted from a production week instead of a bench run:
+[`docs/load_cells/SBS-PF-150/`](docs/load_cells/SBS-PF-150/).
 
 ### Extended Mode — a look inside the hive
 
