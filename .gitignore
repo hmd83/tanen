@@ -35,8 +35,8 @@ Desktop.ini
 .DS_Store
 
 # --- Claude Code -------------------------------------------------------------
-# Per-machine permission state
-.claude/settings.local.json
+# Per-machine settings and permission state
+.claude/
 
 # --- Handbuch ----------------------------------------------------------------
 # Die HTML-Fassung ist die versionierte; das PDF baut scripts/build_manual_pdf.py
