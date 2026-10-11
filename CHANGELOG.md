@@ -7,6 +7,8 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-10-11 — Extended Mode, load-cell profiles, ABP
+
 ### Changed
 - **Steinberg SBS-PF-150 characterised — load-cell profile 2 now corrects**
   (2026-10-02): **10681 mg/K · 25 min**, fitted from a 114 h production week
