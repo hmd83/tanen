@@ -375,6 +375,7 @@ Defined in [`Kconfig`](../Kconfig). Feature toggles:
 
 | Flag | Default | Purpose |
 |------|---------|---------|
+| `CONFIG_TANENBASE_VERSION` | `"1.0.0"` | Firmware version printed in the boot log — bump on release |
 | `CONFIG_TANENBASE_BLE_CONFIG` | `y` | BLE GATT configuration service (SETUP state) |
 | `CONFIG_TANENBASE_ANOMALY` | `y` | Delta/anomaly detection module |
 | `CONFIG_TANENBASE_EXT_SENSORS` | `y` | Extended Mode: SwitchBot BLE T/H sensors (selects `BT_OBSERVER`) |
