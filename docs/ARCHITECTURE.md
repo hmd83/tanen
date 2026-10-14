@@ -121,7 +121,9 @@ TanenBase/
 │       ├── measurement/measure.c/h   # Weight + temp + battery orchestration
 │       ├── measurement/tempcomp.c/h  # Load-cell thermal drift correction
 │       ├── transmission/transmit.c/h # Payload build (big-endian) + uplink
-│       ├── ble_config/ble_svc.c/h    # BLE GATT service (Web Bluetooth config)
+│       ├── ble_config/ble_svc.c/h    # BLE config service: lifecycle, advertising, live notifies
+│       ├── ble_config/ble_svc_gatt.c # GATT table + config characteristic handlers
+│       ├── ble_config/ble_svc_cmd.c  # ConfigCmd parser, tare/calibrate, LoRa test thread
 │       └── anomaly/anomaly.c/h       # Weight/temp delta anomaly detection
 ├── boards/                     # App devicetree overlay for the target board
 ├── third_party/                # Vendored Seeed XIAO nRF54LM20A board def
