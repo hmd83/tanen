@@ -90,6 +90,10 @@ it. Please keep writing those.
 2. Build both configurations: `.\build.ps1 debug --pristine` and
    `.\build.ps1 prod --pristine`. Both must be clean — every kconfiglib warning
    is fatal in this tree.
+   Then `make -C tests/host` (any Linux/macOS host compiler, no SDK) — CI runs
+   it next to both firmware builds. If you change the temperature correction,
+   regenerate `tests/host/golden/` with `tests/host/gen_golden.py` and update
+   the Python `firmware_replay()` it uses in the same commit.
 3. Say in the PR what you tested on real hardware, and what you did not. "Builds
    clean, not hardware-tested" is a perfectly acceptable and useful statement;
    silently implying otherwise is not.

@@ -21,6 +21,13 @@ env:
   NCS_VERSION: v3.4.0
 
 jobs:
+  # tests/host: plain C against stubbed Zephyr headers, seconds, no SDK.
+  host-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make -C tests/host
+
   firmware:
     name: firmware (${{ matrix.config }})
     runs-on: ubuntu-24.04
