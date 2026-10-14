@@ -7,6 +7,11 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+### Added
+- **CI** (2026-10-14): GitHub Actions builds the default and the production
+  configuration on every push and PR, in Nordic's pinned v3.4.0 toolchain
+  image, and fails on any new compiler warning from `src/`
+
 ### Fixed
 - **Boot log printed `v0.3.0` on the 1.0.0 release** (2026-10-14). The version
   now comes from one Kconfig symbol, `CONFIG_TANENBASE_VERSION`, and `src/`
