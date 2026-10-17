@@ -1,4 +1,11 @@
-# TanenBase — Smart Hive Monitoring
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="site/tanenbase-lockup-dark.svg">
+    <img src="site/tanenbase-lockup.svg" alt="TanenBase" width="360">
+  </picture>
+</h1>
+
+**Open-source LoRaWAN hive scale** · *Offene Stockwaage* · [tanen.eu](https://tanen.eu)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-nRF54LM20A-brightgreen.svg)](https://www.seeedstudio.com/)
