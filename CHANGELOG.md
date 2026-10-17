@@ -14,6 +14,10 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   `tanenbase-lockup-dark.svg` and `tanenbase-wordmark.svg`; regenerate with
   `scripts/outline_wordmark.py`. The site, setup app and encoder headers now
   show the wordmark next to the yellow honey-pot tile, in every language
+- **GitHub look** (2026-10-17): README opens with the lock-up (dark variant in
+  GitHub's dark theme) instead of "Smart Hive Monitoring";
+  `media/brand/social-preview.png` (1280×640, from `social-preview.html`) is
+  the repo's link-share card
 
 ### Fixed
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
