@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+  TanenBase share cards, one template for both. Render with headless Chrome
+  (output path must be absolute):
+
+    German, tanen.eu og:image -> site/media/share-card.png
+      chrome --headless=new --hide-scrollbars --window-size=1200,630 ^
+             --screenshot=<abs>\site\media\share-card.png "file:///<abs>/media/brand/share-card.html?lang=de"
+    English, GitHub Settings > Social preview -> media/brand/social-preview.png
+      chrome --headless=new --hide-scrollbars --window-size=1280,640 ^
+             --screenshot=<abs>\media\brand\social-preview.png "file:///<abs>/media/brand/share-card.html?lang=en"
+
+  Colours and type follow the Tanen design system (site/index.html tokens).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>TanenBase share card</title>
+<style>
+  :root {
+    --bg: #eaeef5; --surface: #ffffff; --border-strong: #4a5568;
+    --text: #0c1017; --dim: #39445a;
+    --accent: #f0a500; --accent-ink: #231800; --accent-edge: #a06d00; --accent-soft: #fff4dc;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 100vw; height: 100vh; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: grid; grid-template-columns: 1fr 35vw; gap: 52px;
+    padding: 60px 68px;
+  }
+  .copy { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 24px; min-width: 0; }
+  .lockup { width: 400px; height: auto; display: block; margin-left: -8px; }
+  .kicker {
+    font-size: 19px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent-ink); background: var(--accent-soft); border: 2px solid var(--accent-edge);
+    border-radius: 999px; padding: 6px 18px;
+  }
+  h1 { font-size: 52px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
+  p { font-size: 24px; line-height: 1.45; color: var(--dim); max-width: 42ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 12px; }
+  .fact {
+    font-size: 20px; font-weight: 700; padding: 7px 18px;
+    background: var(--surface); border: 3px solid var(--border-strong); border-radius: 999px;
+  }
+  .fact.url { background: var(--accent); border-color: var(--accent-edge); color: var(--accent-ink); font-weight: 800; }
+  .photo { border: 3px solid var(--border-strong); border-radius: 18px; overflow: hidden; background: var(--surface); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <img class="lockup" src="../../site/tanenbase-lockup.svg" alt="TanenBase">
+    <span class="kicker" id="kicker">Offene Stockwaage · LoRaWAN</span>
+    <h1 id="title">Ihr Bienenvolk gibt Ihnen Entwarnung.</h1>
+    <p id="lead">TanenBase wiegt den Stock, misst die Temperatur und funkt die Werte zu Ihnen. Jahrelang mit einer Batterie.</p>
+    <div class="facts">
+      <span class="fact">BEEP &amp; beelogger</span>
+      <span class="fact" id="nosub">Kein Abo</span>
+      <span class="fact url">tanen.eu</span>
+    </div>
+  </div>
+  <div class="photo">
+    <img src="../../site/media/buehl-hive.jpg" alt="">
+  </div>
+<script>
+  // ?lang=en swaps the copy; German is the default.
+  const en = {
+    kicker: 'Open-source hive scale · LoRaWAN',
+    title: 'Peace of mind for your hive.',
+    lead: 'Weighs the hive and reads its temperature, reports to The Things Network, then sleeps at about 4 µA. Years on three AAA cells.',
+    nosub: 'No subscription'
+  };
+  if (new URLSearchParams(location.search).get('lang') === 'en') {
+    document.documentElement.lang = 'en';
+    for (const [id, text] of Object.entries(en)) document.getElementById(id).textContent = text;
+  }
+</script>
+</body>
+</html>
