@@ -1,0 +1,93 @@
+# Build every shipped firmware configuration on every push and PR.
+#
+# The configs are layered Kconfig overlays, so they drift silently: rename a
+# symbol, fix prj.conf, forget prj_production.conf, and nobody notices until a
+# user builds production. This catches that, and every kconfiglib warning is
+# already fatal in this tree, so a stale symbol in any overlay turns the job red.
+#
+# The Nordic image carries the TOOLCHAIN only (nrfutil toolchain-manager bundle,
+# put on PATH through BASH_ENV for every bash step) — it has no NCS workspace,
+# so the job fetches NCS itself. The image tag and the --mr below must name the
+# same NCS release: each tag ships the toolchain bundle matched to it. Pinned on
+# purpose; bump both together when the project moves SDK.
+
+name: build
+
+on:
+  push:
+  pull_request:
+
+env:
+  NCS_VERSION: v3.4.0
+
+jobs:
+  # tests/host: plain C against stubbed Zephyr headers, seconds, no SDK.
+  host-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make -C tests/host
+
+  firmware:
+    name: firmware (${{ matrix.config }})
+    runs-on: ubuntu-24.04
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.0
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The documented build, docs/BUILD_ENV.md
+          - config: default
+            overlay: ""
+          # What build.ps1 prod runs, with the committed placeholder credentials
+          - config: production
+            overlay: prj_credentials.conf.example;prj_production.conf
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tanen
+
+      - name: Fetch NCS ${{ env.NCS_VERSION }}
+        run: |
+          west init -m https://github.com/nrfconnect/sdk-nrf --mr "$NCS_VERSION" ncs
+          cd ncs
+          west update --narrow -o=--depth=1
+          echo "ZEPHYR_BASE=$(pwd)/zephyr" >> "$GITHUB_ENV"
+
+      # Fail loudly here, not as a confusing CMake error three steps later.
+      - name: Check environment
+        working-directory: tanen
+        run: |
+          echo "ZEPHYR_BASE=$ZEPHYR_BASE"
+          west topdir
+          west --version
+          arm-zephyr-eabi-gcc --version | head -1
+
+      # sysbuild.conf in the app dir would make west pick sysbuild (MCUboot),
+      # which is unverified on the LM20A — hence --no-sysbuild, as documented.
+      - name: Build
+        working-directory: tanen
+        env:
+          OVERLAY: ${{ matrix.overlay }}
+        run: |
+          west build -b xiao_nrf54lm20a/nrf54lm20a/cpuapp -d build . \
+            --no-sysbuild -- \
+            -DBOARD_ROOT=$(pwd)/third_party/seeed-xiao-nrf54lm20a \
+            ${OVERLAY:+"-DOVERLAY_CONFIG=$OVERLAY"} 2>&1 | tee build.log
+
+      # Zephyr and the modules carry warnings we do not own; ours must not grow.
+      # Some only appear with CONFIG_LOG=n, which is why both configs run this.
+      # Known and accepted: config.c's FIXED_PARTITION_ID() is deprecated in
+      # Zephyr 4.4. It opens the ZMS partition that holds the DevNonce, so it
+      # moves with an SDK bump and a hardware test, not as a CI cleanup.
+      - name: No new compiler warnings from src/
+        working-directory: tanen
+        run: |
+          if grep -E '/src/[^ ]*: warning:' build.log |
+             grep -vE '/src/config/config\.c:[0-9]+:[0-9]+: warning: Macro is deprecated$'; then
+            echo "::error::compiler warnings in src/ (${{ matrix.config }})"
+            exit 1
+          fi

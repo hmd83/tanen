@@ -121,7 +121,9 @@ TanenBase/
 │       ├── measurement/measure.c/h   # Weight + temp + battery orchestration
 │       ├── measurement/tempcomp.c/h  # Load-cell thermal drift correction
 │       ├── transmission/transmit.c/h # Payload build (big-endian) + uplink
-│       ├── ble_config/ble_svc.c/h    # BLE GATT service (Web Bluetooth config)
+│       ├── ble_config/ble_svc.c/h    # BLE config service: lifecycle, advertising, live notifies
+│       ├── ble_config/ble_svc_gatt.c # GATT table + config characteristic handlers
+│       ├── ble_config/ble_svc_cmd.c  # ConfigCmd parser, tare/calibrate, LoRa test thread
 │       └── anomaly/anomaly.c/h       # Weight/temp delta anomaly detection
 ├── boards/                     # App devicetree overlay for the target board
 ├── third_party/                # Vendored Seeed XIAO nRF54LM20A board def
@@ -375,6 +377,7 @@ Defined in [`Kconfig`](../Kconfig). Feature toggles:
 
 | Flag | Default | Purpose |
 |------|---------|---------|
+| `CONFIG_TANENBASE_VERSION` | `"1.0.0"` | Firmware version printed in the boot log — bump on release |
 | `CONFIG_TANENBASE_BLE_CONFIG` | `y` | BLE GATT configuration service (SETUP state) |
 | `CONFIG_TANENBASE_ANOMALY` | `y` | Delta/anomaly detection module |
 | `CONFIG_TANENBASE_EXT_SENSORS` | `y` | Extended Mode: SwitchBot BLE T/H sensors (selects `BT_OBSERVER`) |

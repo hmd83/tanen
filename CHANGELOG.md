@@ -7,6 +7,20 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+### Added
+- **CI** (2026-10-14): GitHub Actions builds the default and the production
+  configuration on every push and PR, in Nordic's pinned v3.4.0 toolchain
+  image, and fails on any new compiler warning from `src/`
+- **Host unit tests** (2026-10-14), `make -C tests/host`, run in CI: the
+  temperature correction (alpha edge cases, convergence, saturation, gain 0 as
+  an exact no-op, tare) replayed bit-exact against the Python reference on
+  both characterised cells' data, and the FSM's wake/TX/sleep transitions
+
+### Fixed
+- **Boot log printed `v0.3.0` on the 1.0.0 release** (2026-10-14). The version
+  now comes from one Kconfig symbol, `CONFIG_TANENBASE_VERSION`, and `src/`
+  carries no version literal of its own
+
 ## [1.0.0] — 2026-10-11 — Extended Mode, load-cell profiles, ABP
 
 ### Changed

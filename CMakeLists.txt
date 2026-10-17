@@ -56,9 +56,11 @@ target_sources_ifdef(CONFIG_TANENBASE_TEMPCOMP app PRIVATE
 # enough to build with CONFIG_BT=n (useful for isolating radio-vs-sensor bugs).
 target_sources_ifdef(CONFIG_TANENBASE_BLE_CONFIG app PRIVATE
     src/features/ble_config/ble_svc.c
+    src/features/ble_config/ble_svc_gatt.c
+    src/features/ble_config/ble_svc_cmd.c
 )
 
-# Extended Mode BLE sensors: fsm.c and ble_svc.c guard every call site with
+# Extended Mode BLE sensors: fsm.c and ble_config/ guard every call site with
 # IS_ENABLED(CONFIG_TANENBASE_EXT_SENSORS); the types in ext_sensors.h stay
 # available to transmit.c either way.
 target_sources_ifdef(CONFIG_TANENBASE_EXT_SENSORS app PRIVATE

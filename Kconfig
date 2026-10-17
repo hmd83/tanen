@@ -2,6 +2,17 @@ mainmenu "TanenBase"
 
 source "Kconfig.zephyr"
 
+config TANENBASE_VERSION
+	string "Firmware version (semver, no leading v)"
+	default "1.0.0"
+	help
+	  Printed as the first line of the boot log, which is the first thing
+	  anyone reads from a field unit — so it must name the release that is
+	  actually flashed. The only copy of the version in the firmware; bump
+	  it in the release commit together with the CHANGELOG heading and the
+	  git tag. src/ must not carry a version literal of its own (that is how
+	  1.0.0 shipped printing v0.3.0).
+
 config TANENBASE_DEV_EUI
 	string "LoRaWAN DevEUI (16 hex chars, MSB first)"
 	default ""

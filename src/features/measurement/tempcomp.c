@@ -52,10 +52,15 @@ static bool     have_last_sample; /* false = first sample of this wake */
  *
  *     alpha_q16 = 65536 * dt / (dt + tau)
  *
- * Exact in the limit dt << tau, within a couple of percent up to dt = tau. At
- * tau = 1500 s and the default 300 s wake interval the error is well under the
- * DS18B20's resolution. It is also unconditionally stable for any dt, which the
- * exp() form is not without extra clamping. */
+ * Exact only in the limit dt << tau; it always comes out low, by 2 % at
+ * dt = 60 s, 8 % at the default 300 s and 21 % at dt = tau (tau = 1500 s).
+ * The cost is a slower filter, not a wrong one: it equals the exact filter
+ * with tau_eff = dt / ln(1 + dt/tau) — 27.4 min instead of 25 at 300 s, well
+ * inside the broad tau optimum (15-40 min all within 1 g). Replayed on the
+ * H40A reference run, t_eff stays within 0.16 K of the exact filter and the
+ * compensated sigma is 15.67 g against the 15.7 g fitted with exp()
+ * (tests/host/test_tempcomp.c). It is also unconditionally stable for any dt,
+ * which the exp() form is not without extra clamping. */
 static int32_t alpha_q16(uint32_t dt_s, uint32_t tau_s)
 {
 	uint64_t den = (uint64_t)dt_s + (uint64_t)tau_s;
