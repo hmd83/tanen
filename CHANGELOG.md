@@ -7,6 +7,8 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-10-17 — Version fix, CI, host tests
+
 ### Added
 - **CI** (2026-10-14): GitHub Actions builds the default and the production
   configuration on every push and PR, in Nordic's pinned v3.4.0 toolchain

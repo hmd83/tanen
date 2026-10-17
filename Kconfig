@@ -4,7 +4,7 @@ source "Kconfig.zephyr"
 
 config TANENBASE_VERSION
 	string "Firmware version (semver, no leading v)"
-	default "1.0.0"
+	default "1.0.1"
 	help
 	  Printed as the first line of the boot log, which is the first thing
 	  anyone reads from a field unit — so it must name the release that is
