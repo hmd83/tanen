@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TanenBase Etikett</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<!-- QR encoder, MIT, Kazuhiko Arase - qrcode-generator 1.4.4, vendored so the
+     page works offline at the apiary. -->
+<script src="qrcode.js"></script>
+<style>
+/* =========================================================================
+   Etiketten fuer die Station, gedruckt auf dem Brother QL-500 mit
+   DK-11201 (29 x 90 mm). Thermodruck kann nur Schwarz: das Etikett selbst
+   ist rein schwarz-weiss, die Bedienung drumherum nutzt die Tanen-Farben.
+
+   Geraete-Etikett: QR nach LoRaWAN TR005 (LW:D0:JoinEUI:DevEUI:Profil), den
+   die TTN-Konsole unter "Scan end device QR code" liest, plus DevEUI als
+   Text. Der AppKey kommt NIE auf das Etikett.
+   Marken-Aufkleber: Zeichen, Wortmarke, Claim, tanen.eu.
+   ========================================================================= */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;--surface:#ffffff;--border:#8f9cb5;--border-strong:#4a5568;
+  --text:#0c1017;--dim:#39445a;
+  --accent:#f0a500;--accent-ink:#231800;--accent-edge:#a06d00;--accent-soft:#fff4dc;
+  --red:#9e1030;--red-soft:#fdeaee;--blue:#0f4c96;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+.ui{max-inline-size:760px;margin-inline:auto;padding:24px 20px 48px;display:flex;flex-direction:column;gap:18px}
+.appbar{display:flex;align-items:center;gap:10px;font-weight:800}
+.brand-mark{inline-size:44px;block-size:44px;border-radius:12px;flex:none;background:var(--accent);border:3px solid var(--accent-edge);display:grid;place-items:center;color:var(--accent-ink)}
+.brand-mark svg{inline-size:24px;block-size:24px}
+.appbar .back{margin-inline-start:auto;color:var(--blue);font-weight:700}
+h1{font-size:1.6rem;line-height:1.2;font-weight:800}
+.card{background:var(--surface);border:3px solid var(--border-strong);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.lead{color:var(--dim)}
+.tabs{display:flex;gap:10px;flex-wrap:wrap}
+.tab{flex:1 1 200px;min-block-size:60px;border:3px solid var(--border-strong);border-radius:14px;background:var(--surface);font:inherit;font-weight:800;color:var(--text);cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-inline-size:0}
+.field label{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.field input,.field select{min-block-size:60px;border:3px solid var(--border-strong);border-radius:12px;padding:0 14px;font:inherit;font-family:ui-monospace,Consolas,monospace;font-size:1.05rem;background:var(--surface);color:var(--text);text-transform:uppercase;direction:ltr}
+.field select{font-family:inherit;text-transform:none}
+.field input[aria-invalid="true"]{border-color:var(--red);background:var(--red-soft)}
+.hint{font-size:.85rem;color:var(--dim)}
+.err{color:var(--red);font-weight:700}
+.stage{background:var(--surface-2,#e4eaf4);border-radius:12px;padding:16px;overflow:hidden}
+.stage-inner{transform-origin:top left}
+.payload{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;color:var(--dim);word-break:break-all;direction:ltr}
+.btn{min-block-size:66px;border-radius:999px;border:3px solid var(--accent-edge);background:var(--accent);color:var(--accent-ink);font:inherit;font-size:1.08rem;font-weight:800;cursor:pointer;padding:14px 30px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+details summary{font-weight:700;cursor:pointer;min-block-size:44px;display:flex;align-items:center}
+details ol{padding-inline-start:1.3em;display:flex;flex-direction:column;gap:6px;color:var(--dim)}
+
+/* ---- the label itself: real millimetres, black on white only ---- */
+.label{
+  inline-size:90mm;block-size:29mm;background:#fff;color:#000;overflow:hidden;
+  padding:2.2mm 3mm;display:flex;align-items:center;gap:3mm;
+  font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;
+  box-shadow:0 0 0 1px var(--border);
+}
+.label .qr{inline-size:24.6mm;block-size:24.6mm;flex:none;display:block}
+.label .info{display:flex;flex-direction:column;justify-content:center;gap:1.1mm;min-inline-size:0}
+.label .lockup{block-size:6.6mm;inline-size:auto;display:block;align-self:flex-start;margin-inline-start:-.6mm}
+.label .k{font-size:1.75mm;font-weight:800;letter-spacing:.12em;text-transform:uppercase;line-height:1}
+.label .eui{font-family:Consolas,ui-monospace,monospace;font-weight:700;font-size:3.7mm;line-height:1;letter-spacing:.02em;white-space:nowrap;direction:ltr}
+.label .join{font-family:Consolas,ui-monospace,monospace;font-size:2.1mm;line-height:1;white-space:nowrap;direction:ltr}
+.label .url{font-size:2.3mm;font-weight:700;line-height:1}
+
+.label.sticker{flex-direction:column;justify-content:center;align-items:center;gap:1.4mm;padding:2mm 3mm}
+.label.sticker .lockup{block-size:12.6mm;margin:0;align-self:center}
+.label.sticker .tagline{font-size:3.3mm;font-weight:700;line-height:1.15;text-align:center}
+.label.sticker .url{font-size:2.5mm}
+
+@page{size:90mm 29mm;margin:0}
+@media print{
+  html,body{background:#fff}
+  .ui > :not(.print-wrap),.no-print{display:none!important}
+  .ui{padding:0;max-inline-size:none;display:block}
+  html,body{margin:0}
+  .print-wrap,.stage{border:0;padding:0;background:none;border-radius:0;display:block}
+  .stage-inner{transform:none!important;block-size:auto!important}
+  .label{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="ui">
+  <header class="appbar no-print">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+        <ellipse cx="24" cy="18" rx="10" ry="3"/>
+        <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+      </svg>
+    </span>
+    <img src="tanenbase-wordmark.svg" alt="TanenBase" width="108" height="16">
+    <a class="back" href="./">Zur Einrichtung</a>
+  </header>
+
+  <h1 class="no-print">Etikett drucken</h1>
+
+  <section class="card no-print" aria-label="Was drucken?">
+    <div class="tabs" role="group" aria-label="Was drucken?">
+      <button class="tab" type="button" id="tabDevice" aria-pressed="true">Geräte-Etikett</button>
+      <button class="tab" type="button" id="tabSticker" aria-pressed="false">Marken-Aufkleber</button>
+    </div>
+    <p class="lead" id="whatLead">QR-Code für The Things Network und die DevEUI der Station. Klebt auf den Deckel des Gehäuses.</p>
+
+    <div class="fields" id="deviceFields">
+      <div class="field">
+        <label for="devEui">DevEUI</label>
+        <input id="devEui" maxlength="23" autocomplete="off" spellcheck="false" placeholder="16 Zeichen, z. B. DA01504D352D7284" aria-describedby="devHint">
+        <span class="hint" id="devHint">Steht auf der Einrichtungsseite unter <em>Netzwerk</em>.</span>
+      </div>
+      <div class="field">
+        <label for="joinEui">JoinEUI</label>
+        <input id="joinEui" maxlength="23" autocomplete="off" spellcheck="false" value="0000000000000000">
+      </div>
+      <div class="field">
+        <label for="profile">Profil-ID</label>
+        <input id="profile" maxlength="8" autocomplete="off" spellcheck="false" value="FFFF0000">
+      </div>
+    </div>
+
+    <div class="fields" id="stickerFields" hidden>
+      <div class="field">
+        <label for="lang">Sprache des Claims</label>
+        <select id="lang">
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
+      </div>
+    </div>
+    <p class="err" id="err" role="alert" hidden></p>
+  </section>
+
+  <section class="card print-wrap" aria-label="Vorschau">
+    <div class="stage" id="stage">
+      <div class="stage-inner" id="stageInner">
+        <div class="label" id="labelDevice">
+          <svg class="qr" id="qr" viewBox="0 0 1 1" role="img" aria-label="TTN-QR-Code"></svg>
+          <div class="info">
+            <img class="lockup" src="tanenbase-lockup-black.svg" alt="TanenBase">
+            <span class="k">DevEUI</span>
+            <span class="eui" id="eui">---- ---- ---- ----</span>
+            <span class="join" id="join">JoinEUI 0000 0000 0000 0000</span>
+            <span class="url">tanen.eu</span>
+          </div>
+        </div>
+        <div class="label sticker" id="labelSticker" hidden>
+          <img class="lockup" src="tanenbase-lockup-black.svg" alt="TanenBase">
+          <span class="tagline" id="tagline">Ihr Bienenvolk gibt Ihnen Entwarnung.</span>
+          <span class="url">tanen.eu</span>
+        </div>
+      </div>
+    </div>
+    <p class="payload no-print" id="payload"></p>
+    <button class="btn no-print" type="button" id="printBtn">Drucken</button>
+  </section>
+
+  <details class="card no-print">
+    <summary>Druckeinstellungen für den Brother QL-500</summary>
+    <ol>
+      <li>Rolle DK-11201 einlegen (29 × 90 mm, Adressetiketten).</li>
+      <li>Im Druckdialog den Brother QL-500 wählen, Papierformat <strong>29 mm × 90 mm</strong>, Querformat.</li>
+      <li>Ränder: <strong>Keine</strong>, Skalierung: <strong>100 %</strong>, Kopf- und Fußzeilen aus.</li>
+      <li>Mehrere Etiketten: Anzahl der Kopien im Druckdialog einstellen.</li>
+      <li>Nach dem Druck den QR-Code mit dem Handy testen: die TTN-Konsole (<em>Register end device › Scan</em>) muss die DevEUI übernehmen.</li>
+    </ol>
+  </details>
+</div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const TAGLINES = {
+  de: 'Ihr Bienenvolk gibt Ihnen Entwarnung.',
+  en: 'Peace of mind for your hive.',
+  ar: 'خلية النحل تطمئنك عنها.'
+};
+let mode = 'device';
+
+// "da:01-50 4d..." -> "DA01504D...": keep hex digits only, upper case
+const hex = s => (s || '').toUpperCase().replace(/[^0-9A-F]/g, '');
+const groups = s => s.replace(/(.{4})(?=.)/g, '$1 ');
+
+function qrSvg(svg, text) {
+  const qr = qrcode(0, 'M');                 // smallest version that fits, ECC M
+  qr.addData(text, 'Alphanumeric');          // TR005 payload is 0-9 A-Z and ':'
+  qr.make();
+  const n = qr.getModuleCount(), q = 2;       // 2-module quiet zone; the label margin adds more
+  let d = '';
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (!qr.isDark(r, c)) continue;
+      let w = 1;
+      while (c + w < n && qr.isDark(r, c + w)) w++;   // one rect per dark run
+      d += `M${c + q} ${r + q}h${w}v1h-${w}z`;
+      c += w - 1;
+    }
+  }
+  const size = n + 2 * q;
+  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+  svg.setAttribute('shape-rendering', 'crispEdges');
+  svg.innerHTML = `<rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#000"/>`;
+}
+
+function render() {
+  const dev = hex($('devEui').value), join = hex($('joinEui').value), prof = hex($('profile').value);
+  const problems = [];
+  if (mode === 'device') {
+    if (dev.length !== 16) problems.push('Die DevEUI braucht genau 16 Hex-Zeichen (0–9, A–F).');
+    if (join.length !== 16) problems.push('Die JoinEUI braucht genau 16 Hex-Zeichen.');
+    if (prof.length !== 8) problems.push('Die Profil-ID braucht genau 8 Hex-Zeichen.');
+  }
+  $('devEui').setAttribute('aria-invalid', String(mode === 'device' && dev.length > 0 && dev.length !== 16));
+  $('err').hidden = problems.length === 0 || !$('devEui').value;
+  $('err').textContent = problems.join(' ');
+
+  const ok = mode === 'sticker' || problems.length === 0;
+  $('printBtn').disabled = !ok;
+  if (mode === 'device') {
+    const payload = `LW:D0:${join}:${dev}:${prof}`;
+    $('payload').textContent = ok ? `QR-Inhalt: ${payload}` : '';
+    if (ok) qrSvg($('qr'), payload); else $('qr').innerHTML = '';
+    $('eui').textContent = dev.length === 16 ? groups(dev) : '---- ---- ---- ----';
+    $('join').textContent = 'JoinEUI ' + (join.length === 16 ? groups(join) : '----');
+  } else {
+    const lang = $('lang').value;
+    $('tagline').textContent = TAGLINES[lang];
+    $('tagline').dir = lang === 'ar' ? 'rtl' : 'ltr';
+    $('payload').textContent = '';
+  }
+  fit();
+}
+
+// scale the true-size label up to fill the preview box (screen only)
+function fit() {
+  const label = mode === 'device' ? $('labelDevice') : $('labelSticker');
+  const w = label.offsetWidth, h = label.offsetHeight;
+  const s = Math.min(3, ($('stage').clientWidth - 32) / w);
+  $('stageInner').style.transform = `scale(${s})`;
+  $('stageInner').style.blockSize = (h * s) + 'px';
+}
+
+function setMode(m) {
+  mode = m;
+  $('tabDevice').setAttribute('aria-pressed', String(m === 'device'));
+  $('tabSticker').setAttribute('aria-pressed', String(m === 'sticker'));
+  $('deviceFields').hidden = m !== 'device';
+  $('stickerFields').hidden = m !== 'sticker';
+  $('labelDevice').hidden = m !== 'device';
+  $('labelSticker').hidden = m !== 'sticker';
+  $('whatLead').textContent = m === 'device'
+    ? 'QR-Code für The Things Network und die DevEUI der Station. Klebt auf den Deckel des Gehäuses.'
+    : 'Zeichen, Wortmarke und Claim. Für den Bienenstock, gleich für jede Station.';
+  render();
+}
+
+// ?deveui=…&joineui=…&profile=…&type=sticker&lang=en prefill the form
+const q = new URLSearchParams(location.search);
+if (q.get('deveui')) $('devEui').value = q.get('deveui');
+if (q.get('joineui')) $('joinEui').value = q.get('joineui');
+if (q.get('profile')) $('profile').value = q.get('profile');
+if (['de', 'en', 'ar'].includes(q.get('lang'))) $('lang').value = q.get('lang');
+
+['devEui', 'joinEui', 'profile', 'lang'].forEach(id => $(id).addEventListener('input', render));
+$('tabDevice').addEventListener('click', () => setMode('device'));
+$('tabSticker').addEventListener('click', () => setMode('sticker'));
+$('printBtn').addEventListener('click', () => window.print());
+window.addEventListener('resize', fit);
+setMode(q.get('type') === 'sticker' ? 'sticker' : 'device');
+</script>
+</body>
+</html>

@@ -23,6 +23,15 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   share card `site/media/share-card.png` (1200×630, German) as og:image;
   both cards render from `media/brand/share-card.html`. The page title and
   meta description keep their search terms
+- **Device label and brand sticker** (2026-10-17): `web/label.html`
+  (tanen.eu/setup/label.html) prints 29 × 90 mm labels on a Brother QL-500
+  (DK-11201). Device label: LoRaWAN TR005 QR code
+  (`LW:D0:<JoinEUI>:<DevEUI>:<profile>`, read by the TTN console's
+  *Scan end device QR code*) plus DevEUI and JoinEUI as text; never the
+  AppKey. Brand sticker: mark, wordmark, tagline (DE/EN/AR), tanen.eu.
+  Black only for thermal printing (`tanenbase-*-black.svg`). Prefill with
+  `?deveui=…&joineui=…&profile=…`. QR encoder: qrcode-generator 1.4.4 (MIT),
+  vendored as `web/qrcode.js` so it works offline
 
 ### Fixed
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
