@@ -16,8 +16,13 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   show the wordmark next to the yellow honey-pot tile, in every language
 - **GitHub look** (2026-10-17): README opens with the lock-up (dark variant in
   GitHub's dark theme) instead of "Smart Hive Monitoring";
-  `media/brand/social-preview.png` (1280×640, from `social-preview.html`) is
-  the repo's link-share card
+  `media/brand/social-preview.png` (1280×640) is the repo's link-share card
+- **Tagline** (2026-10-17): "Ihr Bienenvolk gibt Ihnen Entwarnung." /
+  "Peace of mind for your hive." / "خلية النحل تطمئنك عنها." replaces the
+  tanen.eu hero headline in all three languages and the og:title. New
+  share card `site/media/share-card.png` (1200×630, German) as og:image;
+  both cards render from `media/brand/share-card.html`. The page title and
+  meta description keep their search terms
 
 ### Fixed
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
