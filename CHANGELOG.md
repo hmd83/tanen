@@ -7,6 +7,19 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## [Unreleased]
 
+### Added
+- **Wordmark** (2026-10-17): "TanenBase" set in M PLUS Rounded 1c ("Tanen"
+  ExtraBold, "Base" Medium in grey), outlined to SVG paths so no font is
+  needed. `site/tanenbase-lockup.svg` (mark + wordmark),
+  `tanenbase-lockup-dark.svg` and `tanenbase-wordmark.svg`; regenerate with
+  `scripts/outline_wordmark.py`. The site, setup app and encoder headers now
+  show the wordmark next to the yellow honey-pot tile, in every language
+
+### Fixed
+- **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
+  grounds; the tile is filled white, so the pot vanished. The comment now
+  says to use the mark as it is
+
 ## [1.0.1] — 2026-10-17 — Version fix, CI, host tests
 
 ### Added

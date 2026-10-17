@@ -11,8 +11,10 @@
          <link rel="icon" href="logo.svg">
 
        The strokes are currentColor, which resolves to black on its own.
-       Inline the file instead and it follows the CSS color property, so
-       color:#fff on a dark ground gives the reversed mark for free. -->
+       The tile is filled white in this file, so do NOT set color:#fff to
+       "reverse" it: white strokes on the white tile make the pot vanish.
+       On a dark ground use the mark as it is, a white tile with a black pot
+       (see tanenbase-lockup-dark.svg). -->
 
   <rect x="1.5" y="1.5" width="61" height="61" rx="16"
         fill="#ffffff" stroke="currentColor" stroke-width="3"/>
