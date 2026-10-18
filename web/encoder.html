@@ -32,6 +32,13 @@
   --red-soft:#fdeaee;
   --blue:#0f4c96;
   --blue-soft:#e6eefa;
+  /* Text und Kanten auf den Status-Farben (aus den bisher fest
+     eingetragenen Werten, jetzt als Token wie im Design-System) */
+  --green-ink:#06381b;   /* Text auf --green-soft */
+  --green-edge:#054d23;  /* Kante gruener Flaechen (Speichern) */
+  --red-ink:#5e0a1c;     /* Text auf --red-soft */
+  --red-edge:#6d0a20;    /* Kante roter Flaechen */
+  --blue-ink:#0a2f5e;    /* Text auf --blue-soft */
   --r:18px;
   --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
 }
@@ -57,15 +64,15 @@ a{color:var(--blue)}
 }
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;flex:1 1 auto}
 .brand-mark{
-  inline-size:40px;block-size:40px;border-radius:11px;flex:none;
-  background:var(--accent);border:2px solid var(--accent-edge);
+  inline-size:40px;block-size:40px;border-radius:12px;flex:none;
+  background:var(--accent);border:3px solid var(--accent-edge);
   display:grid;place-items:center;color:var(--accent-ink);
 }
 .brand-mark svg{inline-size:26px;block-size:26px}
 .back-link{
-  order:3;flex:1 1 100%;
+  order:3;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  min-block-size:56px;padding:10px 18px;border-radius:12px;
+  min-block-size:60px;padding:10px 18px;border-radius:12px;
   border:3px solid var(--border-strong);background:var(--surface-2);
   color:var(--text);font-size:1rem;font-weight:800;text-decoration:none;
 }
@@ -74,9 +81,9 @@ html[dir="rtl"] .back-link svg{transform:scaleX(-1)}
 @media (min-width:680px){.back-link{order:0;flex:0 0 auto}}
 .lang-toggle{display:flex;gap:6px;flex:none}
 .lang-toggle button{
-  min-inline-size:62px;min-block-size:48px;padding:6px 12px;border-radius:12px;
-  border:2px solid var(--border);background:var(--surface-2);
-  font-size:.95rem;font-weight:800;color:var(--dim);
+  min-inline-size:62px;min-block-size:60px;padding:6px 12px;border-radius:12px;
+  border:3px solid var(--border-strong);background:var(--surface-2);
+  font-size:1rem;font-weight:800;color:var(--dim);
 }
 .lang-toggle button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
 
@@ -90,18 +97,18 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
   padding:20px;margin-block-end:16px;box-shadow:var(--shadow);
 }
 .card h3{font-size:1.25rem;font-weight:800;margin-block-end:6px;line-height:1.25}
-.card-sub{font-size:.95rem;color:var(--dim);margin-block-end:14px}
+.card-sub{font-size:1rem;color:var(--dim);margin-block-end:14px}
 
 .note{
   display:flex;gap:12px;align-items:flex-start;
   font-size:1rem;line-height:1.5;padding:14px 16px;border-radius:14px;margin-block-end:16px;
-  background:var(--blue-soft);border:3px solid var(--blue);color:#0a2f5e;
+  background:var(--blue-soft);border:3px solid var(--blue);color:var(--blue-ink);
 }
 .note svg{inline-size:26px;block-size:26px;flex:none;color:var(--blue)}
 .note strong{display:block;margin-block-end:2px}
-.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
-.note.warn svg{color:#8a5f00}
-.note.bad{background:var(--red-soft);border-color:var(--red);color:#5e0a1c}
+.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:var(--accent-ink)}
+.note.warn svg{color:var(--accent-edge)}
+.note.bad{background:var(--red-soft);border-color:var(--red);color:var(--red-ink)}
 .note.bad svg{color:var(--red)}
 
 /* ============================ Werte-Auswahl ============================ */
@@ -119,7 +126,7 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
 .seg button[aria-pressed="true"]{
   background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink);
 }
-.seg button[aria-pressed="true"] small{color:#4a3400}
+.seg button[aria-pressed="true"] small{color:var(--accent-ink)}
 .seg button[aria-pressed="true"]::before{content:"\2713\00a0"}
 
 .field{margin-block:16px}
@@ -133,7 +140,7 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
 }
 .field input:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
 .field input::placeholder{color:#5c6880}
-.hint{font-size:.95rem;color:var(--dim);margin-block-start:7px}
+.hint{font-size:1rem;color:var(--dim);margin-block-start:7px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
 @media (max-width:520px){.grid-2{grid-template-columns:1fr}}
 
@@ -142,9 +149,9 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
 .out .out-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-block-end:7px}
 .out .out-head span{font-size:1.05rem;font-weight:700}
 .copy-btn{
-  flex:none;min-block-size:48px;padding:8px 18px;border-radius:12px;
+  flex:none;min-block-size:60px;padding:8px 18px;border-radius:12px;
   border:3px solid var(--border-strong);background:var(--surface-2);
-  font-size:.92rem;font-weight:800;color:var(--text);
+  font-size:1rem;font-weight:800;color:var(--text);
 }
 .out pre{
   direction:ltr;text-align:start;
@@ -164,11 +171,11 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
 .q-port{
   flex:none;direction:ltr;font-family:ui-monospace,Consolas,monospace;
   font-size:.9rem;font-weight:800;color:var(--accent-ink);
-  background:var(--accent);border:2px solid var(--accent-edge);border-radius:8px;padding:4px 9px;
+  background:var(--accent);border:2px solid var(--accent-edge);border-radius:6px;padding:4px 9px;
 }
 .q-txt{flex:1 1 160px;font-size:1rem;font-weight:700;min-inline-size:0}
 .q-btn{
-  flex:none;min-inline-size:52px;min-block-size:52px;border-radius:12px;
+  flex:none;min-inline-size:60px;min-block-size:60px;border-radius:12px;
   border:3px solid var(--border-strong);background:var(--surface);
   font-size:1.2rem;font-weight:800;line-height:1;
 }
@@ -198,9 +205,9 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
   opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .25s,transform .25s;
 }
 #toast.show{opacity:1;transform:none}
-#toast.ok{background:var(--green-soft);color:#06381b;border-color:var(--green)}
-#toast.err{background:var(--red-soft);color:#5e0a1c;border-color:var(--red)}
-#toast.info{background:var(--blue-soft);color:#0a2f5e;border-color:var(--blue)}
+#toast.ok{background:var(--green-soft);color:var(--green-ink);border-color:var(--green)}
+#toast.err{background:var(--red-soft);color:var(--red-ink);border-color:var(--red)}
+#toast.info{background:var(--blue-soft);color:var(--blue-ink);border-color:var(--blue)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -220,7 +227,7 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
   </div>
   <a class="back-link" href="index.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-    <span data-i18n="back">Zurück zur Bedienung</span>
+    <span data-i18n="back">Zurück</span>
   </a>
   <div class="lang-toggle" role="group" data-i18n-al="langGroup" aria-label="Sprache">
     <button type="button" id="langDe" aria-pressed="true" lang="de">DE</button>
@@ -309,7 +316,7 @@ main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
 
   <a class="btn btn-outline btn-block" href="index.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-    <span data-i18n="back">Zurück zur Bedienung</span>
+    <span data-i18n="back">Zurück</span>
   </a>
 </main>
 
@@ -324,7 +331,7 @@ const I18N = {
     _dir: 'ltr',
     brand: 'TanenBase',
     langGroup: 'Sprache',
-    back: 'Zurück zur Bedienung',
+    back: 'Zurück',
     encTitle: 'Befehls-Rechner',
     encSub: 'Erzeugt TTN-Downlinks, die Werte im Gerät ändern',
     advTitle: 'Werkzeug für Fachleute',
@@ -370,7 +377,7 @@ const I18N = {
     _dir: 'ltr',
     brand: 'TanenBase',
     langGroup: 'Language',
-    back: 'Back to the controls',
+    back: 'Back',
     encTitle: 'Command builder',
     encSub: 'Builds TTN downlinks that change values on the device',
     advTitle: 'Tool for experts',
@@ -416,7 +423,7 @@ const I18N = {
     _dir: 'rtl',
     brand: 'قاعدة طنين',
     langGroup: 'اللغة',
-    back: 'رجوع إلى شاشة التشغيل',
+    back: 'رجوع',
     encTitle: 'مُولّد الأوامر',
     encSub: 'يولّد رسائل TTN النازلة التي تغيّر قيم الجهاز',
     advTitle: 'أداة للفنيين',

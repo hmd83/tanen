@@ -53,6 +53,13 @@
   --red-soft:#fdeaee;
   --blue:#0f4c96;
   --blue-soft:#e6eefa;
+  /* Text und Kanten auf den Status-Farben (aus den bisher fest
+     eingetragenen Werten, jetzt als Token wie im Design-System) */
+  --green-ink:#06381b;   /* Text auf --green-soft */
+  --green-edge:#054d23;  /* Kante gruener Flaechen (Speichern) */
+  --red-ink:#5e0a1c;     /* Text auf --red-soft */
+  --red-edge:#6d0a20;    /* Kante roter Flaechen */
+  --blue-ink:#0a2f5e;    /* Text auf --blue-soft */
   --nav-h:80px;
   --r:18px;
   --shadow:0 3px 0 rgba(12,16,23,.07),0 10px 26px rgba(12,16,23,.10);
@@ -79,8 +86,8 @@ a{color:var(--blue)}
 }
 .brand{order:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;flex:1 1 auto}
 .brand-mark{
-  inline-size:40px;block-size:40px;border-radius:11px;flex:none;
-  background:var(--accent);border:2px solid var(--accent-edge);
+  inline-size:40px;block-size:40px;border-radius:12px;flex:none;
+  background:var(--accent);border:3px solid var(--accent-edge);
   display:grid;place-items:center;color:var(--accent-ink);
 }
 .brand-mark svg{inline-size:26px;block-size:26px}
@@ -92,7 +99,7 @@ a{color:var(--blue)}
   background:var(--surface-2);white-space:nowrap;
 }
 .conn-pill .led{inline-size:11px;block-size:11px;border-radius:50%;background:var(--border-strong);flex:none}
-.conn-pill.on{display:inline-flex;color:#06381b;background:var(--green-soft);border-color:var(--green)}
+.conn-pill.on{display:inline-flex;color:var(--green-ink);background:var(--green-soft);border-color:var(--green)}
 .conn-pill.on .led{background:var(--green)}
 
 /* Sprachwahl: Klappliste mit Flaggen. "Language" bleibt in jeder Sprache
@@ -100,7 +107,7 @@ a{color:var(--blue)}
    Flaggen als SVG: Windows zeigt Flaggen-Emoji nur als zwei Buchstaben. */
 .lang{position:relative;flex:none;order:2}
 .lang-btn{
-  display:flex;align-items:center;gap:10px;min-block-size:54px;padding:6px 12px;
+  display:flex;align-items:center;gap:10px;min-block-size:60px;padding:6px 12px;
   font:inherit;color:var(--text);cursor:pointer;text-align:start;
   border:3px solid var(--border-strong);border-radius:14px;background:var(--surface-2);
 }
@@ -116,7 +123,7 @@ a{color:var(--blue)}
   background:var(--surface);border:3px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
 }
 .lang-list button{
-  display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:56px;padding:8px 14px;
+  display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:60px;padding:8px 14px;
   font:inherit;font-size:1rem;font-weight:700;color:var(--text);background:none;border:0;border-radius:9px;
   cursor:pointer;text-align:start;white-space:nowrap;
 }
@@ -128,14 +135,14 @@ a{color:var(--blue)}
 .flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
 .flag-ar{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cpath fill='%23007A3D' d='M0 0h900v200H0z'/%3E%3Cpath fill='%23fff' d='M0 200h900v200H0z'/%3E%3Cpath d='M0 400h900v200H0z'/%3E%3Cg fill='%23CE1126'%3E%3Cpath transform='translate(225 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(450 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(675 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3C/g%3E%3C/svg%3E")}
 
-/* Weg zurueck auf die Startseite. Auf dem Handy eine eigene Zeile unter
-   Name und Sprachwahl (order hinter der Status-Anzeige), auf breiten
-   Schirmen vorne links. Gleiche Form wie der Zurueck-Knopf der
-   Befehls-Seite, damit beide Seiten sich gleich bedienen. */
+/* Weg zurueck auf die Startseite. Auf dem Handy in der zweiten Zeile unter
+   Name und Sprachwahl, nur so breit wie sein Text (eine volle Zeile war zu
+   wuchtig), auf breiten Schirmen vorne links. Gleiche Form wie der
+   Zurueck-Knopf der Befehls-Seite, damit beide Seiten sich gleich bedienen. */
 .home-link{
-  order:4;flex:1 1 100%;
+  order:4;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  min-block-size:56px;padding:10px 18px;border-radius:12px;
+  min-block-size:60px;padding:10px 18px;border-radius:12px;
   border:3px solid var(--border-strong);background:var(--surface-2);
   color:var(--text);font-size:1rem;font-weight:800;text-decoration:none;
 }
@@ -151,12 +158,12 @@ html[dir="rtl"] .home-link svg{transform:scaleX(-1)}
 .conn-timer{
   direction:ltr;font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
   font-size:.95rem;font-weight:800;line-height:1.2;color:var(--text);
-  background:var(--surface);border:2px solid var(--border-strong);border-radius:8px;
+  background:var(--surface);border:2px solid var(--border-strong);border-radius:6px;
   padding:2px 9px;flex:none;
 }
 .conn-timer[hidden]{display:none}
 .conn-timer.warn{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
-.conn-timer.danger{background:var(--red);border-color:#6d0a20;color:#fff;animation:pulse 1.1s steps(1) infinite}
+.conn-timer.danger{background:var(--red);border-color:var(--red-edge);color:#fff;animation:pulse 1.1s steps(1) infinite}
 @keyframes pulse{50%{opacity:.55}}
 
 /* ================================ Views ================================ */
@@ -170,7 +177,7 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 /* ============================ Start-Bildschirm ============================ */
 #viewConnect{text-align:center}
 #viewConnect h2{font-size:1.5rem;font-weight:800;margin-block-end:14px;line-height:1.25}
-.hero-note{margin-block-start:20px;font-size:.92rem;color:var(--dim)}
+.hero-note{margin-block-start:20px;font-size:1rem;color:var(--dim)}
 
 /* Bild der Station: zeigt, wo der rote Knopf sitzt - Worte allein
    erklaeren die Stelle nicht. */
@@ -182,9 +189,9 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 .device-fig svg{
   inline-size:100%;block-size:auto;display:block;
   background:var(--surface);border:3px solid var(--border-strong);
-  border-radius:16px;padding:6px;
+  border-radius:14px;padding:6px;
 }
-.hint-ring{fill:none;stroke:#9e1030;stroke-width:6}
+.hint-ring{fill:none;stroke:var(--red);stroke-width:6}
 .hint-pulse{animation:ringPulse 2.2s ease-out infinite}
 @keyframes ringPulse{0%{r:30;opacity:.9}100%{r:58;opacity:0}}
 
@@ -201,7 +208,7 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 
 /* ============================== Uebersicht ============================== */
 .gauge-card{
-  background:var(--surface);border:3px solid var(--border-strong);border-radius:22px;
+  background:var(--surface);border:3px solid var(--border-strong);border-radius:var(--r);
   padding:22px 18px;text-align:center;box-shadow:var(--shadow);margin-block-end:16px;
 }
 .gauge-label{font-size:1.1rem;font-weight:800;color:var(--dim)}
@@ -242,7 +249,7 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
   padding:20px;margin-block-end:16px;box-shadow:var(--shadow);
 }
 .card h3{font-size:1.25rem;font-weight:800;margin-block-end:6px;line-height:1.25}
-.card-sub{font-size:.95rem;color:var(--dim);margin-block-end:14px}
+.card-sub{font-size:1rem;color:var(--dim);margin-block-end:14px}
 .card-split{border-block-start:3px dashed var(--border);margin-block:24px 16px;padding-block-start:18px}
 .card-part-title{font-size:1.1rem;font-weight:800;margin-block-end:6px;display:flex;align-items:center;gap:10px}
 .card-part-title svg{inline-size:26px;block-size:26px;flex:none;color:var(--dim)}
@@ -264,7 +271,7 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 .field input:focus-visible,.field select:focus-visible{outline:4px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
 .field input::placeholder{color:#5c6880}
 .field input.bad{border-color:var(--red);background:var(--red-soft)}
-.hint{font-size:.95rem;color:var(--dim);margin-block-start:7px}
+.hint{font-size:1rem;color:var(--dim);margin-block-start:7px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
 @media (max-width:520px){.grid-2{grid-template-columns:1fr}}
 
@@ -280,15 +287,15 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 .btn:disabled{opacity:.45;cursor:default}
 .btn-lg{min-block-size:74px;font-size:1.2rem;padding:16px 40px}
 .btn-block{inline-size:100%}
-.btn-save{background:var(--green);border-color:#054d23;color:#fff}
+.btn-save{background:var(--green);border-color:var(--green-edge);color:#fff}
 .btn-outline{background:var(--surface);border:3px solid var(--border-strong);color:var(--text);border-radius:12px}
 .btn-danger{background:var(--surface);border:3px solid var(--red);color:var(--red);border-radius:12px}
 .btn-danger:active:not(:disabled){background:var(--red-soft)}
 .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-block-start:18px}
 .btn-row .btn{flex:1 1 200px}
 /* Schnell-Aktionen: knapper als die Haupt-Knoepfe, aber immer noch gross
-   genug zum sicheren Treffen (54px). */
-.btn-compact{min-block-size:54px;padding:9px 16px;font-size:.95rem;gap:8px}
+   genug zum sicheren Treffen (60px, wie jeder Knopf). */
+.btn-compact{min-block-size:60px;padding:9px 16px;font-size:.95rem;gap:8px}
 .btn-compact svg{inline-size:20px;block-size:20px}
 .quick-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-block-start:16px}
 @media (max-width:430px){.quick-row{grid-template-columns:1fr}}
@@ -302,12 +309,12 @@ html[dir="rtl"] .steps{direction:rtl}
 }
 .step-line{flex:1;block-size:4px;background:var(--border)}
 .step-dot.now{background:var(--accent);border-color:var(--accent-edge);color:var(--accent-ink)}
-.step-dot.done{background:var(--green);border-color:#054d23;color:#fff}
+.step-dot.done{background:var(--green);border-color:var(--green-edge);color:#fff}
 .step-line.done{background:var(--green)}
 .wiz-pane{display:none}
 .wiz-pane.active{display:block}
 .wiz-illus{
-  inline-size:96px;block-size:96px;border-radius:26px;margin:0 auto 18px;
+  inline-size:96px;block-size:96px;border-radius:var(--r);margin:0 auto 18px;
   background:var(--surface-2);border:3px solid var(--border-strong);
   display:grid;place-items:center;color:var(--dim);
 }
@@ -336,7 +343,7 @@ html[dir="rtl"] .steps{direction:rtl}
   content:"";position:absolute;inset-block-start:4px;inset-inline-start:4px;
   inline-size:30px;block-size:30px;border-radius:50%;background:#fff;transition:inset-inline-start .2s;
 }
-.switch[aria-checked="true"]{background:var(--green-soft);border-color:var(--green);color:#06381b}
+.switch[aria-checked="true"]{background:var(--green-soft);border-color:var(--green);color:var(--green-ink)}
 .switch[aria-checked="true"] .knob{background:var(--green)}
 .switch[aria-checked="true"] .knob::after{inset-inline-start:28px}
 .field .lbl-plain{display:block;font-size:1.05rem;font-weight:700;margin-block-end:7px}
@@ -377,11 +384,11 @@ html[dir="rtl"] .steps{direction:rtl}
 .note{
   display:flex;gap:12px;align-items:flex-start;
   font-size:1rem;line-height:1.5;padding:14px 16px;border-radius:14px;margin-block-end:16px;
-  background:var(--blue-soft);border:3px solid var(--blue);color:#0a2f5e;
+  background:var(--blue-soft);border:3px solid var(--blue);color:var(--blue-ink);
 }
 .note svg{inline-size:26px;block-size:26px;flex:none;color:var(--blue)}
-.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
-.note.warn svg{color:#8a5f00}
+.note.warn{background:var(--accent-soft);border-color:var(--accent-edge);color:var(--accent-ink)}
+.note.warn svg{color:var(--accent-edge)}
 .note strong{display:block;margin-block-end:2px}
 .card.danger{border-color:var(--red)}
 .card.danger h3{color:var(--red)}
@@ -410,12 +417,12 @@ html[dir="rtl"] .steps{direction:rtl}
 }
 /* Netzwerk ist Fachmann-Werkzeug: abgesetzt, ruhiger, ausdruecklich beschriftet */
 .tab-adv{border-inline-start:3px dashed var(--border)}
-.tab-adv button{color:#4d576b;background:var(--surface-2)}
+.tab-adv button{color:var(--dim);background:var(--surface-2)}
 .tab-adv button svg{opacity:.85}
 .tab-adv button[aria-current="page"]{background:var(--accent-soft);color:var(--text)}
 .adv-tag{
-  display:block;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-  color:#4d576b;line-height:1.1;
+  display:block;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--dim);line-height:1.1;
 }
 
 /* ================================= Toast ================================= */
@@ -426,9 +433,9 @@ html[dir="rtl"] .steps{direction:rtl}
   opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .25s,transform .25s;
 }
 #toast.show{opacity:1;transform:none}
-#toast.ok{background:var(--green-soft);color:#06381b;border-color:var(--green)}
-#toast.err{background:var(--red-soft);color:#5e0a1c;border-color:var(--red)}
-#toast.info{background:var(--blue-soft);color:#0a2f5e;border-color:var(--blue)}
+#toast.ok{background:var(--green-soft);color:var(--green-ink);border-color:var(--green)}
+#toast.err{background:var(--red-soft);color:var(--red-ink);border-color:var(--red)}
+#toast.info{background:var(--blue-soft);color:var(--blue-ink);border-color:var(--blue)}
 .sr-only{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -467,7 +474,7 @@ html[dir="rtl"] .steps{direction:rtl}
   </div>
   <a class="home-link" href="../">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-    <span data-i18n="home">Zur Startseite</span>
+    <span data-i18n="home">Startseite</span>
   </a>
 </header>
 
@@ -477,7 +484,7 @@ html[dir="rtl"] .steps{direction:rtl}
 <div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
   <div class="qr-box">
     <h3 id="qrTitle" data-i18n="qrTitle">QR-Code scannen</h3>
-    <p class="card-sub" data-i18n="qrHint">Halten Sie den QR-Code etwa 15 cm vor die Kamera, mitten in das gelbe Quadrat, und warten Sie, bis das Bild scharf ist.</p>
+    <p class="card-sub" data-i18n="qrHint">QR-Code ins gelbe Quadrat halten, etwa 15 cm Abstand.</p>
     <div class="qr-view">
       <video id="qrVideo" playsinline muted></video>
       <span class="qr-aim" aria-hidden="true"></span>
@@ -501,7 +508,7 @@ html[dir="rtl"] .steps{direction:rtl}
         <span class="cstep-num" aria-hidden="true">1</span>
         <div class="cstep-body">
           <div class="cstep-row">
-            <p data-i18n="step1">Drücken Sie den roten Knopf an der Station.</p>
+            <p data-i18n="step1">Den roten Knopf an der Station drücken.</p>
           <figure class="device-fig">
             <!-- Zeichnung der Station (web/device.svg), zugeschnitten auf Gehäuse
                  und Knopf; der rote Ring zeigt, welcher Knopf gemeint ist. -->
@@ -620,7 +627,7 @@ html[dir="rtl"] .steps{direction:rtl}
       <div class="cstep">
         <span class="cstep-num" aria-hidden="true">2</span>
         <div class="cstep-body">
-          <p data-i18n="step2">Tippen Sie auf „Verbinden“. Wählen Sie dann „TanenBase“ aus der Liste des Browsers.</p>
+          <p data-i18n="step2">Auf „Verbinden“ tippen, dann „TanenBase“ wählen.</p>
         </div>
       </div>
     </div>
@@ -678,7 +685,7 @@ html[dir="rtl"] .steps{direction:rtl}
     <!-- Waegezelle: nur sichtbar, wenn die Firmware das Merkmal kennt -->
     <div class="card" id="lcCard" hidden>
       <h3 data-i18n="lcTitle">Wägezelle</h3>
-      <p class="card-sub" data-i18n="lcSub">Welche Wägezelle ist eingebaut? Die Station rechnet damit die Temperatur aus dem Gewicht heraus.</p>
+      <p class="card-sub" data-i18n="lcSub">Welche Wägezelle ist eingebaut?</p>
       <div class="field">
         <label for="lcProfile" data-i18n="lcLabel">Eingebaute Wägezelle</label>
         <!-- Reihenfolge der Liste, NICHT der Nummern: die eigenen Messwerte
@@ -729,7 +736,7 @@ html[dir="rtl"] .steps{direction:rtl}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20V9l6-5 6 5v11"/><circle cx="12" cy="12" r="2.5"/></svg>
         </div>
         <h4 data-i18n="wiz1Title">Schritt 1: Waage leer räumen</h4>
-        <p class="desc" data-i18n="wiz1Desc">Nehmen Sie alles von der Waage herunter. Tippen Sie dann auf den Knopf.</p>
+        <p class="desc" data-i18n="wiz1Desc">Alles von der Waage nehmen, dann tippen.</p>
         <button class="btn btn-block" id="tareBtn" data-i18n="tare">Auf Null setzen</button>
       </div>
 
@@ -739,7 +746,7 @@ html[dir="rtl"] .steps{direction:rtl}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21h12"/><path d="M12 3v4"/><circle cx="12" cy="8" r="2"/><path d="M7 10l-3 7a4 4 0 0 0 6 0l-3-7zM17 10l-3 7a4 4 0 0 0 6 0l-3-7z"/></svg>
         </div>
         <h4 data-i18n="wiz2Title">Schritt 2: Bekanntes Gewicht auflegen</h4>
-        <p class="desc" data-i18n="wiz2Desc">Legen Sie etwas auf die Waage, dessen Gewicht Sie genau kennen. Tragen Sie das Gewicht ein.</p>
+        <p class="desc" data-i18n="wiz2Desc">Etwas mit bekanntem Gewicht auflegen und das Gewicht eintragen.</p>
         <div class="field">
           <label for="calibRefKg" data-i18n="refWeight">Gewicht in Kilogramm</label>
           <input id="calibRefKg" type="number" step="0.01" min="0" inputmode="decimal" data-i18n-ph="phRef" placeholder="z. B. 10.00">
@@ -784,12 +791,12 @@ html[dir="rtl"] .steps{direction:rtl}
         <div class="field">
           <label for="txMin" data-i18n="txInterval">Senden alle (Minuten)</label>
           <input id="txMin" type="number" min="1" step="1" inputmode="numeric">
-          <p class="hint" data-i18n="txHint">Wie oft die Station ihre Werte funkt. Übliche Einstellung: 240 Minuten.</p>
+          <p class="hint" data-i18n="txHint">Üblich: 240 Minuten (4 Stunden).</p>
         </div>
         <div class="field">
           <label for="msMin" data-i18n="msInterval">Messen alle (Minuten)</label>
           <input id="msMin" type="number" min="1" step="1" inputmode="numeric">
-          <p class="hint" data-i18n="msHint">Wie oft die Station misst. Mindestens 1 Minute. Übliche Einstellung: 5 Minuten.</p>
+          <p class="hint" data-i18n="msHint">Üblich: 5 Minuten.</p>
         </div>
       </div>
 
@@ -798,7 +805,7 @@ html[dir="rtl"] .steps{direction:rtl}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
           <span data-i18n="thresholds">Alarm-Grenzen</span>
         </div>
-        <p class="card-sub" data-i18n="thresholdsSub">Die Station meldet sich sofort, wenn sich ein Wert stärker ändert als hier eingestellt.</p>
+        <p class="card-sub" data-i18n="thresholdsSub">Bei größeren Änderungen meldet sich die Station sofort.</p>
         <div class="grid-2">
           <div class="field">
             <label for="weightThreshKg" data-i18n="weightThresh">Gewicht (kg)</label>
@@ -819,7 +826,7 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="card danger">
       <h3 data-i18n="finish">Einrichtung beenden</h3>
-      <p class="card-sub" data-i18n="finishHint">Die Station startet neu und arbeitet ganz normal weiter. Bluetooth wird ausgeschaltet.</p>
+      <p class="card-sub" data-i18n="finishHint">Die Station startet neu und arbeitet normal weiter.</p>
       <div class="btn-row" style="margin-block-start:0">
         <button class="btn btn-outline" id="disconnectBtn" data-i18n="disconnect">Verbindung trennen</button>
         <button class="btn btn-danger" data-cmd="1" data-i18n="done">Einrichtung beenden</button>
@@ -839,7 +846,7 @@ html[dir="rtl"] .steps{direction:rtl}
           <span class="knob" aria-hidden="true"></span><span class="sw-txt"></span>
         </button>
       </div>
-      <p class="hint" data-i18n="extRules">Höchstens 2 Sensoren im Bienenstock und 1 Sensor außen.</p>
+      <p class="hint" data-i18n="extRules">Bis zu 2 Sensoren im Stock und 1 außen.</p>
     </div>
 
     <!-- Karten fuer Fuehler 1-3 baut buildExtSlots() -->
@@ -858,7 +865,7 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="note warn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
-      <span><strong data-i18n="advTitle">Nur für Fachleute</strong><span data-i18n="netWarn">Diese Angaben bekommen Sie vom Installateur. Für den täglichen Gebrauch ändern Sie hier nichts.</span></span>
+      <span><strong data-i18n="advTitle">Nur für Fachleute</strong><span data-i18n="netWarn">Nur für den Installateur. Im Alltag hier nichts ändern.</span></span>
     </div>
 
     <div class="card">
@@ -878,7 +885,7 @@ html[dir="rtl"] .steps{direction:rtl}
         <div class="field">
           <label for="appKey">AppKey</label>
           <input id="appKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
-          <p class="hint" data-i18n="appKeyHint">Wird nur geschrieben — nie vom Gerät zurückgelesen.</p>
+          <p class="hint" data-i18n="appKeyHint">Wird nie vom Gerät zurückgelesen.</p>
         </div>
       </div>
       <div id="abpFields" hidden>
@@ -887,7 +894,7 @@ html[dir="rtl"] .steps{direction:rtl}
         <div class="field">
           <label for="appSKey">AppSKey</label>
           <input id="appSKey" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-ph="ph32" placeholder="32 Zeichen">
-          <p class="hint" data-i18n="sKeyHint">Schlüssel werden nur geschrieben — nie vom Gerät zurückgelesen. Leer lassen, um die gespeicherten zu behalten.</p>
+          <p class="hint" data-i18n="sKeyHint">Leer lassen, um die gespeicherten Schlüssel zu behalten.</p>
         </div>
         <div class="field">
           <label for="loraDr" data-i18n="drLabel">Funk-Stufe</label>
@@ -900,7 +907,7 @@ html[dir="rtl"] .steps{direction:rtl}
             <option value="1">SF11</option>
             <option value="0" data-i18n="dr0">SF12 – langsam, größte Reichweite</option>
           </select>
-          <p class="hint" data-i18n="drHint">Automatisch braucht Antworten vom Netz. Kommen keine an, eine feste Stufe wählen — die kleinste SF, bei der die Daten in TTN sicher ankommen.</p>
+          <p class="hint" data-i18n="drHint">Automatisch braucht Antworten vom Netz. Sonst eine feste Stufe wählen.</p>
         </div>
       </div>
       <button class="btn btn-save btn-block" id="saveNetBtn" data-i18n="saveNet">Zugangsdaten speichern</button>
@@ -908,7 +915,7 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="card danger">
       <h3 data-i18n="session">Funk-Sitzung</h3>
-      <p class="card-sub" id="sessionHint" data-i18n="sessionHint">Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.</p>
+      <p class="card-sub" id="sessionHint" data-i18n="sessionHint">Die Station meldet sich beim nächsten Senden neu an.</p>
       <button class="btn btn-danger btn-block" data-cmd="3" data-i18n="clearSession">Sitzung löschen</button>
     </div>
   </section>
@@ -946,13 +953,13 @@ const I18N = {
   de: {
     _dir: 'ltr', _locale: 'de-DE',
     brand: 'TanenBase',
-    home: 'Zur Startseite',
+    home: 'Startseite',
     navLabel: 'Hauptbereiche',
     pillOff: 'Nicht verbunden', pillOn: 'Verbunden',
     heroTitle: 'Gerät verbinden',
-    step1: 'Drücken Sie den roten Knopf an der Station.',
+    step1: 'Den roten Knopf an der Station drücken.',
     figCap: 'Roter Knopf an der Station',
-    step2: 'Tippen Sie auf „Verbinden“. Wählen Sie dann „TanenBase“ aus der Liste des Browsers.',
+    step2: 'Auf „Verbinden“ tippen, dann „TanenBase“ wählen.',
     heroNote: 'Funktioniert mit Chrome oder Edge',
     connect: 'Verbinden', disconnect: 'Verbindung trennen',
     navHome: 'Über­sicht', navCal: 'Waage', navSet: 'Einstel­lungen', navExt: 'Erwei­tert', navNet: 'Netzwerk',
@@ -960,14 +967,14 @@ const I18N = {
     weight: 'Gewicht', unitKg: 'kg',
     temperature: 'Temperatur (°C)', battery: 'Batterie (Volt)',
     waiting: 'Warte auf Daten …',
-    quick: 'Schnell-Aktionen', quickSub: 'Werte neu abfragen oder den Funk prüfen.',
+    quick: 'Schnell-Aktionen', quickSub: 'Werte abfragen oder Funk prüfen.',
     refresh: 'Werte neu laden', testLora: 'Funk-Test senden',
     calTitle: 'Waage einstellen', calSub: 'In drei Schritten zur genauen Waage',
     wiz1Title: 'Schritt 1: Waage leer räumen',
-    wiz1Desc: 'Nehmen Sie alles von der Waage herunter. Tippen Sie dann auf den Knopf.',
+    wiz1Desc: 'Alles von der Waage nehmen, dann tippen.',
     tare: 'Auf Null setzen',
     wiz2Title: 'Schritt 2: Bekanntes Gewicht auflegen',
-    wiz2Desc: 'Legen Sie etwas auf die Waage, dessen Gewicht Sie genau kennen. Tragen Sie das Gewicht ein.',
+    wiz2Desc: 'Etwas mit bekanntem Gewicht auflegen und das Gewicht eintragen.',
     refWeight: 'Gewicht in Kilogramm', phRef: 'z. B. 10.00',
     back: 'Zurück', calibrate: 'Jetzt einstellen',
     wiz3Title: 'Fertig! Die Waage ist eingestellt.',
@@ -975,16 +982,16 @@ const I18N = {
     zeroOffset: 'Null-Punkt', scaleFactor: 'Umrechnung',
     recal: 'Noch einmal einstellen',
     lcTitle: 'Wägezelle',
-    lcSub: 'Welche Wägezelle ist eingebaut? Die Station rechnet damit die Temperatur aus dem Gewicht heraus.',
+    lcSub: 'Welche Wägezelle ist eingebaut?',
     lcLabel: 'Eingebaute Wägezelle',
     lc0: 'Andere / unbekannt', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'Eigene Messwerte',
     lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
     lcUnknown: 'Profil {id} (dieser Seite unbekannt)',
-    lcHintOff: 'Ohne Temperatur-Ausgleich. Das Gewicht schwankt dann mit der Tageswärme — bei einer 150-kg-Zelle sind das schnell 300 Gramm.',
-    lcHintH40A: 'Die Zelle im TanenBase-Bausatz. Ihre Werte stammen aus einer 40-Stunden-Messreihe am Referenzgerät.',
-    lcHintSBS: 'Ihre Werte stammen aus einer einwöchigen Messreihe im Freien mit festem Gewicht. Ältere Firmware rechnet für diese Zelle noch ohne Ausgleich — ein Update genügt.',
-    lcHintRaw: 'Diese Zelle ist noch nicht vermessen. Sie läuft vorerst ohne Ausgleich — die Station merkt sich aber, welche Zelle verbaut ist. Eigene Werte tragen Sie unter „Eigene Messwerte“ ein.',
-    lcHintCustom: 'Werte aus einer eigenen Messreihe. Sie gelten für Zelle und Gestell zusammen.',
+    lcHintOff: 'Das Gewicht schwankt dann mit der Tageswärme.',
+    lcHintH40A: 'Die Zelle aus dem Bausatz, vermessen.',
+    lcHintSBS: 'Vermessen, mit Temperatur-Ausgleich ab Firmware 1.0.',
+    lcHintRaw: 'Noch nicht vermessen: läuft ohne Temperatur-Ausgleich.',
+    lcHintCustom: 'Eigene Messwerte für Zelle und Gestell.',
     lcGain: 'Abweichung (Gramm je °C)', lcTau: 'Nachlauf (Minuten)',
     lcCustomHint: 'So messen Sie das selbst: docs/load_cells im Projekt.',
     lcActiveOn: 'Die Station rechnet mit {gain} Gramm je °C, Nachlauf {min} Minuten.',
@@ -994,32 +1001,32 @@ const I18N = {
     timingCard: 'Zeiten & Alarm', timingCardSub: 'Alle Zeiten in Minuten.',
     timing: 'Zeiten',
     txInterval: 'Senden alle (Minuten)', msInterval: 'Messen alle (Minuten)',
-    txHint: 'Wie oft die Station ihre Werte funkt. Übliche Einstellung: 240 Minuten.',
-    msHint: 'Wie oft die Station misst. Mindestens 1 Minute. Übliche Einstellung: 5 Minuten.',
+    txHint: 'Üblich: 240 Minuten (4 Stunden).',
+    msHint: 'Üblich: 5 Minuten.',
     thresholds: 'Alarm-Grenzen',
-    thresholdsSub: 'Die Station meldet sich sofort, wenn sich ein Wert stärker ändert als hier eingestellt.',
+    thresholdsSub: 'Bei größeren Änderungen meldet sich die Station sofort.',
     weightThresh: 'Gewicht (kg)', tempThresh: 'Temperatur (°C)',
     saveSet: 'Einstellungen speichern',
     finish: 'Einrichtung beenden',
-    finishHint: 'Die Station startet neu und arbeitet ganz normal weiter. Bluetooth wird ausgeschaltet.',
+    finishHint: 'Die Station startet neu und arbeitet normal weiter.',
     done: 'Einrichtung beenden',
     netSub: 'LoRaWAN-Zugang und Funk-Sitzung',
-    netWarn: 'Diese Angaben bekommen Sie vom Installateur. Für den täglichen Gebrauch ändern Sie hier nichts.',
+    netWarn: 'Nur für den Installateur. Im Alltag hier nichts ändern.',
     credentials: 'Zugangsdaten', ph16: '16 Zeichen', ph32: '32 Zeichen',
-    appKeyHint: 'Wird nur geschrieben — nie vom Gerät zurückgelesen.',
+    appKeyHint: 'Wird nie vom Gerät zurückgelesen.',
     saveNet: 'Zugangsdaten speichern',
     session: 'Funk-Sitzung',
-    sessionHint: 'Nach dem Löschen meldet sich die Station beim nächsten Senden neu im Funknetz an.',
+    sessionHint: 'Die Station meldet sich beim nächsten Senden neu an.',
     clearSession: 'Sitzung löschen',
     actLabel: 'Anmeldung im Funknetz',
-    actHintOtaa: 'OTAA: Die Station meldet sich selbst an. Dafür muss das Netz antworten können.',
-    actHintAbp: 'ABP: Feste Adresse und Schlüssel, keine Anmeldung. Die Station sendet sofort — auch wenn Antworten vom Netz nicht ankommen. Das Gerät in TTN als ABP anlegen.',
+    actHintOtaa: 'OTAA: meldet sich selbst an, das Netz muss antworten.',
+    actHintAbp: 'ABP: feste Schlüssel, sendet ohne Anmeldung. In TTN als ABP anlegen.',
     ph8: '8 Zeichen',
-    sKeyHint: 'Schlüssel werden nur geschrieben — nie vom Gerät zurückgelesen. Leer lassen, um die gespeicherten zu behalten.',
+    sKeyHint: 'Leer lassen, um die gespeicherten Schlüssel zu behalten.',
     drLabel: 'Funk-Stufe', drAdr: 'Automatisch (ADR)',
     dr5: 'SF7 – schnell, kurze Reichweite', dr0: 'SF12 – langsam, größte Reichweite',
-    drHint: 'Automatisch braucht Antworten vom Netz. Kommen keine an, eine feste Stufe wählen — die kleinste SF, bei der die Daten in TTN sicher ankommen.',
-    sessionHintAbp: 'Nach dem Löschen beginnt die Station beim nächsten Senden eine neue Sitzung mit denselben Schlüsseln. Der Zähler läuft weiter.',
+    drHint: 'Automatisch braucht Antworten vom Netz. Sonst eine feste Stufe wählen.',
+    sessionHintAbp: 'Startet beim nächsten Senden eine neue Sitzung, gleiche Schlüssel.',
     stAbpAddr: 'Bitte die DevAddr eintragen (8 Zeichen, nicht 0).',
     stAbpKeys: 'Für ABP bitte NwkSKey und AppSKey eintragen.',
     idleTitle: 'Einrichtungs-Modus endet in',
@@ -1054,7 +1061,7 @@ const I18N = {
     /* Erweiterter Modus */
     extTitle: 'Erweiterter Modus', extSub: 'Bis zu 3 Bluetooth-Sensoren für Temperatur und Luftfeuchte',
     extMaster: 'Bluetooth-Sensoren benutzen',
-    extRules: 'Höchstens 2 Sensoren im Bienenstock und 1 Sensor außen. Der Außen-Sensor ersetzt die Außen-Temperatur der Station. Die Werte werden bei jedem Senden mitgeschickt.',
+    extRules: 'Bis zu 2 Sensoren im Stock und 1 außen.',
     on: 'An', off: 'Aus',
     sensor: 'Sensor', macLabel: 'Bluetooth-Adresse (steht auf dem Aufkleber)', scanQr: 'QR scannen',
     placement: 'Wo hängt der Sensor?', roleIn: 'Im Bienenstock', roleOut: 'Außen',
@@ -1065,7 +1072,7 @@ const I18N = {
     bleNoMac: 'Noch keine Adresse eingetragen.', phMac: 'z. B. AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'Bitte speichern — dann erscheinen hier die Werte.',
     saveExt: 'Sensoren speichern', bleSensors: 'Bluetooth-Sensoren',
-    qrTitle: 'QR-Code scannen', qrHint: 'Halten Sie den QR-Code etwa 15 cm vor die Kamera, mitten in das gelbe Quadrat, und warten Sie, bis das Bild scharf ist.', cancel: 'Abbrechen',
+    qrTitle: 'QR-Code scannen', qrHint: 'QR-Code ins gelbe Quadrat halten, etwa 15 cm Abstand.', cancel: 'Abbrechen',
     qrPhoto: 'Foto aufnehmen', stQrPhotoBusy: 'Foto wird ausgewertet …',
     stQrPhotoNone: 'Auf dem Foto wurde kein QR-Code erkannt. Bitte scharf und von nahem fotografieren — oder die Adresse abtippen.',
     stMacBad: 'Sensor {n}: Die Adresse braucht 12 Zeichen (0–9, A–F).',
@@ -1079,13 +1086,13 @@ const I18N = {
   en: {
     _dir: 'ltr', _locale: 'en-US',
     brand: 'TanenBase',
-    home: 'Back to the home page',
+    home: 'Home',
     navLabel: 'Main sections',
     pillOff: 'Not connected', pillOn: 'Connected',
     heroTitle: 'Connect your device',
     step1: 'Press the red button on the station.',
     figCap: 'Red button on the station',
-    step2: 'Tap “Connect”. Then pick “TanenBase” from the browser list.',
+    step2: 'Tap “Connect”, then pick “TanenBase”.',
     heroNote: 'Works with Chrome or Edge',
     connect: 'Connect', disconnect: 'Disconnect',
     navHome: 'Overview', navCal: 'Scale', navSet: 'Settings', navExt: 'Extended', navNet: 'Network',
@@ -1093,14 +1100,14 @@ const I18N = {
     weight: 'Weight', unitKg: 'kg',
     temperature: 'Temperature (°C)', battery: 'Battery (volts)',
     waiting: 'Waiting for data …',
-    quick: 'Quick actions', quickSub: 'Read the values again or check the radio.',
+    quick: 'Quick actions', quickSub: 'Read values or check the radio.',
     refresh: 'Reload values', testLora: 'Send radio test',
     calTitle: 'Set up the scale', calSub: 'Three steps to an accurate scale',
     wiz1Title: 'Step 1: Clear the scale',
-    wiz1Desc: 'Take everything off the scale. Then tap the button.',
+    wiz1Desc: 'Take everything off the scale, then tap.',
     tare: 'Set to zero',
     wiz2Title: 'Step 2: Put on a known weight',
-    wiz2Desc: 'Place something on the scale whose weight you know exactly. Type that weight in.',
+    wiz2Desc: 'Put something of known weight on the scale and type its weight.',
     refWeight: 'Weight in kilograms', phRef: 'e.g. 10.00',
     back: 'Back', calibrate: 'Set up now',
     wiz3Title: 'Done! The scale is set up.',
@@ -1108,16 +1115,16 @@ const I18N = {
     zeroOffset: 'Zero point', scaleFactor: 'Conversion',
     recal: 'Set up again',
     lcTitle: 'Load cell',
-    lcSub: 'Which load cell is fitted? The station uses it to take the temperature back out of the weight.',
+    lcSub: 'Which load cell is fitted?',
     lcLabel: 'Fitted load cell',
     lc0: 'Other / unknown', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'Own measured values',
     lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
     lcUnknown: 'Profile {id} (unknown to this page)',
-    lcHintOff: 'No temperature correction. The weight then moves with the daily warmth — on a 150 kg cell that is easily 300 grams.',
-    lcHintH40A: 'The cell in the TanenBase kit. Its values come from a 40-hour measurement run on the reference unit.',
-    lcHintSBS: 'Its values come from a one-week outdoor run on a fixed weight. Older firmware still runs this cell without correction — an update is all it takes.',
-    lcHintRaw: 'This cell has not been measured yet. For now it runs without correction — but the station remembers which cell is fitted. Enter your own numbers under “Own measured values”.',
-    lcHintCustom: 'Values from your own measurement run. They cover the cell and its frame together.',
+    lcHintOff: 'The weight then drifts with the day\'s warmth.',
+    lcHintH40A: 'The cell from the kit, measured.',
+    lcHintSBS: 'Measured; temperature correction from firmware 1.0.',
+    lcHintRaw: 'Not measured yet: runs without temperature correction.',
+    lcHintCustom: 'Your own values for cell and frame.',
     lcGain: 'Drift (grams per °C)', lcTau: 'Lag (minutes)',
     lcCustomHint: 'How to measure this yourself: docs/load_cells in the project.',
     lcActiveOn: 'The station is using {gain} grams per °C, lag {min} minutes.',
@@ -1127,32 +1134,32 @@ const I18N = {
     timingCard: 'Times & alarm', timingCardSub: 'All times in minutes.',
     timing: 'Times',
     txInterval: 'Send every (minutes)', msInterval: 'Measure every (minutes)',
-    txHint: 'How often the station transmits its values. Common setting: 240 minutes.',
-    msHint: 'How often the station measures. At least 1 minute. Common setting: 5 minutes.',
+    txHint: 'Usual: 240 minutes (4 hours).',
+    msHint: 'Usual: 5 minutes.',
     thresholds: 'Alarm limits',
-    thresholdsSub: 'The station reports immediately when a value changes more than set here.',
+    thresholdsSub: 'Bigger changes are reported straight away.',
     weightThresh: 'Weight (kg)', tempThresh: 'Temperature (°C)',
     saveSet: 'Save settings',
     finish: 'Finish setup',
-    finishHint: 'The station restarts and carries on as usual. Bluetooth is switched off.',
+    finishHint: 'The station restarts and carries on as usual.',
     done: 'Finish setup',
     netSub: 'LoRaWAN access and radio session',
-    netWarn: 'Your installer provides these values. For everyday use, change nothing here.',
+    netWarn: 'For your installer only. Change nothing here day to day.',
     credentials: 'Access data', ph16: '16 characters', ph32: '32 characters',
-    appKeyHint: 'Written only — never read back from the device.',
+    appKeyHint: 'Never read back from the device.',
     saveNet: 'Save access data',
     session: 'Radio session',
-    sessionHint: 'After clearing, the station rejoins the radio network on its next transmission.',
+    sessionHint: 'The station rejoins on its next transmission.',
     clearSession: 'Clear session',
     actLabel: 'Network activation',
-    actHintOtaa: 'OTAA: the station joins by itself. This needs the network to be able to answer.',
-    actHintAbp: 'ABP: fixed address and keys, no join. The station sends straight away, even where replies from the network do not arrive. Register the device in TTN as ABP.',
+    actHintOtaa: 'OTAA: joins by itself; the network must answer.',
+    actHintAbp: 'ABP: fixed keys, sends without joining. Register it as ABP in TTN.',
     ph8: '8 characters',
-    sKeyHint: 'Keys are written only — never read back from the device. Leave empty to keep the stored ones.',
+    sKeyHint: 'Leave empty to keep the stored keys.',
     drLabel: 'Data rate', drAdr: 'Automatic (ADR)',
     dr5: 'SF7 – fast, short range', dr0: 'SF12 – slow, longest range',
-    drHint: 'Automatic needs replies from the network. If none arrive, pick a fixed rate — the lowest SF at which data reliably shows up in TTN.',
-    sessionHintAbp: 'After clearing, the station starts a new session with the same keys on its next transmission. The frame counter carries on.',
+    drHint: 'Automatic needs replies from the network. Otherwise pick a fixed rate.',
+    sessionHintAbp: 'Starts a new session with the same keys on the next transmission.',
     stAbpAddr: 'Please enter the DevAddr (8 characters, not 0).',
     stAbpKeys: 'For ABP, please enter NwkSKey and AppSKey.',
     idleTitle: 'Setup mode ends in',
@@ -1185,7 +1192,7 @@ const I18N = {
     cmd4: 'Radio test', cmd5: 'Set up scale', cmdX: 'Command 0x{hex}',
     extTitle: 'Extended mode', extSub: 'Up to 3 Bluetooth sensors for temperature and humidity',
     extMaster: 'Use Bluetooth sensors',
-    extRules: 'At most 2 sensors inside the hive and 1 outside. The outside sensor replaces the station’s outside temperature. The values are sent with every transmission.',
+    extRules: 'Up to 2 sensors inside the hive and 1 outside.',
     on: 'On', off: 'Off',
     sensor: 'Sensor', macLabel: 'Bluetooth address (printed on the sticker)', scanQr: 'Scan QR',
     placement: 'Where is the sensor?', roleIn: 'Inside the hive', roleOut: 'Outside',
@@ -1196,7 +1203,7 @@ const I18N = {
     bleNoMac: 'No address entered yet.', phMac: 'e.g. AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'Please save — then the values appear here.',
     saveExt: 'Save sensors', bleSensors: 'Bluetooth sensors',
-    qrTitle: 'Scan QR code', qrHint: 'Hold the QR code about 15 cm in front of the camera, inside the yellow square, and wait until the picture is sharp.', cancel: 'Cancel',
+    qrTitle: 'Scan QR code', qrHint: 'Hold the QR code inside the yellow square, about 15 cm away.', cancel: 'Cancel',
     qrPhoto: 'Take a photo', stQrPhotoBusy: 'Reading the photo …',
     stQrPhotoNone: 'No QR code found in the photo. Take a sharp close-up — or type the address in.',
     stMacBad: 'Sensor {n}: the address needs 12 characters (0–9, A–F).',
@@ -1210,13 +1217,13 @@ const I18N = {
   ar: {
     _dir: 'rtl', _locale: 'ar-EG-u-nu-latn',
     brand: 'قاعدة طنين',
-    home: 'العودة إلى الصفحة الرئيسية',
+    home: 'الرئيسية',
     navLabel: 'الأقسام الرئيسية',
     pillOff: 'غير متصل', pillOn: 'متصل',
     heroTitle: 'اربط الجهاز',
     step1: 'اضغط الزر الأحمر على المحطة.',
     figCap: 'الزر الأحمر على المحطة',
-    step2: 'اضغط «اتصال»، ثم اختر «TanenBase» من قائمة المتصفح.',
+    step2: 'اضغط «اتصال»، ثم اختر «TanenBase».',
     heroNote: 'يعمل مع Chrome أو Edge',
     connect: 'اتصال', disconnect: 'قطع الاتصال',
     navHome: 'الرئيسية', navCal: 'الميزان', navSet: 'الإعدادات', navExt: 'متقدم', navNet: 'الشبكة',
@@ -1224,14 +1231,14 @@ const I18N = {
     weight: 'الوزن', unitKg: 'كجم',
     temperature: 'الحرارة (°م)', battery: 'البطارية (فولت)',
     waiting: 'في انتظار البيانات …',
-    quick: 'إجراءات سريعة', quickSub: 'أعد قراءة القيم أو افحص الإرسال.',
+    quick: 'إجراءات سريعة', quickSub: 'اقرأ القيم أو افحص الإرسال.',
     refresh: 'تحديث القيم', testLora: 'إرسال اختبار',
     calTitle: 'ضبط الميزان', calSub: 'ثلاث خطوات لميزان دقيق',
     wiz1Title: 'الخطوة 1: أفرغ الميزان',
-    wiz1Desc: 'أزل كل شيء عن الميزان، ثم اضغط الزر.',
+    wiz1Desc: 'أزل كل شيء عن الميزان، ثم اضغط.',
     tare: 'ضبط على الصفر',
     wiz2Title: 'الخطوة 2: ضع وزنًا معروفًا',
-    wiz2Desc: 'ضع على الميزان شيئًا تعرف وزنه بدقة، ثم اكتب الوزن.',
+    wiz2Desc: 'ضع شيئًا معروف الوزن على الميزان واكتب وزنه.',
     refWeight: 'الوزن بالكيلوجرام', phRef: 'مثال: 10.00',
     back: 'رجوع', calibrate: 'اضبط الآن',
     wiz3Title: 'تم! الميزان مضبوط.',
@@ -1239,16 +1246,16 @@ const I18N = {
     zeroOffset: 'نقطة الصفر', scaleFactor: 'معامل التحويل',
     recal: 'إعادة الضبط',
     lcTitle: 'خلية الوزن',
-    lcSub: 'ما خلية الوزن المركّبة؟ تستخدمها المحطة لإزالة أثر الحرارة من الوزن.',
+    lcSub: 'ما خلية الوزن المركّبة؟',
     lcLabel: 'خلية الوزن المركّبة',
     lc0: 'أخرى / غير معروفة', lc1: 'Bosche H40A-C3-0150', lc2: 'Steinberg SBS-PF-150', lc3: 'قيم من قياسك',
     lc4: 'Zemic L6E / L6E3', lc5: 'TAL220 / TAL220B', lc6: 'Flintec PC / SB',
     lcUnknown: 'الملف {id} (غير معروف لهذه الصفحة)',
-    lcHintOff: 'بدون تصحيح حراري. عندها يتغيّر الوزن مع حرارة النهار — في خلية 150 كغ قد يبلغ ذلك 300 غرام.',
-    lcHintH40A: 'الخلية الموجودة في طقم TanenBase. قيمها مأخوذة من سلسلة قياس استمرّت 40 ساعة على الجهاز المرجعي.',
-    lcHintSBS: 'قيمها مأخوذة من سلسلة قياس استمرّت أسبوعاً في الهواء الطلق بوزن ثابت. البرامج الثابتة الأقدم تشغّل هذه الخلية بدون تصحيح — يكفي التحديث.',
-    lcHintRaw: 'لم تُقَس هذه الخلية بعد. تعمل حالياً بدون تصحيح — لكن المحطة تحفظ أي خلية مركّبة. أدخل قيمك تحت «قيم من قياسك».',
-    lcHintCustom: 'قيم من سلسلة قياس خاصة بك. تشمل الخلية والحامل معاً.',
+    lcHintOff: 'عندها يتغيّر الوزن مع حرارة النهار.',
+    lcHintH40A: 'الخلية الموجودة في الطقم، مُقاسة.',
+    lcHintSBS: 'مُقاسة، مع تصحيح حراري ابتداءً من البرنامج الثابت 1.0.',
+    lcHintRaw: 'لم تُقَس بعد: تعمل بدون تصحيح حراري.',
+    lcHintCustom: 'قيمك الخاصة للخلية والحامل.',
     lcGain: 'الانحراف (غرام لكل °م)', lcTau: 'التأخّر (دقائق)',
     lcCustomHint: 'طريقة القياس بنفسك: docs/load_cells في المشروع.',
     lcActiveOn: 'تحسب المحطة بـ {gain} غرام لكل °م، وتأخّر {min} دقيقة.',
@@ -1258,32 +1265,32 @@ const I18N = {
     timingCard: 'الأوقات والتنبيه', timingCardSub: 'كل الأوقات بالدقائق.',
     timing: 'الأوقات',
     txInterval: 'الإرسال كل (دقيقة)', msInterval: 'القياس كل (دقيقة)',
-    txHint: 'كل كم دقيقة ترسل المحطة قيمها. المعتاد: 240 دقيقة.',
-    msHint: 'كل كم دقيقة تقيس المحطة. دقيقة واحدة على الأقل. المعتاد: 5 دقائق.',
+    txHint: 'المعتاد: 240 دقيقة (4 ساعات).',
+    msHint: 'المعتاد: 5 دقائق.',
     thresholds: 'حدود التنبيه',
-    thresholdsSub: 'ترسل المحطة فورًا إذا تغيّرت القيمة أكثر من الحد المضبوط هنا.',
+    thresholdsSub: 'عند تغيّر أكبر ترسل المحطة فورًا.',
     weightThresh: 'الوزن (كجم)', tempThresh: 'الحرارة (°م)',
     saveSet: 'حفظ الإعدادات',
     finish: 'إنهاء الإعداد',
-    finishHint: 'تعيد المحطة التشغيل وتعمل بشكل عادي، ويُطفأ البلوتوث.',
+    finishHint: 'تعيد المحطة التشغيل وتعمل بشكل عادي.',
     done: 'إنهاء الإعداد',
     netSub: 'بيانات LoRaWAN والجلسة',
-    netWarn: 'تحصل على هذه البيانات من الفني. لا تغيّر شيئًا هنا في الاستخدام اليومي.',
+    netWarn: 'للفني فقط. لا تغيّر شيئًا هنا في الاستخدام اليومي.',
     credentials: 'بيانات الدخول', ph16: '16 خانة', ph32: '32 خانة',
-    appKeyHint: 'للكتابة فقط — لا يُقرأ من الجهاز أبدًا.',
+    appKeyHint: 'لا يُقرأ من الجهاز أبدًا.',
     saveNet: 'حفظ بيانات الدخول',
     session: 'جلسة الشبكة',
-    sessionHint: 'بعد المسح تنضم المحطة للشبكة من جديد عند أول إرسال.',
+    sessionHint: 'تنضم المحطة من جديد عند الإرسال التالي.',
     clearSession: 'مسح الجلسة',
     actLabel: 'طريقة الانضمام للشبكة',
-    actHintOtaa: 'OTAA: تنضم المحطة للشبكة بنفسها، ويلزم أن تصلها ردود الشبكة.',
-    actHintAbp: 'ABP: عنوان ومفاتيح ثابتة بدون انضمام. ترسل المحطة فورًا حتى لو لم تصلها ردود الشبكة. سجّل الجهاز في TTN بطريقة ABP.',
+    actHintOtaa: 'OTAA: تنضم بنفسها، ويلزم أن ترد الشبكة.',
+    actHintAbp: 'ABP: مفاتيح ثابتة، ترسل دون انضمام. سجّل الجهاز في TTN بطريقة ABP.',
     ph8: '8 خانات',
-    sKeyHint: 'المفاتيح للكتابة فقط ولا تُقرأ من الجهاز أبدًا. اتركها فارغة للإبقاء على المحفوظة.',
+    sKeyHint: 'اتركها فارغة للإبقاء على المفاتيح المحفوظة.',
     drLabel: 'معدل البيانات', drAdr: 'تلقائي (ADR)',
     dr5: 'SF7 – سريع، مدى قصير', dr0: 'SF12 – بطيء، أبعد مدى',
-    drHint: 'التلقائي يحتاج ردود الشبكة. إن لم تصل، اختر معدلًا ثابتًا: أصغر SF تصل به البيانات إلى TTN بثبات.',
-    sessionHintAbp: 'بعد المسح تبدأ المحطة جلسة جديدة بنفس المفاتيح عند أول إرسال، ويستمر العدّاد.',
+    drHint: 'التلقائي يحتاج ردود الشبكة، وإلا فاختر معدلًا ثابتًا.',
+    sessionHintAbp: 'تبدأ جلسة جديدة بنفس المفاتيح عند الإرسال التالي.',
     stAbpAddr: 'أدخل DevAddr (8 خانات، ليست صفرًا).',
     stAbpKeys: 'لـ ABP أدخل NwkSKey و AppSKey.',
     idleTitle: 'ينتهي وضع الإعداد خلال',
@@ -1316,7 +1323,7 @@ const I18N = {
     cmd4: 'اختبار الإرسال', cmd5: 'ضبط الميزان', cmdX: 'أمر 0x{hex}',
     extTitle: 'الوضع المتقدم', extSub: 'حتى 3 حساسات بلوتوث للحرارة والرطوبة',
     extMaster: 'استخدام حساسات البلوتوث',
-    extRules: 'حساسان كحد أقصى داخل الخلية وحساس واحد خارجها. يحل الحساس الخارجي محل الحرارة الخارجية للمحطة. تُرسل القيم مع كل إرسال.',
+    extRules: 'حتى حساسين داخل الخلية وحساس واحد خارجها.',
     on: 'تشغيل', off: 'إيقاف',
     sensor: 'حساس', macLabel: 'عنوان البلوتوث (مطبوع على الملصق)', scanQr: 'مسح QR',
     placement: 'أين يوجد الحساس؟', roleIn: 'داخل الخلية', roleOut: 'خارج الخلية',
@@ -1327,7 +1334,7 @@ const I18N = {
     bleNoMac: 'لم يُدخل عنوان بعد.', phMac: 'مثال: AA:BB:CC:DD:EE:FF',
     bleSaveFirst: 'احفظ أولًا — ثم تظهر القيم هنا.',
     saveExt: 'حفظ الحساسات', bleSensors: 'حساسات البلوتوث',
-    qrTitle: 'مسح رمز QR', qrHint: 'ضع رمز QR على بعد نحو 15 سم أمام الكاميرا داخل المربع الأصفر، وانتظر حتى تصبح الصورة واضحة.', cancel: 'إلغاء',
+    qrTitle: 'مسح رمز QR', qrHint: 'ضع رمز QR داخل المربع الأصفر على بعد نحو 15 سم.', cancel: 'إلغاء',
     qrPhoto: 'التقاط صورة', stQrPhotoBusy: 'جارٍ قراءة الصورة …',
     stQrPhotoNone: 'لم يُعثر على رمز QR في الصورة. التقط صورة واضحة عن قرب — أو اكتب العنوان.',
     stMacBad: 'الحساس {n}: العنوان يحتاج 12 خانة (0–9، A–F).',
