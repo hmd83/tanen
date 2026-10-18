@@ -33,6 +33,15 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   `?deveui=…&joineui=…&profile=…`. QR encoder: qrcode-generator 1.4.4 (MIT),
   vendored as `web/qrcode.js` so it works offline
 
+### Changed
+- **Setup app and encoder follow the design system** (2026-10-18): every
+  button at least 60 px tall (language picker, home/back link, quick
+  actions, copy and queue buttons were 48–56 px); hints and card subtitles
+  back to 18 px; the network tab's grey no lighter than `--dim`; status text
+  colours are tokens (`--green-ink`, `--green-edge`, `--red-ink`,
+  `--red-edge`, `--blue-ink`) instead of hex literals; radii on the
+  18/14/12/6 px scale; 3 px yellow edge on the header tile
+
 ### Fixed
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
   grounds; the tile is filled white, so the pot vanished. The comment now
