@@ -7,8 +7,9 @@ drawn in site/logo.svg. Usage: outline_wordmark.py <font dir> <out dir>
 Needs `pip install fonttools` and the two TTFs (OFL) from Google Fonts,
 github.com/google/fonts/tree/main/ofl/mplusrounded1c:
 MPLUSRounded1c-ExtraBold.ttf, MPLUSRounded1c-Medium.ttf.
-Writes tanenbase-lockup.svg, tanenbase-lockup-dark.svg, tanenbase-wordmark.svg;
-copy them to site/ (all three) and web/ (the wordmark).
+Writes tanenbase-lockup.svg, tanenbase-lockup-dark.svg, tanenbase-wordmark.svg
+(copy to site/; the wordmark to web/ too) and the black-only
+tanenbase-lockup-black.svg, tanenbase-wordmark-black.svg (web/, for label.html).
 """
 import sys
 from pathlib import Path
@@ -131,6 +132,9 @@ files = {
     "tanenbase-lockup.svg": build(bold, medium, True, "#0c1017", "#39445a"),
     "tanenbase-lockup-dark.svg": build(bold, medium, True, "#ffffff", "#b4bdcf"),
     "tanenbase-wordmark.svg": build(bold, medium, False, "#0c1017", "#39445a"),
+    # black only, for the thermal label printer (grey would dither)
+    "tanenbase-lockup-black.svg": build(bold, medium, True, "#000000", "#000000"),
+    "tanenbase-wordmark-black.svg": build(bold, medium, False, "#000000", "#000000"),
 }
 for name, svg in files.items():
     (OUT_DIR / name).write_text(svg, encoding="utf-8")
