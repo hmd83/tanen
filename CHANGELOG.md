@@ -41,6 +41,12 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   colours are tokens (`--green-ink`, `--green-edge`, `--red-ink`,
   `--red-edge`, `--blue-ink`) instead of hex literals; radii on the
   18/14/12/6 px scale; 3 px yellow edge on the header tile
+- **Setup app says less** (2026-10-18): 25 always-visible explanations cut
+  to one short line each in German, English and Arabic (e.g. "Üblich:
+  5 Minuten." instead of three sentences; load-cell notes from up to 181
+  characters to one line); error messages unchanged. The home button
+  ("Startseite") and the encoder's "Zurück" are no longer full-width bars
+  on phones
 
 ### Fixed
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
