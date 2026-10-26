@@ -5,7 +5,7 @@
   </picture>
 </h1>
 
-**Open-source LoRaWAN hive scale** · *Offene Stockwaage* · [tanen.eu](https://tanen.eu)
+**Open-source LoRaWAN hive scale** · *Offene Stockwaage* · [العربية](README.ar.md) · [tanen.eu](https://tanen.eu)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-nRF54LM20A-brightgreen.svg)](https://www.seeedstudio.com/)
