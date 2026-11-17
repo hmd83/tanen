@@ -33,7 +33,8 @@ foreach ($f in $Files) {
 
     & curl.exe -s -k --ssl-reqd --create-dirs -u $cred -o (Join-Path $backup $f) "$base/$f"
     if ($LASTEXITCODE -eq 67) { throw 'FTP login refused - put the current password in secrets.pw' }
-    if ($LASTEXITCODE -eq 78) { Write-Host "new  $f (not on the server yet)" }
+    # 78: datei fehlt, 9: ordner fehlt (CWD abgelehnt) - beides heisst neu
+    if ($LASTEXITCODE -in 9, 78) { Write-Host "new  $f (not on the server yet)" }
     elseif ($LASTEXITCODE) { throw "backup of $f failed (curl $LASTEXITCODE)" }
 
     & curl.exe -sS -k --ssl-reqd --ftp-create-dirs -u $cred -T $local "$base/$f"

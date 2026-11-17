@@ -3,14 +3,23 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tanen.eu/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-11-17</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
   </url>
   <url>
     <loc>https://tanen.eu/ar/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-11-17</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
+  </url>
+  <url>
+    <loc>https://tanen.eu/en/</loc>
+    <lastmod>2026-11-17</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
   </url>
   <url>

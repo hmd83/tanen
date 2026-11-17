@@ -42,7 +42,7 @@
 <meta property="og:locale:alternate" content="en_GB">
 <meta property="og:locale:alternate" content="ar">
 <link rel="alternate" hreflang="de" href="https://tanen.eu/">
-<link rel="alternate" hreflang="en" href="https://tanen.eu/?lang=en">
+<link rel="alternate" hreflang="en" href="https://tanen.eu/en/">
 <link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/">
 <link rel="alternate" hreflang="x-default" href="https://tanen.eu/">
 <meta name="twitter:card" content="summary_large_image">
@@ -1347,7 +1347,8 @@ function t(key){ return (I18N[lang] && I18N[lang][key]) || (I18N.ar && I18N.ar[k
 
 function applyLang(next){
   if (next && next !== 'ar') {
-    location.href = next === 'de' ? '../' : '../?lang=' + next;
+    try { localStorage.setItem(LANG_STORE, next); } catch (e) {}
+    location.href = next === 'en' ? '../en/' : '../';
     return;
   }
   lang = 'ar';
