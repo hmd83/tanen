@@ -560,6 +560,9 @@ footer p{font-size:.98rem;color:var(--dim)}
 @media (max-width:779px){.consent .btn{flex:1 1 0;min-inline-size:0}}
 .linkbtn{font:inherit;font-size:.95rem;color:var(--blue);text-decoration:underline;text-underline-offset:3px;min-block-size:48px;padding:0}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+/* fliesstext nur auf der englischen seite */
+.prose p{max-inline-size:68ch}
+.prose p+p{margin-block-start:14px}
 </style>
 </head>
 <body>
@@ -669,6 +672,18 @@ footer p{font-size:.98rem;color:var(--dim)}
       <div class="stat"><b>&plusmn;12<span class="u">g</span></b><span data-i18n="stat3">residual scatter in the field test</span></div>
       <div class="stat"><b>0<span class="u">&euro;</span></b><span data-i18n="stat4">running costs, no subscription</span></div>
     </div>
+  </div>
+</section>
+
+<!-- nur englisch, ohne data-i18n: beschreibt das projekt in den worten,
+     mit denen danach gesucht wird -->
+<section class="band band-white" id="about">
+  <div class="wrap prose">
+    <h2>An open-source hive scale for LoRaWAN</h2>
+    <p>TanenBase is an open source hive scale: the firmware, the carrier board and the bill of materials are all published, and you can build, change and run the device without anyone’s permission. It sits under a single hive, weighs it, measures its temperature and sends the readings by radio, then goes back to sleep at about 4&nbsp;µA. Three AAA lithium cells last roughly four and a half years on the calculated budget.</p>
+    <p>As a LoRaWAN hive scale it needs no mobile contract, and no receiver of your own where a public gateway is in range. It joins The Things Network (TTN) over OTAA on EU868 and sends an 8-byte uplink with weight, temperature, battery voltage and status flags. A payload formatter from the repository decodes it on TTN, and a webhook passes the readings on to BEEP or beelogger, two free beehive monitoring platforms that draw the curves and keep your history. The radio only transmits when weight or temperature has changed noticeably, or when a regular heartbeat is due.</p>
+    <p>Many DIY hive scales are built on an Arduino or an ESP32. TanenBase uses neither: it runs on a Nordic nRF54LM20A on a Seeed Studio XIAO module, with Zephyr from the nRF Connect SDK. A 24-bit NAU7802 reads the load cell, and the firmware corrects the weight for temperature — in a six-day outdoor test against a known weight, the scatter dropped from 63&nbsp;g to about 12&nbsp;g. With the optional Extended Mode, up to three Bluetooth sensors add temperature and humidity from inside the hive and outside it.</p>
+    <p>Everything is released under the Apache-2.0 licence, commercial use included. Setup and calibration happen over Bluetooth from a web page in Chrome or Edge, so there is no app to install. The repository holds the source code, the KiCad files and gerbers, a BOM with suppliers, and the measurement data behind the temperature correction.</p>
   </div>
 </section>
 
