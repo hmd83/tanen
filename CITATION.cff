@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: "TanenBase: Open-Source LoRaWAN Beehive Scale and Telemetry System"
+message: "If you use this hardware, firmware, or load-cell characterization dataset in your research or project, please cite it using the metadata below."
+type: software
+authors:
+  - given-names: Hussein
+    family-names: Daj
+    affiliation: TanenBase
+repository-code: "https://github.com/hmd83/tanen"
+url: "https://tanen.eu"
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-09-13"
+keywords:
+  - LoRaWAN
+  - precision beekeeping
+  - beehive scale
+  - Stockwaage
+  - open-source hardware
+  - nRF54LM20A
+  - SX1262
+  - NAU7802
+  - load cell thermal compensation
+  - Zephyr RTOS
+abstract: >-
+  TanenBase is an Apache-2.0 open-source LoRaWAN (EU868) beehive scale and
+  colony monitoring node built on the Seeed Studio XIAO nRF54LM20A, Wio-SX1262,
+  and NAU7802 24-bit ADC. It features a 4.5 µA System OFF sleep current via a
+  single-pass cold-boot state machine, runtime two-parameter load-cell thermal
+  drift compensation (reducing diurnal thermal swing by 6.5x on a 22 kg load),
+  Web Bluetooth provisioning, Extended Mode wireless in-hive BLE sensor scanning,
+  and unified TTN v3 payload decoding for BEEP.nl and beelogger.de.

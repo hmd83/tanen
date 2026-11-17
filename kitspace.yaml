@@ -1,0 +1,8 @@
+bom: docs/BOM/tanenbase_bom.csv
+gerbers: Tanen_Base_pcb/XIAO_nRF54L15_V1_Gerber
+eda:
+  type: kicad
+  pcb: Tanen_Base_pcb/XIAO_nRF54L15 V1.kicad_pcb
+site: https://tanen.eu
+summary: Open-source (Apache-2.0) LoRaWAN EU868 beehive scale built on Seeed XIAO nRF54LM20A, Wio-SX1262, and NAU7802 24-bit ADC with 4.5 µA sleep current and load-cell thermal drift compensation.
+color: green
