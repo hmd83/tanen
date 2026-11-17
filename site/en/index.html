@@ -563,6 +563,8 @@ footer p{font-size:.98rem;color:var(--dim)}
 /* fliesstext nur auf der englischen seite */
 .prose p{max-inline-size:68ch}
 .prose p+p{margin-block-start:14px}
+.prose ul{max-inline-size:68ch;margin-block:14px;padding-inline-start:1.3em}
+.prose li+li{margin-block-start:6px}
 </style>
 </head>
 <body>
@@ -1080,6 +1082,24 @@ footer p{font-size:.98rem;color:var(--dim)}
         <p data-i18n="o4D">The Apache License 2.0 lets anyone use, modify and pass on TanenBase — commercially too, without a fee and without asking permission. Improvements from beekeepers flow back into the project.</p>
       </article>
     </div>
+  </div>
+</section>
+
+<!-- nur englisch: teile so, wie sie in README.md und Tanen_Base_pcb/ stehen -->
+<section class="band band-white" id="hardware">
+  <div class="wrap prose">
+    <h2>Open source, open hardware</h2>
+    <p>TanenBase is licensed under Apache-2.0: you may use, modify and redistribute it, and commercial use is allowed — no fee, no permission to ask for.</p>
+    <p>The <a href="https://github.com/hmd83/tanen" rel="noopener">source code and build guide on GitHub</a> cover the firmware, the KiCad carrier board with its gerbers, the <a href="https://github.com/hmd83/tanen/tree/main/docs/BOM" rel="noopener">bill of materials</a>, the TTN payload formatter and the Bluetooth setup page. The hardware:</p>
+    <ul>
+      <li><b>Microcontroller:</b> Seeed Studio XIAO nRF54LM20A (Nordic nRF54LM20A), running Zephyr from the nRF Connect SDK</li>
+      <li><b>Radio:</b> Seeed Wio-SX1262 LoRa module — LoRaWAN Class A, OTAA, EU868</li>
+      <li><b>Scale:</b> NAU7802 24-bit load cell amplifier and a single-point load cell; the temperature correction is characterised for the Bosche H40A-C3-0150 cell and the Steinberg SBS-PF-150 weighing platform</li>
+      <li><b>Temperature:</b> DS18B20 probe inside the hive; optionally up to three SwitchBot Outdoor Meter Bluetooth sensors for temperature and humidity</li>
+      <li><b>Power:</b> three AAA lithium (Li/FeS₂) primary cells in series, 1200&nbsp;mAh; battery voltage read through the nPM1300 power-management IC; about 4&nbsp;µA asleep</li>
+      <li><b>Carrier board:</b> a passive breakout for the modules and screw terminals — KiCad sources and gerbers in <code>Tanen_Base_pcb/</code></li>
+    </ul>
+    <p>It measures hive weight and the temperature inside the hive; with the optional Bluetooth sensors it adds inside and outside temperature and humidity, and every report carries the battery voltage.</p>
   </div>
 </section>
 
