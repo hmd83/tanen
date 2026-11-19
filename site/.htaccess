@@ -1,0 +1,9 @@
+# Canonical host + HTTPS (tanen.eu, no www)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^(.*)$ https://tanen.eu/$1 [R=301,L]
+  RewriteCond %{HTTP_HOST} ^www\.tanen\.eu$ [NC]
+  RewriteRule ^(.*)$ https://tanen.eu/$1 [R=301,L]
+</IfModule>
