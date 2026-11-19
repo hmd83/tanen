@@ -24,70 +24,135 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ffffff">
-<meta name="description" id="metaDesc" content="TanenBase is an open-source hive scale (beehive scale): it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0. In service in Bühl and Rastatt-Wintersdorf, Germany.">
+<meta name="description" id="metaDesc" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
 <meta name="author" content="Hussein Daj">
-<meta name="keywords" content="Stockwaage, Bienenwaage, Beutenwaage, hive scale, beehive scale, open source hive scale, LoRaWAN Stockwaage, LoRaWAN hive scale, beehive monitoring, hive monitoring, hive weight, hive temperature, TTN, Apache-2.0, open hardware, bill of materials, nRF54LM20A, BEEP, beelogger, The Things Network, re@di, Rastatt, Wintersdorf, Bühl, Hussein Daj, TanenBase">
+<meta name="keywords" content="hive scale, beehive scale, beehive monitoring, open source hive scale, LoRaWAN hive scale, TTN, Apache-2.0, open hardware, BEEP, beelogger, TanenBase">
 <link rel="icon" href="../logo.svg" type="image/svg+xml">
 <link rel="canonical" href="https://tanen.eu/en/">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://tanen.eu/">
+<meta property="og:url" content="https://tanen.eu/en/">
 <meta property="og:site_name" content="TanenBase">
-<meta property="og:title" content="TanenBase: Ihr Bienenvolk gibt Ihnen Entwarnung.">
-<meta property="og:description" content="Gewicht und Temperatur des Bienenstocks, per Funk, jahrelang mit einer Batterie. Offener Quellcode, offene Baudaten, kein Abo. Entwickelt von Hussein Daj.">
+<meta property="og:title" content="Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase">
+<meta property="og:description" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
 <meta property="og:image" content="https://tanen.eu/media/share-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TanenBase, die offene Stockwaage: ein Bienenstock auf der Waage in Bühl">
-<meta property="og:locale" content="de_DE">
-<meta property="og:locale:alternate" content="en_GB">
-<meta property="og:locale:alternate" content="ar">
+<meta property="og:image:alt" content="TanenBase open-source hive scale: a beehive on the scale in Bühl">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="ar_AR">
 <link rel="alternate" hreflang="de" href="https://tanen.eu/">
 <link rel="alternate" hreflang="en" href="https://tanen.eu/en/">
 <link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/">
 <link rel="alternate" hreflang="x-default" href="https://tanen.eu/">
 <meta name="twitter:card" content="summary_large_image">
-<title>TanenBase — Open-Source LoRaWAN Hive Scale</title>
+<meta name="twitter:title" content="Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase">
+<meta name="twitter:description" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
+<meta name="twitter:image" content="https://tanen.eu/media/share-card.png">
+<meta name="twitter:image:alt" content="TanenBase open-source hive scale: a beehive on the scale in Bühl">
+<title>Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase</title>
 <!-- Strukturierte Daten fuer Suchmaschinen: wer das Projekt macht und was
      es ist. Nur Angaben, die auch sichtbar auf der Seite stehen. -->
 <script type="application/ld+json">
 {
-  "@context":"https://schema.org",
-  "@graph":[
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@type":"WebSite","@id":"https://tanen.eu/#website","url":"https://tanen.eu/",
-      "name":"TanenBase","alternateName":["TanenBase Stockwaage","TanenBase hive scale"],
-      "inLanguage":["de","en","ar"],
-      "publisher":{"@id":"https://tanen.eu/#hussein-daj"}
+      "@type": "WebSite",
+      "@id": "https://tanen.eu/#website",
+      "url": "https://tanen.eu/",
+      "name": "TanenBase",
+      "alternateName": [
+        "TanenBase Stockwaage",
+        "TanenBase hive scale",
+        "TanenBase ميزان خلايا"
+      ],
+      "inLanguage": "de",
+      "publisher": {
+        "@id": "https://tanen.eu/#hussein-daj"
+      }
     },
     {
-      "@type":"Person","@id":"https://tanen.eu/#hussein-daj",
-      "name":"Hussein Daj",
-      "alternateName":["حسين دج","حسين دَج"],
-      "url":"https://tanen.eu/",
-      "jobTitle":"Staatlich geprüfter Techniker — Elektrotechnik / IT",
-      "sameAs":[
+      "@type": "Person",
+      "@id": "https://tanen.eu/#hussein-daj",
+      "name": "Hussein Daj",
+      "alternateName": [
+        "حسين دج",
+        "حسين دَج"
+      ],
+      "url": "https://tanen.eu/",
+      "jobTitle": "Staatlich geprüfter Techniker — Elektrotechnik / IT",
+      "sameAs": [
         "https://www.linkedin.com/in/hussein-daj-787196202/",
         "https://github.com/hmd83",
         "https://www.thethingsnetwork.org/u/husseindaj",
         "https://www.youtube.com/@husseindaj3658",
         "https://www.instagram.com/husseindaj"
       ],
-      "knowsAbout":[
-        "hive scale","Stockwaage","LoRaWAN","beekeeping technology",
-        "embedded firmware","ميزان خلية النحل","إنترنت الأشياء",
-        "استشعار عن بعد","نظام تحديد المواقع RTK"
+      "knowsAbout": [
+        "hive scale",
+        "Stockwaage",
+        "LoRaWAN",
+        "beekeeping technology",
+        "embedded firmware",
+        "ميزان خلية النحل",
+        "إنترنت الأشياء",
+        "استشعار عن بعد",
+        "نظام تحديد المواقع RTK"
       ]
     },
     {
-      "@type":"SoftwareSourceCode","@id":"https://tanen.eu/#tanenbase","name":"TanenBase",
-      "description":"Open-source LoRaWAN hive scale (Stockwaage): weighs the beehive, measures temperature, runs for years on one battery. Data to BEEP and beelogger over The Things Network.",
-      "keywords":"hive scale, beehive scale, Stockwaage, Bienenwaage, LoRaWAN, BEEP, beelogger",
-      "codeRepository":"https://github.com/hmd83/tanen","license":"https://www.apache.org/licenses/LICENSE-2.0",
-      "programmingLanguage":"C","author":{"@id":"https://tanen.eu/#hussein-daj"},
-      "subjectOf":[
-        {"@type":"BlogPosting","url":"https://www.seeedstudio.com/blog/2026/08/04/monthly-wrap-up-for-july-2026-edge-ai-beyond-the-blueprint/","publisher":{"@type":"Organization","name":"Seeed Studio"}},
-        {"@type":"SocialMediaPosting","url":"https://www.linkedin.com/feed/update/urn:li:activity:7488926474700283904/"}
+      "@type": "SoftwareSourceCode",
+      "@id": "https://tanen.eu/#tanenbase",
+      "name": "TanenBase",
+      "description": "Open-source LoRaWAN hive scale (beehive scale): weighs the hive, measures temperature and runs for years on one battery. Data goes to BEEP and beelogger over The Things Network.",
+      "keywords": "hive scale, beehive scale, beehive monitoring, open source hive scale, LoRaWAN hive scale, TTN, Apache-2.0, open hardware, BEEP, beelogger, TanenBase",
+      "codeRepository": "https://github.com/hmd83/tanen",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "programmingLanguage": "C",
+      "isAccessibleForFree": true,
+      "author": {
+        "@id": "https://tanen.eu/#hussein-daj"
+      },
+      "subjectOf": [
+        {
+          "@type": "CreativeWork",
+          "name": "Seeed Studio: Monthly Wrap-Up for July 2026",
+          "url": "https://www.seeedstudio.com/blog/2026/08/04/monthly-wrap-up-for-july-2026-edge-ai-beyond-the-blueprint/",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Seeed Studio"
+          }
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "LinkedIn post about TanenBase",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7488926474700283904/",
+          "author": {
+            "@id": "https://tanen.eu/#hussein-daj"
+          }
+        }
       ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://tanen.eu/en/#webpage",
+      "url": "https://tanen.eu/en/",
+      "name": "Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase",
+      "description": "Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://tanen.eu/#website"
+      },
+      "about": {
+        "@id": "https://tanen.eu/#tanenbase"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://tanen.eu/media/share-card.png",
+        "width": 1200,
+        "height": 630
+      }
     }
   ]
 }
@@ -200,14 +265,14 @@ img{max-inline-size:100%;block-size:auto;display:block}
   min-inline-size:100%;list-style:none;padding:6px;
   background:var(--surface);border:3px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
 }
-.lang-list button{
+.lang-list a{
   display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:56px;padding:8px 14px;
   font:inherit;font-size:1rem;font-weight:700;color:var(--text);background:none;border:0;border-radius:9px;
-  cursor:pointer;text-align:start;white-space:nowrap;
+  cursor:pointer;text-align:start;white-space:nowrap;text-decoration:none;
 }
-.lang-list button:hover{background:var(--accent-soft)}
-.lang-list button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
-.lang-list button:focus-visible{outline-offset:-4px}
+.lang-list a:hover{background:var(--accent-soft)}
+.lang-list a[aria-current="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.lang-list a:focus-visible{outline-offset:-4px}
 .flag{inline-size:30px;block-size:20px;flex:none;border-radius:3px;background:center/cover no-repeat;box-shadow:0 0 0 1px rgba(12,16,23,.35)}
 .flag-de{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Cpath fill='%23000' d='M0 0h5v1H0z'/%3E%3Cpath fill='%23D00' d='M0 1h5v1H0z'/%3E%3Cpath fill='%23FFCE00' d='M0 2h5v1H0z'/%3E%3C/svg%3E")}
 .flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
@@ -613,9 +678,9 @@ footer p{font-size:.98rem;color:var(--dim)}
         <svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <ul class="lang-list" id="langList" hidden>
-        <li><button type="button" data-lang="de" lang="de"><span class="flag flag-de" aria-hidden="true"></span>Deutsch</button></li>
-        <li><button type="button" data-lang="en" lang="en" aria-current="true"><span class="flag flag-en" aria-hidden="true"></span>English</button></li>
-        <li><button type="button" data-lang="ar" lang="ar"><span class="flag flag-ar" aria-hidden="true"></span>العربية</button></li>
+        <li><a href="/" hreflang="de" lang="de" data-lang="de"><span class="flag flag-de" aria-hidden="true"></span>Deutsch</a></li>
+        <li><a href="/en/" hreflang="en" lang="en" data-lang="en" aria-current="true"><span class="flag flag-en" aria-hidden="true"></span>English</a></li>
+        <li><a href="/ar/" hreflang="ar" lang="ar" data-lang="ar"><span class="flag flag-ar" aria-hidden="true"></span>العربية</a></li>
       </ul>
     </div>
     </div>
@@ -1197,8 +1262,8 @@ const I18N = {
 /* ------------------------------- English ------------------------------- */
 en: {
   _dir:'ltr',
-  pageTitle:'TanenBase — Open-Source LoRaWAN Hive Scale',
-  metaDesc:'TanenBase is an open-source hive scale (beehive scale): it weighs the hive, measures its temperature and sends the readings over LoRaWAN. Years on one battery, no subscription, Apache-2.0. In service in Bühl and Rastatt-Wintersdorf, Germany.',
+  pageTitle:'Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase',
+  metaDesc:'Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.',
   skip:'Skip to content',
   brandSub:'Open hive scale',
   navLabel:'Main sections', menu:'Menu',
@@ -1426,7 +1491,7 @@ document.querySelectorAll('.phone-demo').forEach(box => {
 /* Flagge und Name im Knopf, Markierung in der Liste auf die aktuelle Sprache */
 function syncLangPicker(code){
   const btn = document.querySelector('.lang-btn');
-  document.querySelectorAll('.lang-list button').forEach(b => {
+  document.querySelectorAll('.lang-list a').forEach(b => {
     if (b.dataset.lang !== code) { b.removeAttribute('aria-current'); return; }
     b.setAttribute('aria-current', 'true');
     btn.querySelector('.flag').className = 'flag flag-' + code;
@@ -1441,7 +1506,7 @@ function langPicker(onPick){
   const box = document.querySelector('.lang');
   const btn = box.querySelector('.lang-btn');
   const list = box.querySelector('.lang-list');
-  const items = Array.from(list.querySelectorAll('button'));
+  const items = Array.from(list.querySelectorAll('a'));
   function open(show, focusCur){
     list.hidden = !show;
     btn.setAttribute('aria-expanded', String(show));
@@ -1469,7 +1534,13 @@ function langPicker(onPick){
   });
 }
 
-langPicker(applyLang);
+/* Eine Adresse, eine Sprache: die Wahl fuehrt auf die passende Seite.
+   Ohne JavaScript funktionieren die Links im Menue unveraendert. */
+const LANG_URL = {de:'/', en:'/en/', ar:'/ar/'};
+langPicker(code => {
+  try { localStorage.setItem(LANG_STORE, code); } catch (e) {}
+  if (LANG_URL[code]) location.href = LANG_URL[code];
+});
 
 /* Deutsch ist die Vorgabe. Nur eine frueher getroffene Wahl geht davor -
    die Sprache des Browsers wird bewusst nicht ausgewertet, damit dieselbe

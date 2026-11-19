@@ -3,41 +3,34 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tanen.eu/</loc>
-    <lastmod>2026-11-17</lastmod>
+    <lastmod>2026-11-19</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
-  </url>
-  <url>
-    <loc>https://tanen.eu/ar/</loc>
-    <lastmod>2026-11-17</lastmod>
-    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tanen.eu/"/>
   </url>
   <url>
     <loc>https://tanen.eu/en/</loc>
-    <lastmod>2026-11-17</lastmod>
+    <lastmod>2026-11-19</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tanen.eu/"/>
+  </url>
+  <url>
+    <loc>https://tanen.eu/ar/</loc>
+    <lastmod>2026-11-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tanen.eu/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tanen.eu/"/>
   </url>
   <url>
     <loc>https://tanen.eu/impressum.html</loc>
     <lastmod>2026-10-26</lastmod>
-    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/impressum.html"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/impressum.html"/>
   </url>
   <url>
     <loc>https://tanen.eu/datenschutz.html</loc>
     <lastmod>2026-10-26</lastmod>
-    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/datenschutz.html"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/datenschutz.html"/>
-  </url>
-  <url>
-    <loc>https://tanen.eu/phone-demo.html</loc>
-    <lastmod>2026-10-26</lastmod>
-    <xhtml:link rel="alternate" hreflang="de" href="https://tanen.eu/phone-demo.html"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://tanen.eu/phone-demo.html"/>
   </url>
 </urlset>
