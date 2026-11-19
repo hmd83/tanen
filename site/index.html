@@ -1755,7 +1755,6 @@ ar: {
    Englisch waehlt, sieht dort auch Englisch. Der alte Schluessel der
    Startseite zaehlt nur noch, solange der neue fehlt. */
 const LANG_STORE = 'tb3-lang';
-const LANG_STORE_OLD = 'tanen-site-lang';
 let lang = 'de';
 
 function t(key){ return (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key; }
@@ -1763,7 +1762,6 @@ function t(key){ return (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key; 
 function applyLang(next){
   if (!I18N[next]) next = 'de';
   lang = next;
-  try { localStorage.setItem(LANG_STORE, lang); } catch (e) {}
 
   const html = document.documentElement;
   html.lang = lang;
