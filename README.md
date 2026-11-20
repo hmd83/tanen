@@ -10,6 +10,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-nRF54LM20A-brightgreen.svg)](https://www.seeedstudio.com/)
 [![SDK](https://img.shields.io/badge/nRF%20Connect%20SDK-v3.4.0-purple.svg)](https://developer.nordicsemi.com/)
+[![OSHWA](https://img.shields.io/badge/OSHWA%20certified-DE000178-2ea44f.svg)](https://certification.oshwa.org/de000178.html)
 
 A LoRaWAN beehive monitor that runs for years on three AAA primary lithium cells.
 
@@ -451,6 +452,14 @@ concept and specification phase.
   server; its field names are mirrored by the uplink decoder
 
 ---
+
+### OSHWA certification
+
+TanenBase is certified open source hardware by the [Open Source Hardware
+Association](https://www.oshwa.org/), UID **DE000178** — see the
+[certification record](https://certification.oshwa.org/de000178.html). The
+certification confirms that the hardware design, the software and the
+documentation are open and can be rebuilt from what is published here.
 
 ## License
 

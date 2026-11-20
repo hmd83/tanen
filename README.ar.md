@@ -3,6 +3,7 @@
 [English](README.md) · [الموقع الرسمي (tanen.eu)](https://tanen.eu/ar/)
 
 [![الترخيص](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![OSHWA](https://img.shields.io/badge/OSHWA%20certified-DE000178-2ea44f.svg)](https://certification.oshwa.org/de000178.html)
 [![المعالج](https://img.shields.io/badge/platform-nRF54LM20A-brightgreen.svg)](https://www.seeedstudio.com/)
 [![حزمة البرمجة](https://img.shields.io/badge/nRF%20Connect%20SDK-v3.4.0-purple.svg)](https://developer.nordicsemi.com/)
 
@@ -109,6 +110,10 @@ TanenBase هو نظام متكامل ومفتوح المصدر عتاداً وب
 - التحليلات الرياضية وبيانات الاختبار الميداني للتعويض الحراري.
 
 تمنحك رخصة Apache-2.0 الصريحة الحق في استخدام المشروع، تعديله، دمجه، وتوزيعه للأغراض الشخصية والتجارية، دون رسوم أو قيود، مع الالتزام بذكر المؤلف الأصلي وإبقاء إشعار الرخصة.
+
+## شهادة العتاد المفتوح المصدر
+
+TanenBase معتمد كعتاد مفتوح المصدر من [رابطة العتاد المفتوح المصدر](https://www.oshwa.org/)، برقم **DE000178** — انظر [سجل الشهادة](https://certification.oshwa.org/de000178.html). الشهادة تؤكد أن تصميم العتاد والبرمجية والتوثيق مفتوحة، وأن الجهاز قابل لإعادة البناء مما هو منشور في المستودع.
 
 ## روابط
 
