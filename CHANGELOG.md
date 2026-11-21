@@ -8,6 +8,13 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Added
+- **OSHWA certification mark** (2026-11-21): TanenBase is certified open
+  source hardware, UID DE000178 (certified 2026-11-20). The official mark
+  (v2.6, wide and stacked) with the UID is in `media/oshwa/`, with the UID
+  converted to outlines so it renders without DejaVu Sans Mono. The README
+  (EN/AR) shows the wide mark in the certification section; tanen.eu shows
+  the stacked mark in a full-width card in the "Offen" section, in all three
+  languages, linked to the directory entry
 - **Wordmark** (2026-10-17): "TanenBase" set in M PLUS Rounded 1c ("Tanen"
   ExtraBold, "Base" Medium in grey), outlined to SVG paths so no font is
   needed. `site/tanenbase-lockup.svg` (mark + wordmark),
@@ -49,6 +56,11 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   on phones
 
 ### Fixed
+- **OSHWA card on tanen.eu showed raw keys** (2026-11-21): the card had
+  `data-i18n="o5T"`/`"o5D"` but no dictionary entries, so `applyLang()`
+  replaced its text with "o5T"/"o5D" on load (and dropped the record link).
+  Entries added in DE/EN/AR; the link is now its own element. Heading
+  corrected to "Zertifizierte Open Source Hardware"
 - **`logo.svg` comment** claimed `color:#fff` reverses the mark for dark
   grounds; the tile is filled white, so the pot vanished. The comment now
   says to use the mark as it is
