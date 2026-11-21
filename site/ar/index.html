@@ -454,6 +454,11 @@ html[dir="rtl"] .stat b{text-align:right}
 .band-white .card{background:var(--surface-2)}
 .card p{color:var(--dim)}
 .card p+p{margin-block-start:12px}
+/* OSHWA-Karte: volle Breite, Zertifizierungszeichen neben dem Text */
+.card-oshw{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:18px 28px}
+.oshw-mark{flex:none}
+.oshw-mark img{inline-size:150px}
+.card-oshw>div{flex:1 1 280px}
 .card-ico{
   inline-size:56px;block-size:56px;border-radius:15px;margin-block-end:14px;
   display:grid;place-items:center;border:3px solid;
@@ -1129,9 +1134,13 @@ footer p{font-size:.98rem;color:var(--dim)}
         <h3 data-i18n="o4T">نبني عليه معاً</h3>
         <p data-i18n="o4D">رخصة Apache 2.0 تسمح لأي شخص باستعمال TanenBase وتعديله ونشره — تجارياً أيضاً، بلا رسوم ولا استئذان. تحسينات النحالين تعود إلى المشروع.</p>
       </article>
-      <article class="card">
-        <h3 data-i18n="o5T">عتاد مفتوح المصدر معتمد</h3>
-        <p data-i18n="o5D">‏TanenBase معتمد كعتاد مفتوح المصدر من رابطة العتاد المفتوح المصدر، برقم <a href="https://certification.oshwa.org/de000178.html" rel="noopener">DE000178</a>. الشهادة تؤكد أن تصميم العتاد والبرمجية والتوثيق مفتوحة وقابلة لإعادة البناء.</p>
+      <article class="card card-oshw">
+        <a class="oshw-mark" href="https://certification.oshwa.org/de000178.html" rel="noopener"><img src="../media/oshw-certification-mark-stacked-DE000178.svg" width="549" height="442" loading="lazy" decoding="async" alt="علامة شهادة OSHW، برقم DE000178" data-i18n-alt="o5Alt"></a>
+        <div>
+          <h3 data-i18n="o5T">عتاد مفتوح المصدر معتمد</h3>
+          <p data-i18n="o5D">‏TanenBase معتمد كعتاد مفتوح المصدر من رابطة العتاد المفتوح المصدر (OSHWA)، برقم DE000178. الشهادة تؤكد أن تصميم العتاد والبرمجية والتوثيق مفتوحة وقابلة لإعادة البناء.</p>
+          <p><a href="https://certification.oshwa.org/de000178.html" rel="noopener" data-i18n="o5Link">عرض السجل في دليل OSHWA</a></p>
+        </div>
       </article>
     </div>
   </div>
@@ -1313,6 +1322,10 @@ ar: {
   o3D:'المحطة ترسل إلى جهاز الاستقبال أو الشبكة التي تحددها أنت. لا وسيط يقرأ بياناتك، ولا خدمة يتعلق مصير سجلاتك ببقائها.',
   o4T:'نبني عليه معاً',
   o4D:'رخصة Apache 2.0 تسمح لأي شخص باستعمال TanenBase وتعديله ونشره — تجارياً أيضاً، بلا رسوم ولا استئذان. تحسينات النحالين تعود إلى المشروع.',
+  o5T:'عتاد مفتوح المصدر معتمد',
+  o5D:'‏TanenBase معتمد كعتاد مفتوح المصدر من رابطة العتاد المفتوح المصدر (OSHWA)، برقم DE000178. الشهادة تؤكد أن تصميم العتاد والبرمجية والتوثيق مفتوحة وقابلة لإعادة البناء.',
+  o5Link:'عرض السجل في دليل OSHWA',
+  o5Alt:'علامة شهادة OSHW، برقم DE000178',
 
   mediaTitle:'من الميدان',
   mediaLead:'ليست رسوماً تخيلية، بل صور الأجهزة نفسها التي قيست بها أرقام هذه الصفحة.',
