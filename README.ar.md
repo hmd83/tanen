@@ -113,6 +113,8 @@ TanenBase هو نظام متكامل ومفتوح المصدر عتاداً وب
 
 ## شهادة العتاد المفتوح المصدر
 
+<a href="https://certification.oshwa.org/de000178.html"><img src="media/oshwa/oshw-certification-mark-wide-DE000178.svg" alt="علامة شهادة OSHW، برقم DE000178" width="240"></a>
+
 TanenBase معتمد كعتاد مفتوح المصدر من [رابطة العتاد المفتوح المصدر](https://www.oshwa.org/)، برقم **DE000178** — انظر [سجل الشهادة](https://certification.oshwa.org/de000178.html). الشهادة تؤكد أن تصميم العتاد والبرمجية والتوثيق مفتوحة، وأن الجهاز قابل لإعادة البناء مما هو منشور في المستودع.
 
 ## روابط

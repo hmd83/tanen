@@ -455,11 +455,17 @@ concept and specification phase.
 
 ### OSHWA certification
 
+<a href="https://certification.oshwa.org/de000178.html"><img src="media/oshwa/oshw-certification-mark-wide-DE000178.svg" alt="OSHW certification mark, UID DE000178" width="240"></a>
+
 TanenBase is certified open source hardware by the [Open Source Hardware
 Association](https://www.oshwa.org/), UID **DE000178** — see the
 [certification record](https://certification.oshwa.org/de000178.html). The
 certification confirms that the hardware design, the software and the
 documentation are open and can be rebuilt from what is published here.
+
+The mark files with the UID are in [`media/oshwa/`](media/oshwa/) (wide and
+stacked, SVG with the UID as outlines). Use follows OSHWA's
+[mark usage guidelines](https://certification.oshwa.org/mark-usage.html).
 
 ## License
 
