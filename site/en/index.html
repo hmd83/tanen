@@ -24,17 +24,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ffffff">
-<meta name="description" id="metaDesc" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
+<meta name="description" id="metaDesc" content="Open-source LoRa beehive scale for remote beehive monitoring: hive weight and temperature over LoRaWAN. Years on one battery, no subscription.">
 <meta name="author" content="Hussein Daj">
-<meta name="keywords" content="hive scale, beehive scale, beehive monitoring, open source hive scale, LoRaWAN hive scale, TTN, Apache-2.0, open hardware, BEEP, beelogger, TanenBase">
+<meta name="keywords" content="beehive scale, LoRaWAN beehive scale, LoRa beehive scale, remote beehive monitoring, hive scale, open source hive scale, open hardware, TTN, BEEP, beelogger, TanenBase">
 <link rel="icon" href="../logo.svg" type="image/svg+xml">
 <link rel="canonical" href="https://tanen.eu/en/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tanen.eu/en/">
 <meta property="og:site_name" content="TanenBase">
-<meta property="og:title" content="Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase">
-<meta property="og:description" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
-<meta property="og:image" content="https://tanen.eu/media/share-card.png">
+<meta property="og:title" content="LoRaWAN Beehive Scale for Remote Hive Monitoring – TanenBase">
+<meta property="og:description" content="Open-source LoRa beehive scale for remote beehive monitoring: hive weight and temperature over LoRaWAN. Years on one battery, no subscription.">
+<meta property="og:image" content="https://tanen.eu/media/share-card-en.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="TanenBase open-source hive scale: a beehive on the scale in Bühl">
@@ -46,11 +46,11 @@
 <link rel="alternate" hreflang="ar" href="https://tanen.eu/ar/">
 <link rel="alternate" hreflang="x-default" href="https://tanen.eu/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase">
-<meta name="twitter:description" content="Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.">
-<meta name="twitter:image" content="https://tanen.eu/media/share-card.png">
+<meta name="twitter:title" content="LoRaWAN Beehive Scale for Remote Hive Monitoring – TanenBase">
+<meta name="twitter:description" content="Open-source LoRa beehive scale for remote beehive monitoring: hive weight and temperature over LoRaWAN. Years on one battery, no subscription.">
+<meta name="twitter:image" content="https://tanen.eu/media/share-card-en.png">
 <meta name="twitter:image:alt" content="TanenBase open-source hive scale: a beehive on the scale in Bühl">
-<title>Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase</title>
+<title>LoRaWAN Beehive Scale for Remote Hive Monitoring – TanenBase</title>
 <!-- Strukturierte Daten fuer Suchmaschinen: wer das Projekt macht und was
      es ist. Nur Angaben, die auch sichtbar auf der Seite stehen. -->
 <script type="application/ld+json">
@@ -67,10 +67,31 @@
         "TanenBase hive scale",
         "TanenBase ميزان خلايا"
       ],
-      "inLanguage": "de",
+      "inLanguage": [
+        "de",
+        "en",
+        "ar"
+      ],
       "publisher": {
         "@id": "https://tanen.eu/#hussein-daj"
       }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://tanen.eu/#tanen",
+      "name": "Tanen",
+      "url": "https://tanen.eu/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://tanen.eu/tanenbase-lockup.svg"
+      },
+      "email": "info@tanen.eu",
+      "founder": {
+        "@id": "https://tanen.eu/#hussein-daj"
+      },
+      "sameAs": [
+        "https://github.com/hmd83/tanen"
+      ]
     },
     {
       "@type": "Person",
@@ -81,7 +102,7 @@
         "حسين دَج"
       ],
       "url": "https://tanen.eu/",
-      "jobTitle": "Staatlich geprüfter Techniker — Elektrotechnik / IT",
+      "jobTitle": "State-certified technician, electrical engineering / IT",
       "sameAs": [
         "https://www.linkedin.com/in/hussein-daj-787196202/",
         "https://github.com/hmd83",
@@ -102,11 +123,38 @@
       ]
     },
     {
+      "@type": "Product",
+      "@id": "https://tanen.eu/#product",
+      "name": "TanenBase",
+      "description": "LoRaWAN beehive scale for remote hive monitoring: weighs the hive, measures its temperature and reports over LoRa. About 4.5 years on three AAA lithium cells (calculated), no subscription, certified open source hardware.",
+      "category": "Beehive scale",
+      "url": "https://tanen.eu/en/",
+      "image": [
+        "https://tanen.eu/media/buehl-hive.jpg",
+        "https://tanen.eu/media/wintersdorf-stockwaage.jpg",
+        "https://tanen.eu/media/enclosure.jpg"
+      ],
+      "brand": {
+        "@id": "https://tanen.eu/#tanen"
+      },
+      "hasCertification": {
+        "@type": "Certification",
+        "name": "Open Source Hardware Certification",
+        "certificationIdentification": "DE000178",
+        "issuedBy": {
+          "@type": "Organization",
+          "name": "Open Source Hardware Association",
+          "url": "https://www.oshwa.org/"
+        },
+        "url": "https://certification.oshwa.org/de000178.html"
+      }
+    },
+    {
       "@type": "SoftwareSourceCode",
       "@id": "https://tanen.eu/#tanenbase",
       "name": "TanenBase",
       "description": "Open-source LoRaWAN hive scale (beehive scale): weighs the hive, measures temperature and runs for years on one battery. Data goes to BEEP and beelogger over The Things Network.",
-      "keywords": "hive scale, beehive scale, beehive monitoring, open source hive scale, LoRaWAN hive scale, TTN, Apache-2.0, open hardware, BEEP, beelogger, TanenBase",
+      "keywords": "beehive scale, LoRaWAN beehive scale, LoRa beehive scale, remote beehive monitoring, hive scale, open source hive scale, open hardware, TTN, BEEP, beelogger, TanenBase",
       "codeRepository": "https://github.com/hmd83/tanen",
       "license": "https://www.apache.org/licenses/LICENSE-2.0",
       "programmingLanguage": "C",
@@ -138,18 +186,23 @@
       "@type": "WebPage",
       "@id": "https://tanen.eu/en/#webpage",
       "url": "https://tanen.eu/en/",
-      "name": "Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase",
-      "description": "Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.",
+      "name": "LoRaWAN Beehive Scale for Remote Hive Monitoring – TanenBase",
+      "description": "Open-source LoRa beehive scale for remote beehive monitoring: hive weight and temperature over LoRaWAN. Years on one battery, no subscription.",
       "inLanguage": "en",
       "isPartOf": {
         "@id": "https://tanen.eu/#website"
       },
-      "about": {
-        "@id": "https://tanen.eu/#tanenbase"
-      },
+      "about": [
+        {
+          "@id": "https://tanen.eu/#product"
+        },
+        {
+          "@id": "https://tanen.eu/#tanenbase"
+        }
+      ],
       "primaryImageOfPage": {
         "@type": "ImageObject",
-        "url": "https://tanen.eu/media/share-card.png",
+        "url": "https://tanen.eu/media/share-card-en.png",
         "width": 1200,
         "height": 630
       }
@@ -187,6 +240,11 @@
   --red-soft:#fdeaee;
   --blue:#0f4c96;
   --blue-soft:#e6eefa;
+  --green-ink:#06381b;      /* Text auf --green-soft */
+  --green-edge:#054d23;
+  --red-ink:#5e0a1c;        /* Text auf --red-soft */
+  --red-edge:#6d0a20;
+  --blue-ink:#0a2f5e;       /* Text auf --blue-soft */
   --r:18px;
   --max:1120px;
   --stick:92px;            /* Sprungziel-Abstand unter der mitlaufenden Kopfzeile */
@@ -340,15 +398,23 @@ img{max-inline-size:100%;block-size:auto;display:block}
 .btn:hover{background:#ffb61a}
 .btn:active{transform:translateY(2px)}
 .btn svg{inline-size:26px;block-size:26px;flex:none}
+/* Pfeil nach vorn: in der arabischen Fassung zeigt "vorwaerts" nach links
+   (wie .home-link in phone-demo.html). */
+html[dir="rtl"] .ico-fwd{transform:scaleX(-1)}
 .btn-outline{background:var(--surface);border:3px solid var(--border-strong);color:var(--text);border-radius:14px}
 .btn-outline:hover{background:var(--surface-2)}
 .btn-lg{min-block-size:76px;font-size:1.2rem;padding:16px 40px}
 .btn-row{display:flex;gap:14px;flex-wrap:wrap}
+/* OSHWA-Zeichen in der Knopfreihe des Startbereichs: so hoch wie die
+   Knoepfe daneben, verlinkt auf den Eintrag im Verzeichnis. */
+.oshw-badge{display:inline-flex;align-items:center;flex:none;border-radius:6px}
+.oshw-badge img{block-size:76px;inline-size:auto}
+@media (max-width:779px){.oshw-badge img{block-size:60px}}
 /* Handy: etwas flacher und ueber die volle Breite - drei Knoepfe mit 76px
    schoben den Text sonst weit aus dem Bild. 60px bleibt die Untergrenze. */
 @media (max-width:779px){
   .btn-lg{min-block-size:60px;font-size:1.08rem;padding:12px 24px}
-  .hero .btn-row .btn{flex:1 1 100%}
+  .hero .btn-row .btn,.contact .btn-row .btn{flex:1 1 100%}
 }
 /* Knopf unter der Bildunterschrift: setzt deren Leiste fort, damit der Weg
    zur Einrichtungsseite nicht nur oben in der Kopfzeile steht. */
@@ -365,9 +431,13 @@ section{scroll-margin-block-start:var(--stick)}
   color:var(--accent-ink);background:var(--accent-soft);border:2px solid var(--accent-edge);
   border-radius:999px;padding:6px 16px;margin-block-end:14px;
 }
+/* Im h1 der Startseite steht der Kicker als eigene Zeile ueber dem
+   Slogan - so traegt die Hauptueberschrift auch den Suchbegriff. */
+h1 .kicker{display:block;inline-size:fit-content;line-height:1.6}
 h1{font-size:clamp(2.1rem,6vw,3.2rem);font-weight:800;line-height:1.12;letter-spacing:-.01em}
 h2{font-size:clamp(1.7rem,4.2vw,2.3rem);font-weight:800;line-height:1.2;margin-block-end:12px}
 h3{font-size:1.25rem;font-weight:800;line-height:1.3;margin-block-end:8px}
+h1,h2,h3,h4{text-wrap:balance}
 .lead{font-size:1.18rem;line-height:1.6}
 p{font-size:1.05rem}
 .sec-head p{color:var(--dim);font-size:1.12rem}
@@ -377,7 +447,7 @@ p{font-size:1.05rem}
 .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
 @media (min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:52px}}
 .hero p.lead{margin-block:18px 14px;max-inline-size:56ch}
-.hero p.lead-2{margin-block:0 28px;padding-inline-start:14px;border-inline-start:4px solid var(--accent);font-size:1.08rem;color:var(--dim)}
+.hero p.lead-2{margin-block:0 28px;padding-inline-start:14px;border-inline-start:4px solid var(--accent-edge);font-size:1.08rem;color:var(--dim)}
 .hero .btn-row{margin-block-end:22px}
 .hero-note{font-size:.98rem;color:var(--dim)}
 figure{margin:0}
@@ -398,13 +468,13 @@ figure{margin:0}
 .hero-photo img{inline-size:100%}
 .hero-phone{
   position:absolute;inset-inline-end:0;inset-block-end:0;inline-size:28%;
-  padding:5px;background:#0c1017;border-radius:22px;
-  box-shadow:0 4px 0 rgba(12,16,23,.12),0 16px 34px rgba(12,16,23,.30);
+  padding:5px;background:var(--text);border-radius:22px;
+  box-shadow:var(--shadow);
 }
 /* Vorschau der Einrichtungsseite (phone-demo.html): gezeichnet mit
    420 x 910 px wie auf einem echten Handy, per Skript in den Rahmen
    eingepasst und mittig gesetzt. */
-.phone-demo{position:relative;overflow:hidden;background:#eaeef5}
+.phone-demo{position:relative;overflow:hidden;background:var(--bg)}
 .phone-demo iframe{
   position:absolute;top:0;left:0;inline-size:420px;block-size:910px;border:0;
   transform-origin:0 0;pointer-events:none;
@@ -418,7 +488,7 @@ figure{margin:0}
 /* Die Bildunterschrift sitzt im Rahmen, mit eigener Leiste - sonst klebt
    der Text am Rand des Kastens. */
 .shot figcaption{
-  font-size:.95rem;color:var(--dim);line-height:1.5;
+  font-size:.98rem;color:var(--dim);line-height:1.5;
   padding:13px 17px 15px;background:var(--surface);border-block-start:2px solid var(--border);
 }
 
@@ -441,7 +511,7 @@ html[dir="rtl"] .stat b{text-align:right}
    fester Zeichenbreite reisst sonst eine Luecke zwischen Zahl und Einheit. */
 .stat .u{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:.72em;margin-inline-start:.18em}
 /* nur die Beschriftung unter der Zahl - nicht die Einheit, die in <b> steckt */
-.stat>span{display:block;font-size:.95rem;font-weight:700;color:var(--dim);margin-block-start:6px}
+.stat>span{display:block;font-size:.98rem;font-weight:700;color:var(--dim);margin-block-start:6px}
 
 /* ================================ Karten ================================ */
 .cards{display:grid;grid-template-columns:1fr;gap:18px}
@@ -465,8 +535,8 @@ html[dir="rtl"] .stat b{text-align:right}
 }
 .card-ico svg{inline-size:30px;block-size:30px}
 .ico-warn{background:var(--red-soft);border-color:var(--red);color:var(--red)}
-.ico-ok{background:var(--green-soft);border-color:var(--green);color:#054d23}
-.ico-acc{background:var(--accent-soft);border-color:var(--accent-edge);color:#59400a}
+.ico-ok{background:var(--green-soft);border-color:var(--green);color:var(--green-ink)}
+.ico-acc{background:var(--accent-soft);border-color:var(--accent-edge);color:var(--accent-ink)}
 .ico-blue{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
 
 /* Antwort-Block: Haken-Liste, sichtbar von den Problem-Karten abgesetzt */
@@ -474,8 +544,8 @@ html[dir="rtl"] .stat b{text-align:right}
   margin-block-start:26px;background:var(--green-soft);border:3px solid var(--green);
   border-radius:var(--r);padding:26px;
 }
-.answer h3{color:#054d23}
-.answer p{margin-block-start:10px;font-size:1.1rem;color:#08301a}
+.answer h3{color:var(--green-ink)}
+.answer p{margin-block-start:10px;font-size:1.1rem;color:var(--green-ink)}
 
 /* ============================== Merkmale ============================== */
 .feat{display:grid;grid-template-columns:1fr;gap:18px}
@@ -486,6 +556,13 @@ html[dir="rtl"] .stat b{text-align:right}
   border-block-start:2px dashed var(--border);padding-block-start:10px;
 }
 .feat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
+
+/* Was das Geraet kann: nebeneinander stehen Zeichen, Titel, Text und Liste
+   aller drei Karten auf gleicher Hoehe (Subgrid ueber vier Zeilen). */
+@media (min-width:980px){@supports (grid-template-rows:subgrid){
+  .feat-3 .card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:0}
+  .feat-3 .card ul{align-self:start}
+}}
 
 /* ======================= Bluetooth-Sensoren ======================= */
 /* Erweiterter Modus: zwei Karten neben zwei Hochkant-Bildern. Die Karten
@@ -509,11 +586,14 @@ html[dir="rtl"] .stat b{text-align:right}
 }
 
 /* ======================= Auswerteplattformen ======================= */
-/* Zwei Karten nebeneinander statt drei wie bei den Merkmalen, damit die
-   beiden Plattformen gleich schwer wiegen. Der Knopf sitzt unten buendig,
-   auch wenn die Texte unterschiedlich lang sind. */
+/* Karten mit Knopf: zwei nebeneinander (Presse), die Auswerteplattformen
+   als .plat-3. Der Knopf sitzt unten buendig, auch wenn die Texte
+   unterschiedlich lang sind. */
 .plat{display:grid;grid-template-columns:1fr;gap:18px}
 @media (min-width:820px){.plat{grid-template-columns:1fr 1fr}}
+/* Auswerteplattformen: drei Karten, erst ab 980px nebeneinander. */
+.plat.plat-3{grid-template-columns:1fr}
+@media (min-width:980px){.plat.plat-3{grid-template-columns:repeat(3,1fr)}}
 .plat .card{display:flex;flex-direction:column}
 .plat .card ul{list-style:none;margin-block-start:16px;display:grid;gap:10px}
 .plat .card li{
@@ -522,8 +602,15 @@ html[dir="rtl"] .stat b{text-align:right}
 }
 .plat .card li::before{content:"";inline-size:12px;block-size:12px;border-radius:3px;background:var(--accent);border:2px solid var(--accent-edge);flex:none;margin-block-start:6px}
 .plat .card .btn{margin-block-start:auto}
-.plat .card ul+.btn{margin-block-start:22px}
+.plat .card ul{margin-block-end:22px}
 .plat .card>p:last-of-type{margin-block-end:22px}
+/* Nebeneinander stehen Titel, Text, Liste und Knopf aller Karten auf
+   gleicher Hoehe (Subgrid ueber vier Zeilen), in jeder Sprache. */
+@media (min-width:980px){@supports (grid-template-rows:subgrid){
+  .plat-3 .card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:0}
+  .plat-3 .card .btn{align-self:end}
+  .plat-3 .card ul{align-self:start}
+}}
 /* Die Plattformnamen bleiben in jeder Sprache lateinisch geschrieben. */
 .plat-name{direction:ltr;unicode-bidi:isolate}
 .plat-note{margin-block-start:24px;color:var(--dim);max-inline-size:72ch}
@@ -552,6 +639,13 @@ html[dir="rtl"] td{direction:rtl}
 /* Der Bildschirmabzug wird eingepasst statt beschnitten - beschnitten
    waere von der Bedien-Oberflaeche nur ein Streifen zu sehen. */
 .gallery .screen img{object-fit:contain;background:var(--surface-2);padding:10px}
+/* Aus der Praxis: beide Fotos im selben Rahmen (5:4), damit Bilder und
+   Unterschriften nebeneinander auf gleicher Hoehe stehen. Die Waegezelle
+   sitzt rechts im Querformat, der Ausschnitt rueckt dorthin. */
+@media (min-width:760px){
+  .gallery-pair .shot img{aspect-ratio:5/4;max-block-size:none}
+  .gallery-pair .shot:first-child img{object-position:85% 50%}
+}
 
 /* ============================ Einsatz Buehl ============================ */
 .case-title{font-size:1.5rem}
@@ -580,6 +674,15 @@ html[dir="rtl"] td{direction:rtl}
 .sub-head{margin-block:52px 24px;max-inline-size:60ch;scroll-margin-block-start:var(--stick)}
 .sub-head p{color:var(--dim);font-size:1.08rem}
 
+/* ======================= Ueberblick und Bauteile =======================
+   Fliesstext-Abschnitte: Zeilen nicht breiter als gut lesbar, Abstaende
+   14px / 8px wie im Design-System. */
+.prose p{max-inline-size:68ch}
+.prose p+p{margin-block-start:14px}
+.prose ul{max-inline-size:68ch;margin-block:14px;padding-inline-start:1.3em}
+.prose li+li{margin-block-start:8px}
+.prose code{font-family:ui-monospace,Consolas,monospace;background:var(--surface-2);border-radius:3px;padding-inline:.25em}
+
 /* ================================ Kontakt ================================ */
 .contact{
   background:var(--surface);border:3px solid var(--border-strong);border-radius:24px;
@@ -595,11 +698,26 @@ html[dir="rtl"] td{direction:rtl}
 .mail:hover{background:var(--accent)}
 .contact .btn-row{justify-content:center}
 
+/* WhatsApp: Knopf unten am Rand, immer erreichbar. Sieht aus wie das
+   Tanen-Zeichen oben (.brand-mark): gelbe Kachel, dunkles Zeichen. Liegt unter dem Cookie-Hinweis (z 50), damit der
+   zuerst beantwortet wird. Die Fusszeile bekommt unten Platz, damit der
+   Knopf keinen Text verdeckt. */
+.wa-fab{
+  position:fixed;z-index:45;inset-inline-end:16px;inset-block-end:calc(16px + env(safe-area-inset-bottom));
+  display:grid;place-items:center;inline-size:64px;block-size:64px;border-radius:17px;
+  background:var(--accent);color:var(--accent-ink);border:3px solid var(--accent-edge);box-shadow:var(--shadow);
+}
+.wa-fab:hover{background:#ffb61a}
+.wa-fab:active{transform:translateY(2px)}
+.wa-fab svg{inline-size:34px;block-size:34px}
+@media (min-width:780px){.wa-fab{inset-inline-end:24px;inset-block-end:calc(24px + env(safe-area-inset-bottom))}}
+@media print{.wa-fab{display:none}}
+
 /* ================================ Fusszeile ================================ */
-footer{background:var(--surface);border-block-start:3px solid var(--border-strong);padding-block:40px calc(40px + env(safe-area-inset-bottom))}
+footer{background:var(--surface);border-block-start:3px solid var(--border-strong);padding-block:40px calc(100px + env(safe-area-inset-bottom))}
 .foot-grid{display:grid;grid-template-columns:1fr;gap:26px}
 @media (min-width:760px){.foot-grid{grid-template-columns:1.2fr 1fr 1fr}}
-footer h4{font-size:1.05rem;font-weight:800;margin-block-end:12px}
+footer h2{font-size:1.05rem;font-weight:800;line-height:1.6;margin-block-end:12px}
 footer ul{list-style:none;display:grid;gap:6px}
 footer li a{
   display:inline-flex;align-items:center;min-block-size:48px;padding-block:6px;
@@ -609,7 +727,7 @@ footer p{font-size:.98rem;color:var(--dim)}
 .foot-bar{
   margin-block-start:30px;padding-block-start:22px;border-block-start:3px solid var(--border);
   display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;
-  font-size:.95rem;color:var(--dim);
+  font-size:.98rem;color:var(--dim);
 }
 /* ======================= Einwilligung (Cookies) =======================
    Leiste am unteren Rand. Beide Knoepfe gleich gross und gleich gestaltet:
@@ -617,7 +735,6 @@ footer p{font-size:.98rem;color:var(--dim)}
 .consent{
   position:fixed;inset-inline:0;inset-block-end:0;z-index:50;
   background:var(--surface);border-block-start:3px solid var(--border-strong);
-  box-shadow:0 -8px 26px rgba(12,16,23,.18);
   padding-block:18px calc(18px + env(safe-area-inset-bottom));
   max-block-size:80dvh;overflow-y:auto;
 }
@@ -628,13 +745,8 @@ footer p{font-size:.98rem;color:var(--dim)}
 .consent p{font-size:1rem;color:var(--dim)}
 .consent .btn{min-block-size:60px;font-size:1rem;min-inline-size:170px}
 @media (max-width:779px){.consent .btn{flex:1 1 0;min-inline-size:0}}
-.linkbtn{font:inherit;font-size:.95rem;color:var(--blue);text-decoration:underline;text-underline-offset:3px;min-block-size:48px;padding:0}
+.linkbtn{font:inherit;font-size:.98rem;color:var(--blue);text-decoration:underline;text-underline-offset:3px;min-block-size:48px;padding:0}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
-/* fliesstext nur auf der englischen seite */
-.prose p{max-inline-size:68ch}
-.prose p+p{margin-block-start:14px}
-.prose ul{max-inline-size:68ch;margin-block:14px;padding-inline-start:1.3em}
-.prose li+li{margin-block-start:6px}
 </style>
 </head>
 <body>
@@ -702,13 +814,12 @@ footer p{font-size:.98rem;color:var(--dim)}
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <span class="kicker" data-i18n="heroKicker">Open-source hive scale · LoRaWAN</span>
-        <h1 data-i18n="heroTitle">Peace of mind for your hive.</h1>
+        <h1><span class="kicker" data-i18n="heroKicker">LoRaWAN beehive scale · open source</span> <span data-i18n="heroTitle">Peace of mind for your hive.</span></h1>
         <p class="lead" data-i18n="heroLead">TanenBase weighs the hive, measures its temperature and sends the readings to you by radio.</p>
         <p class="lead lead-2" data-i18n="heroLead2">One set of batteries lasts for years. No subscription, no fees, no manufacturer who can switch your device off one day.</p>
         <div class="btn-row">
           <a class="btn btn-lg" href="#features">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+            <svg class="ico-fwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h13"/><path d="M13 6l6 6-6 6"/></svg>
             <span data-i18n="heroBtn1">What the device does</span>
           </a>
           <a class="btn btn-lg btn-outline" href="https://github.com/hmd83/tanen" rel="noopener">
@@ -719,6 +830,7 @@ footer p{font-size:.98rem;color:var(--dim)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3.1M12 18.1v3.1M21.2 12h-3.1M5.9 12H2.8M18.5 5.5l-2.2 2.2M7.7 16.3l-2.2 2.2M18.5 18.5l-2.2-2.2M7.7 7.7L5.5 5.5"/></svg>
             <span data-i18n="heroBtn3">Set up a station</span>
           </a>
+          <a class="oshw-badge" href="https://certification.oshwa.org/de000178.html" rel="noopener"><img src="../media/oshw-certification-mark-stacked-DE000178.svg" width="94" height="76" alt="OSHW certification mark, UID DE000178" data-i18n-alt="o5Alt" decoding="async"></a>
         </div>
         <p class="hero-note" data-i18n="heroNote">Apache License 2.0 — free to use, commercially as well. Questions to info@tanen.eu</p>
       </div>
@@ -730,7 +842,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <div class="hero-phone" role="img" aria-label="Phone showing the setup page: weight 41.36 kg, temperature 21.4 °C, one Bluetooth sensor inside the hive at 34.8 °C" data-i18n-al="heroPhoneAlt">
           <!-- Nachbildung der Uebersicht der Einrichtungsseite, Beispielwerte -->
           <div class="hero-phone-screen phone-demo">
-            <iframe src="../phone-demo.html" width="420" height="910" title="Vorschau der Einrichtungsseite" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
+            <iframe src="../phone-demo.html" width="420" height="910" title="Preview of the setup page" data-i18n-title="demoFrameT" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
           </div>
         </div>
       </figure>
@@ -740,22 +852,10 @@ footer p{font-size:.98rem;color:var(--dim)}
          von links nach rechts, auch in der arabischen Fassung. -->
     <div class="stats">
       <div class="stat"><b>4<span class="u">&micro;A</span></b><span data-i18n="stat1">current draw while asleep</span></div>
-      <div class="stat"><b>~4,5<span class="u" data-i18n="statY">years</span></b><span data-i18n="stat2">on three AAA lithium cells (calculated)</span></div>
+      <div class="stat"><b>~4.5<span class="u" data-i18n="statY">years</span></b><span data-i18n="stat2">on three AAA lithium cells (calculated)</span></div>
       <div class="stat"><b>&plusmn;12<span class="u">g</span></b><span data-i18n="stat3">residual scatter in the field test</span></div>
       <div class="stat"><b>0<span class="u">&euro;</span></b><span data-i18n="stat4">running costs, no subscription</span></div>
     </div>
-  </div>
-</section>
-
-<!-- nur englisch, ohne data-i18n: beschreibt das projekt in den worten,
-     mit denen danach gesucht wird -->
-<section class="band band-white" id="about">
-  <div class="wrap prose">
-    <h2>An open-source hive scale for LoRaWAN</h2>
-    <p>TanenBase is an open source hive scale: the firmware, the carrier board and the bill of materials are all published, and you can build, change and run the device without anyone’s permission. It sits under a single hive, weighs it, measures its temperature and sends the readings by radio, then goes back to sleep at about 4&nbsp;µA. Three AAA lithium cells last roughly four and a half years on the calculated budget.</p>
-    <p>As a LoRaWAN hive scale it needs no mobile contract, and no receiver of your own where a public gateway is in range. It joins The Things Network (TTN) over OTAA on EU868 and sends an 8-byte uplink with weight, temperature, battery voltage and status flags. A payload formatter from the repository decodes it on TTN, and a webhook passes the readings on to BEEP or beelogger, two free beehive monitoring platforms that draw the curves and keep your history. The radio only transmits when weight or temperature has changed noticeably, or when a regular heartbeat is due.</p>
-    <p>Many DIY hive scales are built on an Arduino or an ESP32. TanenBase uses neither: it runs on a Nordic nRF54LM20A on a Seeed Studio XIAO module, with Zephyr from the nRF Connect SDK. A 24-bit NAU7802 reads the load cell, and the firmware corrects the weight for temperature — in a six-day outdoor test against a known weight, the scatter dropped from 63&nbsp;g to about 12&nbsp;g. With the optional Extended Mode, up to three Bluetooth sensors add temperature and humidity from inside the hive and outside it.</p>
-    <p>Everything is released under the Apache-2.0 licence, commercial use included. Setup and calibration happen over Bluetooth from a web page in Chrome or Edge, so there is no app to install. The repository holds the source code, the KiCad files and gerbers, a BOM with suppliers, and the measurement data behind the temperature correction.</p>
   </div>
 </section>
 
@@ -769,7 +869,7 @@ footer p{font-size:.98rem;color:var(--dim)}
       <p data-i18n="mediaLead">Not renderings — photographs of the very equipment the numbers on this page were measured on.</p>
     </div>
 
-    <div class="gallery">
+    <div class="gallery gallery-pair">
       <figure class="shot">
         <img src="../media/loadcell.jpeg" width="1200" height="554" loading="lazy" decoding="async" alt="Load cell bolted between two steel plates" data-i18n-alt="cap2Alt">
         <figcaption data-i18n="cap2">The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.</figcaption>
@@ -919,7 +1019,7 @@ footer p{font-size:.98rem;color:var(--dim)}
       <p data-i18n="featLead">Three things, done properly: last a long time, measure honestly, transmit without anyone else’s permission.</p>
     </div>
 
-    <div class="feat">
+    <div class="feat feat-3">
       <article class="card">
         <span class="card-ico ico-ok" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2.5"/><path d="M21 10.5v3"/><path d="M5.5 10.5v3"/><path d="M9 10.5v3"/><path d="M12.5 10.5v3"/></svg>
@@ -955,7 +1055,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         <ul>
           <li data-i18n="f3b">Set up over Bluetooth in the browser — no app to install</li>
           <li data-i18n="f3c">The data arrives wherever you decide it should</li>
-          <li data-i18n="f3d">Ready-made link to BEEP and beelogger over The Things Network</li>
+          <li data-i18n="f3d">Ready-made link to BEEP, beelogger and b.tree over The Things Network</li>
         </ul>
       </article>
     </div>
@@ -996,7 +1096,7 @@ footer p{font-size:.98rem;color:var(--dim)}
         </figure>
         <figure class="shot">
           <div class="phone-demo ble-demo" role="img" aria-label="Phone showing the setup page: one Bluetooth sensor inside the hive at 34.8 °C and 61 % humidity" data-i18n-al="bleCap2Alt">
-            <iframe src="../phone-demo.html" width="420" height="910" title="Vorschau der Einrichtungsseite" aria-hidden="true" tabindex="-1" scrolling="no" loading="lazy"></iframe>
+            <iframe src="../phone-demo.html" width="420" height="910" title="Preview of the setup page" data-i18n-title="demoFrameT" aria-hidden="true" tabindex="-1" scrolling="no" loading="lazy"></iframe>
           </div>
         </figure>
       </div>
@@ -1010,10 +1110,10 @@ footer p{font-size:.98rem;color:var(--dim)}
     <div class="sec-head">
       <span class="kicker" data-i18n="dataKicker">Analysis</span>
       <h2 data-i18n="dataTitle">Where your data lands</h2>
-      <p data-i18n="dataLead">The scale transmits over The Things Network. From there the readings go to a free, open analysis platform that draws them as curves and keeps your history. Two are wired up and proven in the field — nothing to program.</p>
+      <p data-i18n="dataLead">The scale transmits over The Things Network. From there the readings go to an analysis platform that draws them as curves and keeps your history. BEEP and beelogger are free, wired up and proven in the field; b.tree takes the same readings through its API — nothing to program.</p>
     </div>
 
-    <div class="plat">
+    <div class="plat plat-3">
       <article class="card">
         <h3><span class="plat-name">BEEP</span></h3>
         <p data-i18n="d1D">Open platform from the Netherlands. Weight, temperature and battery as curves, plus a digital hive log for every colony. Create an account, enter the device number from the sticker — that is all it takes.</p>
@@ -1039,9 +1139,22 @@ footer p{font-size:.98rem;color:var(--dim)}
           <span data-i18n="d2L">Open beelogger.de</span>
         </a>
       </article>
+
+      <article class="card">
+        <h3><span class="plat-name">b.tree</span></h3>
+        <p data-i18n="d3D">Hive record software from Austria, around since 2014. Readings arrive through a webhook from The Things Network with the same keys as BEEP, so nothing changes on the scale. The API is a paid b.tree Premium feature and stores at most one reading per hour.</p>
+        <ul>
+          <li data-i18n="d3a">Digital hive records: inspections, feeding, treatments, harvest</li>
+          <li data-i18n="d3b">WizBee AI assistant: log entries by text or voice, ask about your own data</li>
+          <li data-i18n="d3c">Agent API and MCP for your own AI agent</li>
+        </ul>
+        <a class="btn btn-outline" href="https://www.btree.at/" rel="noopener">
+          <span data-i18n="d3L">Open btree.at</span>
+        </a>
+      </article>
     </div>
 
-    <p class="plat-note" data-i18n="dataNote">Both platforms receive the same radio message — nothing to change on the scale. Use one, both in parallel, or pull the readings onto your own server without asking us.</p>
+    <p class="plat-note" data-i18n="dataNote">All three platforms receive the same radio message — nothing to change on the scale. Use one, several in parallel, or pull the readings onto your own server without asking us.</p>
   </div>
 </section>
 
@@ -1163,21 +1276,33 @@ footer p{font-size:.98rem;color:var(--dim)}
   </div>
 </section>
 
-<!-- nur englisch: teile so, wie sie in README.md und Tanen_Base_pcb/ stehen -->
+<!-- =============================== BAUTEILE ===============================
+     Die Teile so, wie sie in README.md und Tanen_Base_pcb/ stehen. -->
 <section class="band band-white" id="hardware">
   <div class="wrap prose">
-    <h2>Open source, open hardware</h2>
-    <p>TanenBase is licensed under Apache-2.0: you may use, modify and redistribute it, and commercial use is allowed — no fee, no permission to ask for.</p>
-    <p>The <a href="https://github.com/hmd83/tanen" rel="noopener">source code and build guide on GitHub</a> cover the firmware, the KiCad carrier board with its gerbers, the <a href="https://github.com/hmd83/tanen/tree/main/docs/BOM" rel="noopener">bill of materials</a>, the TTN payload formatter and the Bluetooth setup page. The hardware:</p>
+    <h2 data-i18n="hwTitle">Build your own hive scale: parts and open plans</h2>
+    <p><span data-i18n="hwP1a">Many DIY hive scales are built on an Arduino or an ESP32; TanenBase runs on a Nordic nRF54LM20A with Zephyr instead. The </span><a href="https://github.com/hmd83/tanen" rel="noopener" data-i18n="hwRepo">source code and build guide on GitHub</a><span data-i18n="hwP1b"> cover the firmware, the KiCad carrier board with its gerbers, the </span><a href="https://github.com/hmd83/tanen/tree/main/docs/BOM" rel="noopener" data-i18n="hwBom">bill of materials with suppliers</a><span data-i18n="hwP1c">, the TTN payload formatter and the Bluetooth setup page. The parts:</span></p>
     <ul>
-      <li><b>Microcontroller:</b> Seeed Studio XIAO nRF54LM20A (Nordic nRF54LM20A), running Zephyr from the nRF Connect SDK</li>
-      <li><b>Radio:</b> Seeed Wio-SX1262 LoRa module — LoRaWAN Class A, OTAA, EU868</li>
-      <li><b>Scale:</b> NAU7802 24-bit load cell amplifier and a single-point load cell; the temperature correction is characterised for the Bosche H40A-C3-0150 cell and the Steinberg SBS-PF-150 weighing platform</li>
-      <li><b>Temperature:</b> DS18B20 probe inside the hive; optionally up to three SwitchBot Outdoor Meter Bluetooth sensors for temperature and humidity</li>
-      <li><b>Power:</b> three AAA lithium (Li/FeS₂) primary cells in series, 1200&nbsp;mAh; battery voltage read through the nPM1300 power-management IC; about 4&nbsp;µA asleep</li>
-      <li><b>Carrier board:</b> a passive breakout for the modules and screw terminals — KiCad sources and gerbers in <code>Tanen_Base_pcb/</code></li>
+      <li><b data-i18n="hwL1k">Microcontroller:</b> <span data-i18n="hwL1v">Seeed Studio XIAO nRF54LM20A (Nordic nRF54LM20A), running Zephyr from the nRF Connect SDK</span></li>
+      <li><b data-i18n="hwL2k">Radio:</b> <span data-i18n="hwL2v">Seeed Wio-SX1262 LoRa module — LoRaWAN Class A, OTAA, EU868</span></li>
+      <li><b data-i18n="hwL3k">Scale:</b> <span data-i18n="hwL3v">NAU7802 24-bit load cell amplifier and a single-point load cell; the temperature correction is characterised for the Bosche H40A-C3-0150 cell and the Steinberg SBS-PF-150 weighing platform</span></li>
+      <li><b data-i18n="hwL4k">Temperature:</b> <span data-i18n="hwL4v">DS18B20 probe inside the hive; optionally up to three SwitchBot Outdoor Meter Bluetooth sensors for temperature and humidity</span></li>
+      <li><b data-i18n="hwL5k">Power:</b> <span data-i18n="hwL5v">three AAA lithium (Li/FeS₂) primary cells in series, 1200 mAh; battery voltage read through the nPM1300 power-management IC; about 4 µA asleep</span></li>
+      <li><b data-i18n="hwL6k">Carrier board:</b> <span data-i18n="hwL6v">a passive breakout for the modules with screw terminals — KiCad sources and gerbers in</span> <code dir="ltr">Tanen_Base_pcb/</code></li>
     </ul>
-    <p>It measures hive weight and the temperature inside the hive; with the optional Bluetooth sensors it adds inside and outside temperature and humidity, and every report carries the battery voltage.</p>
+  </div>
+</section>
+
+<!-- ============================== UEBERBLICK ==============================
+     Am Ende, nach Fotos und Karten: was die Waage dem Imker zeigt und wie
+     sie funkt, in den Worten, mit denen danach gesucht wird. Nur Angaben,
+     die weiter oben oder in der Anleitung belegt sind. -->
+<section class="band" id="about">
+  <div class="wrap prose">
+    <h2 data-i18n="aboutTitle">A LoRaWAN beehive scale for remote hive monitoring</h2>
+    <p data-i18n="aboutP1">TanenBase sits under the hive, weighs it and measures the temperature inside. The weight curve shows when a nectar flow starts and how much of its stores the colony uses over winter. If the weight suddenly drops by more than the alarm threshold you set, as it does when a colony swarms, the station reports at once, even between its regular reports.</p>
+    <p data-i18n="aboutP2">As a LoRa beehive scale it needs no mobile contract: its LoRaWAN radio reaches a gateway several kilometres away, 3.6 km in a straight line at the apiary in Bühl. Where a public network such as The Things Network or re@di is in range, you need no receiver of your own. From there the readings go to BEEP or beelogger free of charge, two platforms for remote beehive monitoring that draw the curves and keep your history.</p>
+    <p data-i18n="aboutP3">Between readings the station sleeps at about 4 µA and only transmits when weight or temperature has changed noticeably or a regular heartbeat is due, so three AAA lithium cells last about 4.5 years on the calculated budget (measuring every 15 min, reporting every 2 h). Temperature correction cut the scatter in a six-day outdoor test from 63 g to about 12 g. Setup runs over Bluetooth in the browser, with no app, and this open source hive scale is published under the Apache-2.0 licence: firmware, board files and measurement data.</p>
   </div>
 </section>
 
@@ -1186,12 +1311,16 @@ footer p{font-size:.98rem;color:var(--dim)}
   <div class="wrap">
     <div class="contact">
       <h2 data-i18n="ctaTitle">Questions? Write to us.</h2>
-      <p data-i18n="ctaLead">Whether you want to build a station, are unsure about the parts, or would like to use the project in your beekeeping association — an email is enough. We answer in German, English and Arabic.</p>
+      <p data-i18n="ctaLead">Whether you want to build a station, are unsure about the parts, or would like to use the project in your beekeeping association — an email or WhatsApp message is enough. We answer in German, English and Arabic.</p>
       <a class="mail" href="mailto:info@tanen.eu">info@tanen.eu</a>
       <div class="btn-row">
         <a class="btn btn-lg" href="mailto:info@tanen.eu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>
           <span data-i18n="ctaBtn">Send an email</span>
+        </a>
+        <a class="btn btn-lg btn-outline" href="https://wa.me/message/XIM36YFLUUZTF1" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-i18n="ctaWa">WhatsApp</span>
         </a>
         <a class="btn btn-lg btn-outline" href="https://github.com/hmd83/tanen" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4H6a2 2 0 00-2 2v13a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="8" y="2.5" width="8" height="4" rx="1.5"/><path d="M8.5 11h7"/><path d="M8.5 15h4.5"/></svg>
@@ -1208,11 +1337,11 @@ footer p{font-size:.98rem;color:var(--dim)}
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <h4>TanenBase</h4>
+        <h2>TanenBase</h2>
         <p data-i18n="footAbout">Open-source hive scale for weight and temperature. Built for permanent service in the apiary, not for a display case.</p>
       </div>
       <div>
-        <h4 data-i18n="footNav">Sections</h4>
+        <h2 data-i18n="footNav">Sections</h2>
         <ul>
           <li><a href="#praxis" data-i18n="navPraxis">In use</a></li>
         <li><a href="#features" data-i18n="navFeat">What it does</a></li>
@@ -1225,9 +1354,10 @@ footer p{font-size:.98rem;color:var(--dim)}
         </ul>
       </div>
       <div>
-        <h4 data-i18n="footContact">Contact</h4>
+        <h2 data-i18n="footContact">Contact</h2>
         <ul>
           <li><a href="mailto:info@tanen.eu">info@tanen.eu</a></li>
+          <li><a href="https://wa.me/message/XIM36YFLUUZTF1" rel="noopener" data-i18n="footWa">WhatsApp</a></li>
           <li><a href="https://github.com/hmd83/tanen" rel="noopener" data-i18n="footRepo">Project on GitHub</a></li>
         </ul>
         <!-- Fuer den Betrieb unter einer .eu-Adresse gehoeren hier noch
@@ -1247,6 +1377,8 @@ footer p{font-size:.98rem;color:var(--dim)}
     </div>
   </div>
 </footer>
+
+<a class="wa-fab" href="https://wa.me/message/XIM36YFLUUZTF1" rel="noopener" aria-label="Message us on WhatsApp" title="Message us on WhatsApp" data-i18n-al="waFab" data-i18n-title="waFab"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
 
 <!-- Einwilligung fuer Google Analytics. Erscheint, bis eine Wahl gespeichert
      ist; ueber "Cookie-Einstellungen" in der Fusszeile jederzeit wieder. -->
@@ -1275,8 +1407,8 @@ const I18N = {
 /* ------------------------------- English ------------------------------- */
 en: {
   _dir:'ltr',
-  pageTitle:'Open-Source LoRaWAN Hive Scale for Beekeepers – TanenBase',
-  metaDesc:'Open-source hive scale for beekeepers: hive weight and temperature over LoRaWAN. Years on one battery, no subscription, Apache-2.0, open hardware.',
+  pageTitle:'LoRaWAN Beehive Scale for Remote Hive Monitoring – TanenBase',
+  metaDesc:'Open-source LoRa beehive scale for remote beehive monitoring: hive weight and temperature over LoRaWAN. Years on one battery, no subscription.',
   skip:'Skip to content',
   brandSub:'Open hive scale',
   navLabel:'Main sections', menu:'Menu',
@@ -1316,10 +1448,10 @@ en: {
   f3D:'Readings go out over LoRaWAN — a radio system for small amounts of data over long distances, with no mobile contract. You either put up your own receiver or use an open network such as The Things Network.',
   f3b:'Set up over Bluetooth in the browser — no app to install',
   f3c:'The data arrives wherever you decide it should',
-  f3d:'Ready-made link to BEEP and beelogger over The Things Network',
+  f3d:'Ready-made link to BEEP, beelogger and b.tree over The Things Network',
   dataKicker:'Analysis',
   dataTitle:'Where your data lands',
-  dataLead:'The scale transmits over The Things Network. From there the readings go to a free, open analysis platform that draws them as curves and keeps your history. Two are wired up and proven in the field — nothing to program.',
+  dataLead:'The scale transmits over The Things Network. From there the readings go to an analysis platform that draws them as curves and keeps your history. BEEP and beelogger are free, wired up and proven in the field; b.tree takes the same readings through its API — nothing to program.',
   d1D:'Open platform from the Netherlands. Weight, temperature and battery as curves, plus a digital hive log for every colony. Create an account, enter the device number from the sticker — that is all it takes.',
   d1a:'Curves and hive log in one place',
   d1b:'Proven in continuous use at the apiary',
@@ -1330,7 +1462,12 @@ en: {
   d2b:'One account for any number of scales',
   d2c:'Connected straight from The Things Network',
   d2L:'Open beelogger.de',
-  dataNote:'Both platforms receive the same radio message — nothing to change on the scale. Use one, both in parallel, or pull the readings onto your own server without asking us.',
+  d3D:'Hive record software from Austria, around since 2014. Readings arrive through a webhook from The Things Network with the same keys as BEEP, so nothing changes on the scale. The API is a paid b.tree Premium feature and stores at most one reading per hour.',
+  d3a:'Digital hive records: inspections, feeding, treatments, harvest',
+  d3b:'WizBee AI assistant: log entries by text or voice, ask about your own data',
+  d3c:'Agent API and MCP for your own AI agent',
+  d3L:'Open btree.at',
+  dataNote:'All three platforms receive the same radio message — nothing to change on the scale. Use one, several in parallel, or pull the readings onto your own server without asking us.',
 
   whyKicker:'The gap in the market',
   whyTitle:'Why TanenBase exists',
@@ -1408,7 +1545,7 @@ en: {
   dashBeep:'BEEP',
   dashBeelogger:'beelogger',
   navPraxis:'In use',
-  heroKicker:'Open-source hive scale · LoRaWAN',
+  heroKicker:'LoRaWAN beehive scale · open source',
   cap2:'The load cell between two steel plates — this exact part was tested outdoors for six days against a known weight.',
   cap2Alt:'Load cell bolted between two steel plates',
   cap3:'The build inside the enclosure: processor, radio module with its antenna, and the load-cell amplifier. Every part is available separately.',
@@ -1442,34 +1579,63 @@ en: {
   t11L:'Licence', t11V:'Apache License 2.0',
 
   ctaTitle:'Questions? Write to us.',
-  ctaLead:'Whether you want to build a station, are unsure about the parts, or would like to use the project in your beekeeping association — an email is enough. We answer in German, English and Arabic.',
+  ctaLead:'Whether you want to build a station, are unsure about the parts, or would like to use the project in your beekeeping association — an email or WhatsApp message is enough. We answer in German, English and Arabic.',
   ctaBtn:'Send an email',
+  ctaWa:'WhatsApp',
+  waFab:'Message us on WhatsApp',
   ctaGit:'View the build guide',
 
   footAbout:'Open-source hive scale for weight and temperature. Built for permanent service in the apiary, not for a display case.',
-  footNav:'Sections', footContact:'Contact', footRepo:'Project on GitHub',
-  footLic:'Apache License 2.0 — use it, change it, pass it on, commercially as well.'
+  footNav:'Sections', footContact:'Contact', footRepo:'Project on GitHub', footWa:'WhatsApp',
+  footLic:'Apache License 2.0 — use it, change it, pass it on, commercially as well.',
+
+  demoFrameT:'Preview of the setup page',
+  aboutTitle:'A LoRaWAN beehive scale for remote hive monitoring',
+  aboutP1:'TanenBase sits under the hive, weighs it and measures the temperature inside. The weight curve shows when a nectar flow starts and how much of its stores the colony uses over winter. If the weight suddenly drops by more than the alarm threshold you set, as it does when a colony swarms, the station reports at once, even between its regular reports.',
+  aboutP2:'As a LoRa beehive scale it needs no mobile contract: its LoRaWAN radio reaches a gateway several kilometres away, 3.6 km in a straight line at the apiary in Bühl. Where a public network such as The Things Network or re@di is in range, you need no receiver of your own. From there the readings go to BEEP or beelogger free of charge, two platforms for remote beehive monitoring that draw the curves and keep your history.',
+  aboutP3:'Between readings the station sleeps at about 4 µA and only transmits when weight or temperature has changed noticeably or a regular heartbeat is due, so three AAA lithium cells last about 4.5 years on the calculated budget (measuring every 15 min, reporting every 2 h). Temperature correction cut the scatter in a six-day outdoor test from 63 g to about 12 g. Setup runs over Bluetooth in the browser, with no app, and this open source hive scale is published under the Apache-2.0 licence: firmware, board files and measurement data.',
+  hwTitle:'Build your own hive scale: parts and open plans',
+  hwP1a:'Many DIY hive scales are built on an Arduino or an ESP32; TanenBase runs on a Nordic nRF54LM20A with Zephyr instead. The ',
+  hwRepo:'source code and build guide on GitHub',
+  hwP1b:' cover the firmware, the KiCad carrier board with its gerbers, the ',
+  hwBom:'bill of materials with suppliers',
+  hwP1c:', the TTN payload formatter and the Bluetooth setup page. The parts:',
+  hwL1k:'Microcontroller:',
+  hwL1v:'Seeed Studio XIAO nRF54LM20A (Nordic nRF54LM20A), running Zephyr from the nRF Connect SDK',
+  hwL2k:'Radio:',
+  hwL2v:'Seeed Wio-SX1262 LoRa module — LoRaWAN Class A, OTAA, EU868',
+  hwL3k:'Scale:',
+  hwL3v:'NAU7802 24-bit load cell amplifier and a single-point load cell; the temperature correction is characterised for the Bosche H40A-C3-0150 cell and the Steinberg SBS-PF-150 weighing platform',
+  hwL4k:'Temperature:',
+  hwL4v:'DS18B20 probe inside the hive; optionally up to three SwitchBot Outdoor Meter Bluetooth sensors for temperature and humidity',
+  hwL5k:'Power:',
+  hwL5v:'three AAA lithium (Li/FeS₂) primary cells in series, 1200 mAh; battery voltage read through the nPM1300 power-management IC; about 4 µA asleep',
+  hwL6k:'Carrier board:',
+  hwL6v:'a passive breakout for the modules with screw terminals — KiCad sources and gerbers in'
 }
+
 };
 
 /* Gemeinsam mit der Einrichtungsseite (setup/, gleiche Adresse): wer hier
-   Englisch waehlt, sieht dort auch Englisch. Der alte Schluessel der
-   Startseite zaehlt nur noch, solange der neue fehlt. */
+   Englisch waehlt, sieht dort auch Englisch. */
 const LANG_STORE = 'tb3-lang';
-const LANG_STORE_OLD = 'tanen-site-lang';
-let lang = 'en';
+/* Eine Adresse, eine Sprache: jede Fassung ist eine eigene Seite. PAGE_LANG
+   ist die Sprache dieser Seite und der einzige Unterschied im Skript. */
+const PAGE_LANG = 'en';
+const LANG_URL = {de:'/', en:'/en/', ar:'/ar/'};
+let lang = PAGE_LANG;
 
-function t(key){ return (I18N[lang] && I18N[lang][key]) || (I18N.en && I18N.en[key]) || key; }
+function t(key){ return (I18N[lang] && I18N[lang][key]) || key; }
 
 function applyLang(next){
-  /* andere sprache = andere seite. die wahl vorher merken, sonst zeigt
-     die startseite die zuletzt gespeicherte sprache statt der gewaehlten. */
-  if (next && next !== 'en') {
+  /* andere Sprache = andere Seite. Die Wahl vorher merken, sonst zeigt
+     die Einrichtungsseite die zuletzt gespeicherte Sprache. */
+  if (next && next !== PAGE_LANG && LANG_URL[next]) {
     try { localStorage.setItem(LANG_STORE, next); } catch (e) {}
-    location.href = next === 'ar' ? '../ar/' : '../';
+    location.href = LANG_URL[next];
     return;
   }
-  lang = 'en';
+  lang = PAGE_LANG;
   try { localStorage.setItem(LANG_STORE, lang); } catch (e) {}
 
   const html = document.documentElement;
@@ -1482,6 +1648,7 @@ function applyLang(next){
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-al]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAl)); });
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.setAttribute('title', t(el.dataset.i18nTitle)); });
 
   syncLangPicker(lang);
   document.querySelectorAll('.phone-demo iframe').forEach(f => {
@@ -1551,19 +1718,15 @@ function langPicker(onPick){
   });
 }
 
-/* Eine Adresse, eine Sprache: die Wahl fuehrt auf die passende Seite.
+/* Die Wahl in der Klappliste fuehrt auf die Seite der Sprache.
    Ohne JavaScript funktionieren die Links im Menue unveraendert. */
-const LANG_URL = {de:'/', en:'/en/', ar:'/ar/'};
-langPicker(code => {
-  try { localStorage.setItem(LANG_STORE, code); } catch (e) {}
-  if (LANG_URL[code]) location.href = LANG_URL[code];
-});
+langPicker(code => applyLang(code));
 
-/* Deutsch ist die Vorgabe. Nur eine frueher getroffene Wahl geht davor -
-   die Sprache des Browsers wird bewusst nicht ausgewertet, damit dieselbe
-   Adresse allen dieselbe Seite zeigt, ueber die man sich unterhalten kann. */
+/* Jede Seite zeigt ihre eigene Sprache. Die Sprache des Browsers wird
+   bewusst nicht ausgewertet, damit dieselbe Adresse allen dieselbe Seite
+   zeigt, ueber die man sich unterhalten kann. */
 (function initLang(){
-  applyLang('en');
+  applyLang(PAGE_LANG);
 })();
 
 /* ============================ Einwilligung ============================

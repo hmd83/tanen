@@ -8,6 +8,28 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Added
+- **WhatsApp contact on tanen.eu** (2026-11-25): WhatsApp button in the
+  contact section next to email, a WhatsApp link in the footer and a
+  floating WhatsApp button styled like the Tanen mark (yellow tile) in the
+  bottom corner (end side, so left in Arabic), DE/EN/AR
+- **b.tree on tanen.eu** (2026-11-25): third platform card next to BEEP and
+  beelogger, in DE/EN/AR. b.tree (Austria) takes TanenBase readings through
+  its TTN webhook with the BEEP payload keys, so nothing changes on the scale;
+  its API is a paid b.tree Premium feature (with the WizBee assistant and the
+  Agent API/MCP) and stores at most one reading per hour. Platform cards sit
+  three across from 980 px, with title, text, list and button on the same
+  level in every card (CSS subgrid); the press cards keep two columns
+  The two photos under "Aus der Praxis" share one 5:4 frame from 760 px, so
+  images, captions and card heights match (load cell crop moved right)
+  The three "Was das Geraet kann" cards line up the same way (icon, title,
+  text and list on one level from 980 px)
+- **`scripts/check_site_parity.py`** (2026-11-21): keeps `/`, `/en/` and
+  `/ar/` built alike: same stylesheet, head tags, element skeleton and
+  script (only `PAGE_LANG` and the dictionary differ); one dictionary per
+  page with the same keys; every `data-i18n` text, `<title>` and meta
+  description equal to its dictionary entry, so a missing key can no longer
+  show raw on the page; no visible text outside the dictionary except names
+  and numbers. Exit code 1 on any drift
 - **OSHWA certification mark** (2026-11-21): TanenBase is certified open
   source hardware, UID DE000178 (certified 2026-11-20). The official mark
   (v2.6, wide and stacked) with the UID is in `media/oshwa/`, with the UID
@@ -41,6 +63,31 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   vendored as `web/qrcode.js` so it works offline
 
 ### Changed
+- **tanen.eu: one design in German, English and Arabic** (2026-11-21): the
+  English page had two sections and a CSS block of its own; the overview
+  (`#about`, last before Contact, after the photos and maps) and the parts list (`#hardware`, "Stockwaage selbst bauen") are
+  now on all three pages, written for each language's own search terms
+  (LoRa-Stockwaage, LoRaWAN-Bienenstockwaage, digitale Stockwaage /
+  LoRaWAN beehive scale, remote beehive monitoring / ميزان خلية نحل LoRa،
+  مراقبة خلايا النحل عن بعد), every text in the page's dictionary. Stylesheet
+  and script are identical on all three; the German page no longer ships
+  the unused English and Arabic dictionaries (126 → 105 kB). Design-system
+  rules applied: status inks as tokens (`--green-ink` …) instead of hex,
+  no text below the note size, `shadow-card` as the only shadow, yellow
+  never a thin line, balanced headings; the forward arrow mirrors in
+  Arabic; the OSHWA mark also sits in the hero button row; the setup-preview frame title and `~4.5` are localized
+- **tanen.eu search engine data** (2026-11-21): new titles and descriptions
+  per language; the hero kicker is part of the `<h1>`; footer headings no
+  longer skip a level; share cards per language (`share-card-en.png`,
+  `share-card-ar.png`, rendered from `media/brand/share-card.html`, which
+  now has Arabic); JSON-LD adds `Organization` (Tanen) and `Product` with
+  the OSHWA certification, without an offer since TanenBase is not sold,
+  and `WebSite` lists all three languages. `.htaccess`: folder addresses
+  without a slash go to `https://…/` in one step (was two, via http), old
+  `?lang=en`/`?lang=ar` links 301 to `/en/` and `/ar/`, and the language
+  pages' `index.html` 301 to the folder. `check_seo.py` also checks one
+  `<h1>`, no skipped heading level, alt text, `dir`, matching title/og/
+  twitter tags, a reachable share card per language and the JSON-LD types
 - **Setup app and encoder follow the design system** (2026-10-18): every
   button at least 60 px tall (language picker, home/back link, quick
   actions, copy and queue buttons were 48–56 px); hints and card subtitles
@@ -56,6 +103,8 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   on phones
 
 ### Fixed
+- **`check_seo.py` crashed on a Windows console** as soon as it printed
+  Arabic (cp1252); its output is now UTF-8
 - **OSHWA card on tanen.eu showed raw keys** (2026-11-21): the card had
   `data-i18n="o5T"`/`"o5D"` but no dictionary entries, so `applyLang()`
   replaced its text with "o5T"/"o5D" on load (and dropped the record link).

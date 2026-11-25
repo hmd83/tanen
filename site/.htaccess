@@ -1,6 +1,24 @@
 # Canonical host + HTTPS (tanen.eu, no www)
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # Ordner ohne Schraegstrich (/en, /ar, /setup) direkt auf
+  # https://tanen.eu/<ordner>/ - sonst setzt mod_dir hinter dem Proxy
+  # http://.../ davor, und es werden zwei Spruenge, einer davon ueber http.
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^(.*[^/])$ https://tanen.eu/$1/ [R=301,L]
+
+  # Alte Sprachadressen ?lang=en / ?lang=ar (frueher hreflang-Ziele) auf die
+  # eigene Seite der Sprache. Das "?" am Ende verwirft die Abfrage.
+  RewriteCond %{QUERY_STRING} (^|&)lang=(en|ar)(&|$)
+  RewriteRule ^(index\.html)?$ https://tanen.eu/%2/? [R=301,L]
+
+  # index.html der drei Sprachseiten auf die Ordneradresse. Nur echte
+  # Anfragen (THE_REQUEST), nicht die interne Weiterleitung durch
+  # DirectoryIndex; setup/ bleibt unberuehrt.
+  RewriteCond %{THE_REQUEST} \s/+((en|ar)/)?index\.html[\s?]
+  RewriteRule ^((en|ar)/)?index\.html$ https://tanen.eu/$1 [R=301,L]
+
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
   RewriteRule ^(.*)$ https://tanen.eu/$1 [R=301,L]
