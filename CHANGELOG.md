@@ -8,6 +8,15 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
 ## [Unreleased]
 
 ### Added
+- **Firmware update in the browser** (2026-11-25): `web/flash.html`
+  (tanen.eu/setup/flash.html, linked from the setup start page) installs a
+  release over USB-C with Chrome/Edge, no tools to install. WebUSB talks to
+  the XIAO's on-board CMSIS-DAP probe (`web/dapflash.js`, no dependencies)
+  and writes the RRAM directly; settings (ZMS @ 0x1D1000) are kept and the
+  image is read back to check it. Versions come from the GitHub releases,
+  the hex through `web/fw.php` (GitHub release downloads send no CORS
+  header) and is checked against its `.sha256`; own .hex files work too.
+  DE/EN/AR. A locked chip can be erased and reflashed after a confirmation
 - **WhatsApp contact on tanen.eu** (2026-11-25): WhatsApp button in the
   contact section next to email, a WhatsApp link in the footer and a
   floating WhatsApp button styled like the Tanen mark (yellow tile) in the

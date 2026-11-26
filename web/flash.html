@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TanenBase Firmware</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+/* =========================================================================
+   Firmware per USB aufspielen, nur im Browser (WebUSB, Chrome/Edge).
+   Schreibt die .hex ueber den CMSIS-DAP-Debugger auf dem XIAO direkt ins
+   RRAM; die Einstellungen (ZMS @ 0x1D1000) bleiben unberuehrt.
+   Versionen kommen von GitHub-Releases, die Datei ueber fw.php (GitHub
+   erlaubt keinen Download aus dem Browser). Treiber: dapflash.js.
+   Sprache teilt sich die Seite mit der Einrichtung (localStorage tb3-lang).
+   ========================================================================= */
+:root{
+  color-scheme:light;
+  --bg:#eaeef5;--surface:#ffffff;--surface-2:#f3f5f9;--border:#8f9cb5;--border-strong:#4a5568;
+  --text:#0c1017;--dim:#39445a;
+  --accent:#f0a500;--accent-ink:#231800;--accent-edge:#a06d00;--accent-soft:#fff4dc;
+  --red:#9e1030;--red-soft:#fdeaee;--green:#1d6b2c;--green-soft:#e6f4e8;--blue:#0f4c96;
+  --shadow:0 8px 24px rgba(12,16,23,.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+.ui{max-inline-size:760px;margin-inline:auto;padding:24px 16px 48px;display:flex;flex-direction:column;gap:18px}
+.appbar{display:flex;align-items:center;gap:10px;font-weight:800;flex-wrap:wrap}
+.brand-mark{inline-size:44px;block-size:44px;border-radius:12px;flex:none;background:var(--accent);border:3px solid var(--accent-edge);display:grid;place-items:center;color:var(--accent-ink)}
+.brand-mark svg{inline-size:24px;block-size:24px}
+.spacer{flex:1}
+.back{display:inline-flex;align-items:center;gap:8px;min-block-size:60px;padding:10px 16px;border-radius:12px;border:3px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-weight:800;text-decoration:none}
+.back svg{inline-size:22px;block-size:22px;flex:none}
+html[dir="rtl"] .back svg{transform:scaleX(-1)}
+
+/* Sprachwahl wie in der Einrichtung (index.html) */
+.lang{position:relative;flex:none}
+.lang-btn{display:flex;align-items:center;gap:10px;min-block-size:60px;padding:6px 12px;font:inherit;color:var(--text);cursor:pointer;text-align:start;border:3px solid var(--border-strong);border-radius:14px;background:var(--surface-2)}
+.lang-btn:hover,.lang-btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent-edge)}
+.lang-txt{display:flex;flex-direction:column;line-height:1.2}
+.lang-cap{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.lang-name{font-size:1rem;font-weight:800;min-inline-size:5.2em}
+.lang-chev{inline-size:20px;block-size:20px;flex:none}
+.lang-btn[aria-expanded="true"] .lang-chev{transform:rotate(180deg)}
+.lang-list{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;z-index:40;min-inline-size:100%;list-style:none;padding:6px;background:var(--surface);border:3px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow)}
+.lang-list button{display:flex;align-items:center;gap:12px;inline-size:100%;min-block-size:60px;padding:8px 14px;font:inherit;font-size:1rem;font-weight:700;color:var(--text);background:none;border:0;border-radius:9px;cursor:pointer;text-align:start;white-space:nowrap}
+.lang-list button:hover{background:var(--accent-soft)}
+.lang-list button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.lang-list button:focus-visible{outline-offset:-4px}
+.flag{inline-size:30px;block-size:20px;flex:none;border-radius:3px;background:center/cover no-repeat;box-shadow:0 0 0 1px rgba(12,16,23,.35)}
+.flag-de{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Cpath fill='%23000' d='M0 0h5v1H0z'/%3E%3Cpath fill='%23D00' d='M0 1h5v1H0z'/%3E%3Cpath fill='%23FFCE00' d='M0 2h5v1H0z'/%3E%3C/svg%3E")}
+.flag-en{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='t'%3E%3Cpath d='M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z'/%3E%3C/clipPath%3E%3Cpath fill='%23012169' d='M0 0h60v30H0z'/%3E%3Cpath stroke='%23fff' stroke-width='6' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23C8102E' stroke-width='4' clip-path='url(%23t)' d='M0,0 L60,30 M60,0 L0,30'/%3E%3Cpath stroke='%23fff' stroke-width='10' d='M30,0 v30 M0,15 h60'/%3E%3Cpath stroke='%23C8102E' stroke-width='6' d='M30,0 v30 M0,15 h60'/%3E%3C/svg%3E")}
+.flag-ar{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cpath fill='%23007A3D' d='M0 0h900v200H0z'/%3E%3Cpath fill='%23fff' d='M0 200h900v200H0z'/%3E%3Cpath d='M0 400h900v200H0z'/%3E%3Cg fill='%23CE1126'%3E%3Cpath transform='translate(225 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(450 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3Cpath transform='translate(675 300)' d='M0-75L16.84-23.18 71.33-23.18 27.25 8.85 44.08 60.68 0 28.65-44.08 60.68-27.25 8.85-71.33-23.18-16.84-23.18z'/%3E%3C/g%3E%3C/svg%3E")}
+
+h1{font-size:1.6rem;line-height:1.2;font-weight:800}
+.card{background:var(--surface);border:3px solid var(--border-strong);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.num{flex:none;inline-size:34px;block-size:34px;border-radius:50%;background:var(--accent);border:3px solid var(--accent-edge);color:var(--accent-ink);font-weight:800;display:grid;place-items:center;font-size:.9rem}
+.step-body{display:flex;flex-direction:column;gap:10px;min-inline-size:0;flex:1}
+.hint{font-size:.85rem;color:var(--dim)}
+.sel{min-block-size:60px;border:3px solid var(--border-strong);border-radius:12px;padding:0 14px;font:inherit;font-weight:700;background:var(--surface);color:var(--text);inline-size:100%;max-inline-size:420px}
+.file{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.file input{position:absolute;inline-size:1px;block-size:1px;opacity:0}
+.pick{min-block-size:56px;border:3px solid var(--border-strong);border-radius:999px;background:var(--surface);font:inherit;font-weight:800;padding:10px 24px;cursor:pointer;display:inline-flex;align-items:center}
+.file input:focus-visible + .pick{outline:4px solid var(--blue);outline-offset:3px}
+.fname,.ltr{font-family:ui-monospace,Consolas,monospace;font-size:.9rem;word-break:break-all;direction:ltr;unicode-bidi:isolate}
+.btn{min-block-size:66px;border-radius:999px;border:3px solid var(--accent-edge);background:var(--accent);color:var(--accent-ink);font:inherit;font-size:1.08rem;font-weight:800;cursor:pointer;padding:14px 30px;align-self:flex-start}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.danger{background:var(--red);border-color:#5e0a1c;color:#fff}
+.bar{block-size:18px;border-radius:999px;background:#dde3ee;overflow:hidden;border:2px solid var(--border)}
+.bar > i{display:block;block-size:100%;inline-size:0;background:var(--accent);transition:inline-size .15s}
+.status{font-weight:700}
+.msg{border-radius:12px;padding:14px 16px;font-weight:700}
+.msg.ok{background:var(--green-soft);color:var(--green);border:2px solid var(--green)}
+.msg.err{background:var(--red-soft);color:var(--red);border:2px solid var(--red)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:600}
+.check input{inline-size:24px;block-size:24px;flex:none;margin-block-start:2px}
+details summary{font-weight:700;cursor:pointer;min-block-size:44px;display:flex;align-items:center}
+pre{font-family:ui-monospace,Consolas,monospace;font-size:.75rem;color:var(--dim);white-space:pre-wrap;word-break:break-all;direction:ltr;text-align:left;max-block-size:260px;overflow:auto;background:var(--surface-2);border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<div class="ui">
+  <header class="appbar">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="2 8 44 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 12 18 C 12 12, 36 12, 36 18 C 36 22, 32 24, 32 26 C 38 28, 42 34, 42 42 C 42 52, 34 56, 24 56 C 14 56, 6 52, 6 42 C 6 34, 10 28, 16 26 C 16 24, 12 22, 12 18 Z"/>
+        <ellipse cx="24" cy="18" rx="10" ry="3"/>
+        <path d="M 14 32 Q 18 38 22 32 Q 26 42 30 32"/>
+      </svg>
+    </span>
+    <img src="tanenbase-wordmark.svg" alt="TanenBase" width="108" height="16">
+    <span class="spacer"></span>
+    <div class="lang">
+      <button type="button" class="lang-btn" aria-expanded="false" aria-controls="langList">
+        <span class="flag flag-de" aria-hidden="true"></span>
+        <span class="lang-txt"><span class="lang-cap" lang="en">Language</span><span class="lang-name" lang="de">Deutsch</span></span>
+        <svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <ul class="lang-list" id="langList" hidden>
+        <li><button type="button" data-lang="de" lang="de" aria-current="true"><span class="flag flag-de" aria-hidden="true"></span>Deutsch</button></li>
+        <li><button type="button" data-lang="en" lang="en"><span class="flag flag-en" aria-hidden="true"></span>English</button></li>
+        <li><button type="button" data-lang="ar" lang="ar"><span class="flag flag-ar" aria-hidden="true"></span>العربية</button></li>
+      </ul>
+    </div>
+    <a class="back" href="./">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span data-i18n="back">Einrichtung</span>
+    </a>
+  </header>
+
+  <h1 data-i18n="title">Firmware aufspielen</h1>
+
+  <div class="msg err" id="noUsb" data-i18n="noUsb" hidden>Dieser Browser kann kein WebUSB. Bitte Chrome oder Edge am Computer nutzen.</div>
+  <div class="msg err" id="isFile" hidden>Open this page over http(s), not as a file. / Seite über http(s) öffnen, nicht als Datei.</div>
+  <script>
+    if (location.protocol === 'file:') document.getElementById('isFile').hidden = false;
+  </script>
+
+  <section class="card" id="main">
+    <div class="step">
+      <span class="num">1</span>
+      <div class="step-body">
+        <label class="hint" for="release" data-i18n="version">Version</label>
+        <select id="release" class="sel">
+          <option value="" data-i18n="loadingVer">Lade Versionen …</option>
+        </select>
+        <div class="file" id="fileRow" hidden>
+          <input type="file" id="hexFile" accept=".hex">
+          <label class="pick" for="hexFile" data-i18n="pickFile">.hex-Datei wählen</label>
+          <span class="fname" id="fname"></span>
+        </div>
+        <span class="hint" id="fileInfo"></span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">2</span>
+      <div class="step-body">
+        <span data-i18n="plugIn">Station per USB-C anschließen.</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">3</span>
+      <div class="step-body">
+        <button class="btn" id="go" type="button" data-i18n="flash" disabled>Aufspielen</button>
+        <span class="hint" data-i18n="keeps">Einstellungen bleiben erhalten.</span>
+      </div>
+    </div>
+
+    <div id="progress" hidden>
+      <p class="status" id="status" aria-live="polite"></p>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="barWrap"><i id="bar"></i></div>
+    </div>
+
+    <div class="msg ok" id="ok" data-i18n="done" hidden>Fertig. Die Station startet neu.</div>
+    <div class="msg err" id="err" hidden></div>
+
+    <div id="locked" hidden class="step-body">
+      <p class="msg err" data-i18n="locked">Der Chip ist gesperrt. Entsperren löscht alles, auch die Einstellungen.</p>
+      <label class="check"><input type="checkbox" id="eraseOk"> <span data-i18n="eraseOk">Ja, alles löschen. Danach neu einrichten.</span></label>
+      <button class="btn danger" id="erase" type="button" data-i18n="erase" disabled>Löschen und aufspielen</button>
+    </div>
+
+    <details>
+      <summary data-i18n="log">Protokoll</summary>
+      <pre id="log"></pre>
+    </details>
+  </section>
+</div>
+
+<script type="module">
+import { USB_FILTER, Dap, Nrf54, parseHex, alignToLines } from './dapflash.js';
+
+// ============================== Sprachen ===============================
+// {x} = Platzhalter. Hex-Adressen und Dateinamen bleiben links-nach-rechts.
+const I18N = {
+  de: {
+    _dir: 'ltr', _title: 'TanenBase Firmware',
+    back: 'Einrichtung', title: 'Firmware aufspielen',
+    noUsb: 'Dieser Browser kann kein WebUSB. Bitte Chrome oder Edge am Computer nutzen.',
+    version: 'Version', loadingVer: 'Lade Versionen …', latest: 'neueste', pre: 'Test',
+    noVer: 'Keine Versionen gefunden', verErr: 'Versionen nicht erreichbar', own: 'Eigene Datei …',
+    pickFile: '.hex-Datei wählen', loading: 'Lade …',
+    plugIn: 'Station per USB-C anschließen.',
+    flash: 'Aufspielen', keeps: 'Einstellungen bleiben erhalten.',
+    connecting: 'Verbinden …', writing: 'Schreiben …', checking: 'Prüfen …', erasing: 'Löschen …',
+    done: 'Fertig. Die Station startet neu.',
+    locked: 'Der Chip ist gesperrt. Entsperren löscht alles, auch die Einstellungen.',
+    eraseOk: 'Ja, alles löschen. Danach neu einrichten.', erase: 'Löschen und aufspielen',
+    log: 'Protokoll',
+    eShaBad: 'Prüfsumme stimmt nicht. Bitte neu laden.',
+    eDownload: 'Download fehlgeschlagen. Datei von GitHub laden und „Eigene Datei“ wählen.',
+    eNotHex: 'Keine gültige .hex-Datei.',
+    eRange: 'Adresse {a} liegt außerhalb des Speichers.',
+    eZms: 'Die Datei würde die Einstellungen überschreiben.',
+    eBusy: 'USB belegt. Andere Programme (nRF Connect, openocd, andere Tabs) schließen.',
+    eVerify: 'Prüfung fehlgeschlagen bei {a}. Bitte nochmal versuchen.',
+    eStillLocked: 'Chip bleibt gesperrt.',
+    eGeneric: 'Fehler: {m}',
+  },
+  en: {
+    _dir: 'ltr', _title: 'TanenBase Firmware',
+    back: 'Setup', title: 'Install firmware',
+    noUsb: 'This browser has no WebUSB. Please use Chrome or Edge on a computer.',
+    version: 'Version', loadingVer: 'Loading versions …', latest: 'latest', pre: 'test',
+    noVer: 'No versions found', verErr: 'Versions not reachable', own: 'Own file …',
+    pickFile: 'Choose .hex file', loading: 'Loading …',
+    plugIn: 'Connect the station by USB-C.',
+    flash: 'Install', keeps: 'Settings are kept.',
+    connecting: 'Connecting …', writing: 'Writing …', checking: 'Checking …', erasing: 'Erasing …',
+    done: 'Done. The station restarts.',
+    locked: 'The chip is locked. Unlocking erases everything, settings too.',
+    eraseOk: 'Yes, erase everything. Set up again afterwards.', erase: 'Erase and install',
+    log: 'Log',
+    eShaBad: 'Checksum mismatch. Please reload.',
+    eDownload: 'Download failed. Get the file from GitHub and choose “Own file”.',
+    eNotHex: 'Not a valid .hex file.',
+    eRange: 'Address {a} is outside the memory.',
+    eZms: 'This file would overwrite the settings.',
+    eBusy: 'USB is busy. Close other programs (nRF Connect, openocd, other tabs).',
+    eVerify: 'Check failed at {a}. Please try again.',
+    eStillLocked: 'Chip is still locked.',
+    eGeneric: 'Error: {m}',
+  },
+  ar: {
+    _dir: 'rtl', _title: 'قاعدة طنين – البرنامج الثابت',
+    back: 'الإعداد', title: 'تثبيت البرنامج الثابت',
+    noUsb: 'هذا المتصفح لا يدعم WebUSB. استخدم Chrome أو Edge على الحاسوب.',
+    version: 'الإصدار', loadingVer: 'جارٍ تحميل الإصدارات …', latest: 'الأحدث', pre: 'تجريبي',
+    noVer: 'لا توجد إصدارات', verErr: 'تعذّر الوصول إلى الإصدارات', own: 'ملف خاص …',
+    pickFile: 'اختر ملف ‎.hex', loading: 'جارٍ التحميل …',
+    plugIn: 'وصّل المحطة بكابل USB-C.',
+    flash: 'تثبيت', keeps: 'تبقى الإعدادات محفوظة.',
+    connecting: 'جارٍ الاتصال …', writing: 'جارٍ الكتابة …', checking: 'جارٍ التحقق …', erasing: 'جارٍ المسح …',
+    done: 'تم. المحطة تعيد التشغيل.',
+    locked: 'الشريحة مقفلة. فتحها يمسح كل شيء، بما في ذلك الإعدادات.',
+    eraseOk: 'نعم، امسح كل شيء. ثم أعد الإعداد.', erase: 'مسح وتثبيت',
+    log: 'السجل',
+    eShaBad: 'المجموع الاختباري غير مطابق. أعد التحميل.',
+    eDownload: 'فشل التنزيل. نزّل الملف من GitHub واختر «ملف خاص».',
+    eNotHex: 'ليس ملف ‎.hex صالحًا.',
+    eRange: 'العنوان {a} خارج الذاكرة.',
+    eZms: 'هذا الملف سيمسح الإعدادات.',
+    eBusy: 'منفذ USB مشغول. أغلق البرامج الأخرى (nRF Connect أو openocd أو علامات تبويب أخرى).',
+    eVerify: 'فشل التحقق عند {a}. حاول مرة أخرى.',
+    eStillLocked: 'الشريحة ما زالت مقفلة.',
+    eGeneric: 'خطأ: {m}',
+  },
+};
+
+let lang = 'de';
+try { const s = localStorage.getItem('tb3-lang'); if (I18N[s]) lang = s; } catch (e) {}
+
+// Values (addresses, messages from the driver) are wrapped in LTR isolates so
+// they read correctly inside Arabic sentences.
+const iso = (v) => '⁦' + v + '⁩';
+function t(key, p) {
+  let s = I18N[lang][key] ?? I18N.de[key] ?? key;
+  if (p) for (const [k, v] of Object.entries(p)) s = s.replace('{' + k + '}', iso(v));
+  return s;
+}
+
+// Show a translated text in an element; it is re-translated on language change.
+function say(el, key, p) {
+  el.dataset.i18n = key;
+  if (p) el.dataset.p = JSON.stringify(p); else delete el.dataset.p;
+  el.textContent = t(key, p);
+}
+
+function applyLang(next) {
+  lang = next;
+  try { localStorage.setItem('tb3-lang', lang); } catch (e) {}
+  document.documentElement.lang = lang;
+  document.documentElement.dir = I18N[lang]._dir;
+  document.title = I18N[lang]._title;
+  document.querySelectorAll('[data-i18n]').forEach((el) =>
+    { el.textContent = t(el.dataset.i18n, el.dataset.p && JSON.parse(el.dataset.p)); });
+  const btn = document.querySelector('.lang-btn');
+  document.querySelectorAll('.lang-list button').forEach((b) => {
+    if (b.dataset.lang !== lang) { b.removeAttribute('aria-current'); return; }
+    b.setAttribute('aria-current', 'true');
+    btn.querySelector('.flag').className = 'flag flag-' + lang;
+    const name = btn.querySelector('.lang-name');
+    name.textContent = b.textContent.trim();
+    name.lang = lang;
+  });
+  renderReleases();
+}
+
+(function langPicker() {
+  const box = document.querySelector('.lang');
+  const btn = box.querySelector('.lang-btn');
+  const list = box.querySelector('.lang-list');
+  const items = [...list.querySelectorAll('button')];
+  const open = (show, focusCur) => {
+    list.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+    if (show && focusCur) (list.querySelector('[aria-current="true"]') || items[0]).focus();
+  };
+  btn.addEventListener('click', () => open(list.hidden, false));
+  btn.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); open(true, true); } });
+  items.forEach((b, i) => {
+    b.addEventListener('click', () => { applyLang(b.dataset.lang); open(false); btn.focus(); });
+    b.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus();
+    });
+  });
+  document.addEventListener('click', (e) => { if (!box.contains(e.target)) open(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !list.hidden) { open(false); btn.focus(); } });
+})();
+
+// ================================ Seite =================================
+// Image must stay inside RRAM and clear of the settings partition.
+const RRAM_END = 0x1fd000, ZMS = [0x1d1000, 0x1da000];
+
+const $ = (id) => document.getElementById(id);
+const logEl = $('log');
+const log = (s) => { logEl.textContent += s + '\n'; logEl.scrollTop = logEl.scrollHeight; };
+const hx = (v) => '0x' + v.toString(16).padStart(5, '0');
+
+class UiError extends Error {
+  constructor(key, p) { super(key); this.key = key; this.p = p; }
+}
+
+let segs = null, busy = false;
+
+if (!('usb' in navigator)) { $('noUsb').hidden = false; $('main').hidden = true; }
+
+// ---- firmware source: GitHub releases (via fw.php relay) or a local file ----
+const REPO = 'hmd83/tanen';
+const LOCAL = '__local__';
+const sel = $('release');
+let releases = null;          // null = loading, [] = none, 'err' = unreachable
+
+async function loadReleases() {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=30`);
+    if (!r.ok) throw new Error('GitHub ' + r.status);
+    releases = (await r.json())
+      .filter((x) => !x.draft)
+      .map((x) => ({ tag: x.tag_name, pre: x.prerelease, date: x.published_at,
+                     hex: x.assets.find((a) => /^tanenbase-.*\.hex$/.test(a.name)),
+                     sha: x.assets.find((a) => /^tanenbase-.*\.hex\.sha256$/.test(a.name)) }))
+      .filter((x) => x.hex);
+  } catch (ex) {
+    log('releases: ' + ex.message);
+    releases = 'err';
+  }
+  renderReleases();
+  pickSource();
+}
+
+// Rebuild the option texts (language change keeps the selection).
+function renderReleases() {
+  if (releases === null) return;
+  const keep = sel.value;
+  sel.innerHTML = '';
+  if (releases === 'err') sel.add(new Option(t('verErr'), ''));
+  else if (!releases.length) sel.add(new Option(t('noVer'), ''));
+  else releases.forEach((x, i) => {
+    const tagTxt = i === 0 && !x.pre ? ` (${t('latest')})` : x.pre ? ` (${t('pre')})` : '';
+    const o = new Option(`${x.tag}${tagTxt} – ${x.date.slice(0, 10)}`, x.tag);
+    o.dataset.hex = x.hex.name;
+    if (x.sha) o.dataset.sha = x.sha.name;
+    sel.add(o);
+  });
+  sel.add(new Option(t('own'), LOCAL));
+  if ([...sel.options].some((o) => o.value === keep && keep)) sel.value = keep;
+}
+
+function resetResult() {
+  segs = null; $('go').disabled = true; $('err').hidden = true; $('ok').hidden = true;
+  $('fileInfo').textContent = ''; delete $('fileInfo').dataset.i18n;
+}
+
+async function pickSource() {
+  resetResult();
+  const o = sel.selectedOptions[0];
+  $('fileRow').hidden = o.value !== LOCAL;
+  if (o.value === LOCAL) { $('hexFile').value = ''; $('fname').textContent = ''; return; }
+  if (!o.value) return;
+  say($('fileInfo'), 'loading');
+  try {
+    const get = async (name) => {
+      const r = await fetch(`fw.php?tag=${encodeURIComponent(o.value)}&name=${encodeURIComponent(name)}`);
+      if (!r.ok) throw new Error('download ' + r.status);
+      return r.text();
+    };
+    const text = await get(o.dataset.hex);
+    if (o.dataset.sha) {
+      const want = (await get(o.dataset.sha)).trim().split(/\s+/)[0].toLowerCase();
+      const got = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))]
+        .map((b) => b.toString(16).padStart(2, '0')).join('');
+      if (got !== want) throw new UiError('eShaBad');
+      log(`${o.dataset.hex}: sha256 ok`);
+    }
+    if (sel.value !== o.value) return;                       // user switched meanwhile
+    useHex(o.dataset.hex, text);
+  } catch (ex) {
+    log('download: ' + ex.message);
+    $('fileInfo').textContent = ''; delete $('fileInfo').dataset.i18n;
+    fail(ex instanceof UiError ? ex.key : 'eDownload');
+  }
+}
+
+sel.addEventListener('change', pickSource);
+
+$('hexFile').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  resetResult();
+  if (!f) return;
+  $('fname').textContent = f.name;
+  useHex(f.name, await f.text());
+});
+
+function useHex(name, text) {
+  $('fileInfo').textContent = ''; delete $('fileInfo').dataset.i18n;
+  try {
+    let s;
+    try { s = alignToLines(parseHex(text)); } catch { throw new UiError('eNotHex'); }
+    for (const { addr, data } of s) {
+      const end = addr + data.length;
+      if (end > RRAM_END) throw new UiError('eRange', { a: hx(addr) });
+      if (addr < ZMS[1] && end > ZMS[0]) throw new UiError('eZms');
+    }
+    const bytes = s.reduce((n, x) => n + x.data.length, 0);
+    $('fileInfo').textContent = iso(`${Math.round(bytes / 1024)} KB, ${hx(s[0].addr)} – ${hx(s.at(-1).addr + s.at(-1).data.length)}`);
+    log(`${name}: ${s.map((x) => hx(x.addr) + '+' + x.data.length).join(', ')}`);
+    segs = s; $('go').disabled = false;
+  } catch (ex) {
+    log(name + ': ' + ex.message);
+    if (ex instanceof UiError) fail(ex.key, ex.p); else fail('eGeneric', { m: ex.message });
+  }
+}
+
+function setProgress(key, frac) {
+  $('progress').hidden = false;
+  say($('status'), key);
+  const pct = Math.round(frac * 100);
+  $('bar').style.inlineSize = pct + '%';
+  $('barWrap').setAttribute('aria-valuenow', pct);
+}
+
+function fail(key, p) {
+  say($('err'), key, p); $('err').hidden = false;
+}
+
+async function withDevice(fn) {
+  if (busy) return;
+  busy = true; $('go').disabled = true; $('erase').disabled = true;
+  $('err').hidden = true; $('ok').hidden = true;
+  let dev, dap;
+  try {
+    dev = await navigator.usb.requestDevice({ filters: [USB_FILTER] });
+  } catch {
+    busy = false; $('go').disabled = !segs; return;           // picker cancelled
+  }
+  try {
+    dap = new Dap(dev, log);
+    await dap.open();
+    await fn(new Nrf54(dap, log));
+  } catch (ex) {
+    log('ERROR ' + ex.message);
+    if (ex instanceof UiError) fail(ex.key, ex.p);
+    else if (/claimInterface|Unable to claim|Access denied/i.test(ex.message)) fail('eBusy');
+    else fail('eGeneric', { m: ex.message });
+    $('progress').hidden = true;
+  } finally {
+    if (dap) await dap.close();
+    busy = false; $('go').disabled = !segs; $('erase').disabled = !$('eraseOk').checked || !segs;
+  }
+}
+
+async function flash(nrf) {
+  const t0 = performance.now();
+  setProgress('writing', 0);
+  await nrf.resetHalt();
+  await nrf.program(segs, (f) => setProgress('writing', f));
+  setProgress('checking', 0);
+  const bad = await nrf.verify(segs, (f) => setProgress('checking', f));
+  if (bad) throw new UiError('eVerify', { a: hx(bad.addr) });
+  await nrf.run();
+  log(`OK in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+  $('progress').hidden = true; $('ok').hidden = false;
+}
+
+$('go').addEventListener('click', () => withDevice(async (nrf) => {
+  setProgress('connecting', 0);
+  const { locked } = await nrf.attach();
+  if (locked) { $('progress').hidden = true; $('locked').hidden = false; return; }
+  await flash(nrf);
+}));
+
+$('eraseOk').addEventListener('change', (e) => { $('erase').disabled = !e.target.checked || !segs; });
+
+$('erase').addEventListener('click', () => withDevice(async (nrf) => {
+  setProgress('erasing', 0);
+  await nrf.attach();
+  const { locked } = await nrf.eraseAll();
+  if (locked) throw new UiError('eStillLocked');
+  $('locked').hidden = true; $('eraseOk').checked = false;
+  await flash(nrf);
+}));
+
+applyLang(lang);
+loadReleases();
+</script>
+</body>
+</html>

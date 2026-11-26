@@ -178,6 +178,10 @@ main{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--nav-h) + 40px)}
 #viewConnect{text-align:center}
 #viewConnect h2{font-size:1.5rem;font-weight:800;margin-block-end:14px;line-height:1.25}
 .hero-note{margin-block-start:20px;font-size:1rem;color:var(--dim)}
+/* Weg zum Firmware-Update (flash.html): klein, nur so breit wie der Text */
+.fw-link{display:inline-flex;align-items:center;gap:8px;margin-block-start:14px;min-block-size:48px;padding:8px 16px;border-radius:12px;border:2px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:.95rem;font-weight:700;text-decoration:none}
+.fw-link svg{inline-size:20px;block-size:20px;flex:none}
+.fw-link:hover{background:var(--accent-soft);border-color:var(--accent-edge)}
 
 /* Bild der Station: zeigt, wo der rote Knopf sitzt - Worte allein
    erklaeren die Stelle nicht. */
@@ -637,6 +641,10 @@ html[dir="rtl"] .steps{direction:rtl}
       <span data-i18n="connect">Verbinden</span>
     </button>
     <p class="hero-note" data-i18n="heroNote">Funktioniert mit Chrome oder Edge</p>
+    <a class="fw-link" href="flash.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+      <span data-i18n="fwLink">Firmware aktualisieren</span>
+    </a>
   </section>
 
   <!-- ============================ ÜBERSICHT ============================ -->
@@ -961,6 +969,7 @@ const I18N = {
     figCap: 'Roter Knopf an der Station',
     step2: 'Auf „Verbinden“ tippen, dann „TanenBase“ wählen.',
     heroNote: 'Funktioniert mit Chrome oder Edge',
+    fwLink: 'Firmware aktualisieren',
     connect: 'Verbinden', disconnect: 'Verbindung trennen',
     navHome: 'Über­sicht', navCal: 'Waage', navSet: 'Einstel­lungen', navExt: 'Erwei­tert', navNet: 'Netzwerk',
     advTag: 'Fachleute', advTitle: 'Nur für Fachleute',
@@ -1094,6 +1103,7 @@ const I18N = {
     figCap: 'Red button on the station',
     step2: 'Tap “Connect”, then pick “TanenBase”.',
     heroNote: 'Works with Chrome or Edge',
+    fwLink: 'Update firmware',
     connect: 'Connect', disconnect: 'Disconnect',
     navHome: 'Overview', navCal: 'Scale', navSet: 'Settings', navExt: 'Extended', navNet: 'Network',
     advTag: 'Experts', advTitle: 'For experts only',
@@ -1225,6 +1235,7 @@ const I18N = {
     figCap: 'الزر الأحمر على المحطة',
     step2: 'اضغط «اتصال»، ثم اختر «TanenBase».',
     heroNote: 'يعمل مع Chrome أو Edge',
+    fwLink: 'تحديث البرنامج الثابت',
     connect: 'اتصال', disconnect: 'قطع الاتصال',
     navHome: 'الرئيسية', navCal: 'الميزان', navSet: 'الإعدادات', navExt: 'متقدم', navNet: 'الشبكة',
     advTag: 'للفنيين', advTitle: 'للفنيين فقط',
