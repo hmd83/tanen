@@ -112,7 +112,7 @@ details ol{padding-inline-start:1.3em;display:flex;flex-direction:column;gap:6px
       <button class="tab" type="button" id="tabDevice" aria-pressed="true">Geräte-Etikett</button>
       <button class="tab" type="button" id="tabSticker" aria-pressed="false">Marken-Aufkleber</button>
     </div>
-    <p class="lead" id="whatLead">QR-Code für The Things Network und die DevEUI der Station. Klebt auf den Deckel des Gehäuses.</p>
+    <p class="lead" id="whatLead">QR-Code für The Things Network und die DevEUI von TanenBase. Klebt auf den Deckel des Gehäuses.</p>
 
     <div class="fields" id="deviceFields">
       <div class="field">
@@ -261,8 +261,8 @@ function setMode(m) {
   $('labelDevice').hidden = m !== 'device';
   $('labelSticker').hidden = m !== 'sticker';
   $('whatLead').textContent = m === 'device'
-    ? 'QR-Code für The Things Network und die DevEUI der Station. Klebt auf den Deckel des Gehäuses.'
-    : 'Zeichen, Wortmarke und Claim. Für den Bienenstock, gleich für jede Station.';
+    ? 'QR-Code für The Things Network und die DevEUI von TanenBase. Klebt auf den Deckel des Gehäuses.'
+    : 'Zeichen, Wortmarke und Claim. Für den Bienenstock, gleich für jedes TanenBase.';
   render();
 }
 

@@ -72,6 +72,9 @@ Detailed per-sprint history lives in [`docs/PLAN.md`](docs/PLAN.md).
   vendored as `web/qrcode.js` so it works offline
 
 ### Changed
+- **Product name in the setup pages** (2026-11-26): "TanenBase" replaces
+  "Station" / "station" / "المحطة" in every visible text of the setup app,
+  firmware page, label page and encoder (DE/EN/AR)
 - **tanen.eu: one design in German, English and Arabic** (2026-11-21): the
   English page had two sections and a CSS block of its own; the overview
   (`#about`, last before Contact, after the photos and maps) and the parts list (`#hardware`, "Stockwaage selbst bauen") are

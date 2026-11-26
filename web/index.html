@@ -512,11 +512,11 @@ html[dir="rtl"] .steps{direction:rtl}
         <span class="cstep-num" aria-hidden="true">1</span>
         <div class="cstep-body">
           <div class="cstep-row">
-            <p data-i18n="step1">Den roten Knopf an der Station drücken.</p>
+            <p data-i18n="step1">Den roten Knopf an TanenBase drücken.</p>
           <figure class="device-fig">
             <!-- Zeichnung der Station (web/device.svg), zugeschnitten auf Gehäuse
                  und Knopf; der rote Ring zeigt, welcher Knopf gemeint ist. -->
-            <svg viewBox="55 45 345 450" role="img" data-i18n-al="figCap" aria-label="Roter Knopf an der Station">
+            <svg viewBox="55 45 345 450" role="img" data-i18n-al="figCap" aria-label="Roter Knopf an TanenBase">
               <defs>
                 <radialGradient id="screwGrad" cx="30%" cy="30%" r="70%">
                   <stop offset="0%" stop-color="#ffffff"/>
@@ -813,7 +813,7 @@ html[dir="rtl"] .steps{direction:rtl}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/></svg>
           <span data-i18n="thresholds">Alarm-Grenzen</span>
         </div>
-        <p class="card-sub" data-i18n="thresholdsSub">Bei größeren Änderungen meldet sich die Station sofort.</p>
+        <p class="card-sub" data-i18n="thresholdsSub">Bei größeren Änderungen meldet sich TanenBase sofort.</p>
         <div class="grid-2">
           <div class="field">
             <label for="weightThreshKg" data-i18n="weightThresh">Gewicht (kg)</label>
@@ -834,7 +834,7 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="card danger">
       <h3 data-i18n="finish">Einrichtung beenden</h3>
-      <p class="card-sub" data-i18n="finishHint">Die Station startet neu und arbeitet normal weiter.</p>
+      <p class="card-sub" data-i18n="finishHint">TanenBase startet neu und arbeitet normal weiter.</p>
       <div class="btn-row" style="margin-block-start:0">
         <button class="btn btn-outline" id="disconnectBtn" data-i18n="disconnect">Verbindung trennen</button>
         <button class="btn btn-danger" data-cmd="1" data-i18n="done">Einrichtung beenden</button>
@@ -923,7 +923,7 @@ html[dir="rtl"] .steps{direction:rtl}
 
     <div class="card danger">
       <h3 data-i18n="session">Funk-Sitzung</h3>
-      <p class="card-sub" id="sessionHint" data-i18n="sessionHint">Die Station meldet sich beim nächsten Senden neu an.</p>
+      <p class="card-sub" id="sessionHint" data-i18n="sessionHint">TanenBase meldet sich beim nächsten Senden neu an.</p>
       <button class="btn btn-danger btn-block" data-cmd="3" data-i18n="clearSession">Sitzung löschen</button>
     </div>
   </section>
@@ -965,8 +965,8 @@ const I18N = {
     navLabel: 'Hauptbereiche',
     pillOff: 'Nicht verbunden', pillOn: 'Verbunden',
     heroTitle: 'Gerät verbinden',
-    step1: 'Den roten Knopf an der Station drücken.',
-    figCap: 'Roter Knopf an der Station',
+    step1: 'Den roten Knopf an TanenBase drücken.',
+    figCap: 'Roter Knopf an TanenBase',
     step2: 'Auf „Verbinden“ tippen, dann „TanenBase“ wählen.',
     heroNote: 'Funktioniert mit Chrome oder Edge',
     fwLink: 'Firmware aktualisieren',
@@ -1003,8 +1003,8 @@ const I18N = {
     lcHintCustom: 'Eigene Messwerte für Zelle und Gestell.',
     lcGain: 'Abweichung (Gramm je °C)', lcTau: 'Nachlauf (Minuten)',
     lcCustomHint: 'So messen Sie das selbst: docs/load_cells im Projekt.',
-    lcActiveOn: 'Die Station rechnet mit {gain} Gramm je °C, Nachlauf {min} Minuten.',
-    lcActiveOff: 'Die Station rechnet ohne Temperatur-Ausgleich.',
+    lcActiveOn: 'TanenBase rechnet mit {gain} Gramm je °C, Nachlauf {min} Minuten.',
+    lcActiveOff: 'TanenBase rechnet ohne Temperatur-Ausgleich.',
     lcSave: 'Wägezelle speichern',
     setSub: 'Zeiten und Alarm-Grenzen',
     timingCard: 'Zeiten & Alarm', timingCardSub: 'Alle Zeiten in Minuten.',
@@ -1013,11 +1013,11 @@ const I18N = {
     txHint: 'Üblich: 240 Minuten (4 Stunden).',
     msHint: 'Üblich: 5 Minuten.',
     thresholds: 'Alarm-Grenzen',
-    thresholdsSub: 'Bei größeren Änderungen meldet sich die Station sofort.',
+    thresholdsSub: 'Bei größeren Änderungen meldet sich TanenBase sofort.',
     weightThresh: 'Gewicht (kg)', tempThresh: 'Temperatur (°C)',
     saveSet: 'Einstellungen speichern',
     finish: 'Einrichtung beenden',
-    finishHint: 'Die Station startet neu und arbeitet normal weiter.',
+    finishHint: 'TanenBase startet neu und arbeitet normal weiter.',
     done: 'Einrichtung beenden',
     netSub: 'LoRaWAN-Zugang und Funk-Sitzung',
     netWarn: 'Nur für den Installateur. Im Alltag hier nichts ändern.',
@@ -1025,7 +1025,7 @@ const I18N = {
     appKeyHint: 'Wird nie vom Gerät zurückgelesen.',
     saveNet: 'Zugangsdaten speichern',
     session: 'Funk-Sitzung',
-    sessionHint: 'Die Station meldet sich beim nächsten Senden neu an.',
+    sessionHint: 'TanenBase meldet sich beim nächsten Senden neu an.',
     clearSession: 'Sitzung löschen',
     actLabel: 'Anmeldung im Funknetz',
     actHintOtaa: 'OTAA: meldet sich selbst an, das Netz muss antworten.',
@@ -1099,8 +1099,8 @@ const I18N = {
     navLabel: 'Main sections',
     pillOff: 'Not connected', pillOn: 'Connected',
     heroTitle: 'Connect your device',
-    step1: 'Press the red button on the station.',
-    figCap: 'Red button on the station',
+    step1: 'Press the red button on TanenBase.',
+    figCap: 'Red button on TanenBase',
     step2: 'Tap “Connect”, then pick “TanenBase”.',
     heroNote: 'Works with Chrome or Edge',
     fwLink: 'Update firmware',
@@ -1137,8 +1137,8 @@ const I18N = {
     lcHintCustom: 'Your own values for cell and frame.',
     lcGain: 'Drift (grams per °C)', lcTau: 'Lag (minutes)',
     lcCustomHint: 'How to measure this yourself: docs/load_cells in the project.',
-    lcActiveOn: 'The station is using {gain} grams per °C, lag {min} minutes.',
-    lcActiveOff: 'The station is running without temperature correction.',
+    lcActiveOn: 'TanenBase is using {gain} grams per °C, lag {min} minutes.',
+    lcActiveOff: 'TanenBase is running without temperature correction.',
     lcSave: 'Save load cell',
     setSub: 'Times and alarm limits',
     timingCard: 'Times & alarm', timingCardSub: 'All times in minutes.',
@@ -1151,7 +1151,7 @@ const I18N = {
     weightThresh: 'Weight (kg)', tempThresh: 'Temperature (°C)',
     saveSet: 'Save settings',
     finish: 'Finish setup',
-    finishHint: 'The station restarts and carries on as usual.',
+    finishHint: 'TanenBase restarts and carries on as usual.',
     done: 'Finish setup',
     netSub: 'LoRaWAN access and radio session',
     netWarn: 'For your installer only. Change nothing here day to day.',
@@ -1159,7 +1159,7 @@ const I18N = {
     appKeyHint: 'Never read back from the device.',
     saveNet: 'Save access data',
     session: 'Radio session',
-    sessionHint: 'The station rejoins on its next transmission.',
+    sessionHint: 'TanenBase rejoins on its next transmission.',
     clearSession: 'Clear session',
     actLabel: 'Network activation',
     actHintOtaa: 'OTAA: joins by itself; the network must answer.',
@@ -1231,8 +1231,8 @@ const I18N = {
     navLabel: 'الأقسام الرئيسية',
     pillOff: 'غير متصل', pillOn: 'متصل',
     heroTitle: 'اربط الجهاز',
-    step1: 'اضغط الزر الأحمر على المحطة.',
-    figCap: 'الزر الأحمر على المحطة',
+    step1: 'اضغط الزر الأحمر على TanenBase.',
+    figCap: 'الزر الأحمر على TanenBase',
     step2: 'اضغط «اتصال»، ثم اختر «TanenBase».',
     heroNote: 'يعمل مع Chrome أو Edge',
     fwLink: 'تحديث البرنامج الثابت',
@@ -1269,8 +1269,8 @@ const I18N = {
     lcHintCustom: 'قيمك الخاصة للخلية والحامل.',
     lcGain: 'الانحراف (غرام لكل °م)', lcTau: 'التأخّر (دقائق)',
     lcCustomHint: 'طريقة القياس بنفسك: docs/load_cells في المشروع.',
-    lcActiveOn: 'تحسب المحطة بـ {gain} غرام لكل °م، وتأخّر {min} دقيقة.',
-    lcActiveOff: 'تعمل المحطة بدون تصحيح حراري.',
+    lcActiveOn: 'يحسب TanenBase بـ {gain} غرام لكل °م، وتأخّر {min} دقيقة.',
+    lcActiveOff: 'يعمل TanenBase بدون تصحيح حراري.',
     lcSave: 'حفظ خلية الوزن',
     setSub: 'الأوقات وحدود التنبيه',
     timingCard: 'الأوقات والتنبيه', timingCardSub: 'كل الأوقات بالدقائق.',
@@ -1279,11 +1279,11 @@ const I18N = {
     txHint: 'المعتاد: 240 دقيقة (4 ساعات).',
     msHint: 'المعتاد: 5 دقائق.',
     thresholds: 'حدود التنبيه',
-    thresholdsSub: 'عند تغيّر أكبر ترسل المحطة فورًا.',
+    thresholdsSub: 'عند تغيّر أكبر يرسل TanenBase فورًا.',
     weightThresh: 'الوزن (كجم)', tempThresh: 'الحرارة (°م)',
     saveSet: 'حفظ الإعدادات',
     finish: 'إنهاء الإعداد',
-    finishHint: 'تعيد المحطة التشغيل وتعمل بشكل عادي.',
+    finishHint: 'يعيد TanenBase التشغيل ويعمل بشكل عادي.',
     done: 'إنهاء الإعداد',
     netSub: 'بيانات LoRaWAN والجلسة',
     netWarn: 'للفني فقط. لا تغيّر شيئًا هنا في الاستخدام اليومي.',
@@ -1291,7 +1291,7 @@ const I18N = {
     appKeyHint: 'لا يُقرأ من الجهاز أبدًا.',
     saveNet: 'حفظ بيانات الدخول',
     session: 'جلسة الشبكة',
-    sessionHint: 'تنضم المحطة من جديد عند الإرسال التالي.',
+    sessionHint: 'ينضم TanenBase من جديد عند الإرسال التالي.',
     clearSession: 'مسح الجلسة',
     actLabel: 'طريقة الانضمام للشبكة',
     actHintOtaa: 'OTAA: تنضم بنفسها، ويلزم أن ترد الشبكة.',
